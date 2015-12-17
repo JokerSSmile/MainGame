@@ -26,3 +26,15 @@
 *.exe
 *.out
 *.app
+
+# My
+*.sln
+*.sdf
+*.cd
+*.filters
+*.user
+*.vcxproj
+*.log
+*.tlog
+*.idp
+*.pdb
