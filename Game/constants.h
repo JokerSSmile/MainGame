@@ -1,3 +1,5 @@
+#pragma once
+
 //player
 const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;

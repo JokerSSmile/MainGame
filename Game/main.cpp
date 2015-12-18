@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <list>
+
 #include "collision.h"
 #include "constants.h"
 #include "map.h"
@@ -9,11 +10,10 @@
 #include "enemy.h"
 #include "chest.h"
 #include "sprites.h"
-
+#include "game.h"
 
 using namespace sf;
 using namespace std;
-
 
 int InitializeLevel(Player & player)
 {
@@ -159,7 +159,7 @@ void UpdateBullets(Player& p, vector<Enemy>& enemies, float gameTime, vector<Bul
 					p.health -= enemies[0].damage;
 				}
 			}
-			it1->Update(time, window, gameTime, mySprite.bulletTexture);
+			it1->UpdateBullet(time, window, gameTime, mySprite.bulletTexture);
 			it1->DeleteBullet(gameTime);
 		}
 	}
@@ -190,17 +190,18 @@ void DrawPlayer(Player& p, RenderWindow& window)
 	if (p.health > 0)
 	{
 		window.draw(p.sprite);
+		window.draw(p.headSprite);
 	}
 }
 
-void UpdateEnemies(vector<Enemy>& enemies, float& time, float& gameTime, RenderWindow& window, int& level)
+void UpdateEnemies(vector<Bullet>& bullets, vector<Enemy>& enemies, float& time, float& gameTime, RenderWindow& window, int& level)
 {
 	//enemy update
 	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
 	{
 		if (it->health > 0)
 		{
-			it->Update(time, gameTime, window, level);
+			it->Update(bullets, time, gameTime, window, level);
 		}
 	}
 }
@@ -281,18 +282,35 @@ void InitEnemies(vector<Enemy>& enemies, Sprites& mySprites)
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
 }
 
+void SetCorrectDrawOrder(Player& player, vector<Enemy>& enemies, float& gameTime, vector<Bullet>& bullets, float& time, RenderWindow& window, Sprites& mySprites)
+{
+	if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
+	{
+		UpdateBullets(player, enemies, gameTime, bullets, time, window, mySprites);
+		DrawPlayer(player, window);
+	}
+	else
+	{
+		DrawPlayer(player, window);
+		UpdateBullets(player, enemies, gameTime, bullets, time, window, mySprites);
+	}
+}
+
 void StartGame()
 {
 	//players last shoot time
 	float lastShootPlayer = 0;
 
-	//map struct
-	tileMap myMap;
-
 	Sprites mySprites;
 	mySprites.InitImages();
 
 	vector<Chest> chests;
+
+	vector<Bullet> bullets;
+
+	tileMap myTileMap;
+	vector<Map> myMap;
+	myTileMap.LoadMapSprites();
 
 	vector<Enemy> enemies;
 	InitEnemies(enemies, mySprites);
@@ -335,9 +353,9 @@ void StartGame()
 		//event
 		ProcessEvents(window);
 
-		player.Update(time, gameTime, lastShootPlayer, mySprites.wallBackgroundSprite, view);
+		player.Update(myMap, bullets, time, gameTime, lastShootPlayer, mySprites.wallBackgroundSprite, view);
 
-		UpdateEnemies(enemies, time, gameTime, window, level);
+		UpdateEnemies(bullets, enemies, time, gameTime, window, level);
 
 		AddChest(level, chests, enemies);
 		CheckEnemyCollidesPlayer(gameTime, hitTimer, player, enemies);
@@ -354,13 +372,11 @@ void StartGame()
 
 		DrawEnemies(window, level, enemies);
 
-		myMap.drawMap(window, IsLevelCleared(level, enemies));
+		myTileMap.drawMap(myMap, window, IsLevelCleared(level, enemies));
 
 		UpdateChests(chests, window, player);
 
-		UpdateBullets(player, enemies, gameTime, bullets, time, window, mySprites);
-
-		DrawPlayer(player, window);
+		SetCorrectDrawOrder(player, enemies, gameTime, bullets, time, window, mySprites);
 
 		window.display();
 		/////////////////////////////
