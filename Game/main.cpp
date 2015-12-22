@@ -39,6 +39,9 @@ void StartGame()
 	{
 		game->level = game->InitializeLevel();
 
+		Sprite a;
+		a.setTexture(game->mySprites.poofTexture);
+
 		float time = game->clock.getElapsedTime().asMicroseconds();
 		game->clock.restart();
 		time = time / 500;

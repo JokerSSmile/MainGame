@@ -21,11 +21,8 @@ struct Enemy :
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
 	float deathTime = 0;
-
+	Sprite poofSprite;
 	Vector2f lastPosition = {0, 0};
-
-	//Texture poofTexture;
-	//Sprite poofSprite;
 
 	Enemy() {};
 	Enemy(Texture & image, float X, float Y, int W, int H, String Name, float Health, int Level) :Character(image, X, Y, w, h, Name, health)
@@ -36,8 +33,7 @@ struct Enemy :
 		y = Y;
 		health = Health;
 		enemyLevel = Level;
-		//poofTexture.loadFromFile("images/enemy_destroy_effect.png");
-		//poofSprite.setTexture(poofTexture);
+
 		if (name == "EnemyFly")
 		{
 			dx = -0.1f;

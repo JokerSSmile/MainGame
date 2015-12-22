@@ -72,8 +72,6 @@ void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Tex
 {
 	if (life == true)
 	{
-		
-
 		bulletSprite.setTexture(bulletTexture);
 		bulletEffectSprite.setTexture(bulletEffectTexture);
 		bulletEnemyEffectSprite.setTexture(bulletEnemyEffectTexture);

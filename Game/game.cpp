@@ -5,10 +5,8 @@ void Game::InitEnemies()
 	enemies.push_back(Enemy(mySprites.enemyTexture, FLY1_POSITION_X, FLY1_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
 	enemies.push_back(Enemy(mySprites.enemyTexture, FLY2_POSITION_X, FLY2_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1400, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1500, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 500, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 300, 38, 43, "EnemyStandAndShoot", 3, 2));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, 1500, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
 }
 
 void Game::InitGame()
@@ -25,6 +23,7 @@ void Game::InitGame()
 	myTileMap.LoadMapSprites();
 
 	mySprites.InitImages();
+	mySprites.LoadFont();
 }
 
 int Game::InitializeLevel()
@@ -81,23 +80,18 @@ void Game::UpdateEnemies(float& time, RenderWindow& window)
 {
 	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
 	{
-		if (it->health > 0)
+		if (it->life == true)
 		{
+			it->lastPosition = { it->x, it->y };
 			it->Update(bullets, time, gameTime, window, level);
 			it->deathTime = gameTime;
-			it->lastPosition = it->sprite.getPosition();
-		}
-		else
-		{
-			cout << "!" << endl;
-			it->DestroyEffect(gameTime, window);
 		}
 	}
 }
 
 void Game::UpdatePlayer(float& time, View& view)
 {
-	player.Update(myMap, bullets, time, gameTime, lastShootPlayer, mySprites.wallBackgroundSprite, view, IsLevelCleared());
+	player.Update(bombs, myMap, bullets, time, gameTime, lastShootPlayer, mySprites.wallBackgroundSprite, view, IsLevelCleared());
 }
 
 void Game::UpdateChests(RenderWindow& window)
@@ -180,6 +174,26 @@ void Game::DrawBackground(View& view, RenderWindow& window)
 	window.draw(mySprites.floorBackgroundSprite);
 }
 
+void Game::DrawBombCount(View& view, RenderWindow& window)
+{
+	Sprite bombCountSprite;
+	bombCountSprite.setTexture(mySprites.bombCount);
+	bombCountSprite.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + 28, view.getCenter().y - WINDOW_HEIGHT / 2 + 32);
+	bombCountSprite.setScale(1.5, 1.5);
+	window.draw(bombCountSprite);
+
+	Text textBombs;
+	textBombs.setFont(mySprites.font);
+	textBombs.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + 80, view.getCenter().y - WINDOW_HEIGHT / 2 + 45);
+	textBombs.setCharacterSize(20);
+
+	ostringstream toString;
+	toString << player.bombCount;
+	textBombs.setString(toString.str());
+
+	window.draw(textBombs);
+}
+
 void Game::DrawPlayersHealth(View& view, RenderWindow& window)
 {
 	Texture heartTexture;
@@ -221,7 +235,7 @@ void Game::DrawEnemies(RenderWindow& window)
 {
 	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
 	{
-		if (it->health > 0)
+		if (it->life == true)
 		{
 			if (it->enemyLevel == level)
 			{
@@ -230,6 +244,7 @@ void Game::DrawEnemies(RenderWindow& window)
 		}
 		else
 		{
+			it->DestroyEffect(gameTime, window, mySprites.poofTexture);
 			it->x = 0;
 			it->y = 0;
 		}
@@ -242,6 +257,14 @@ void Game::DrawPlayer(RenderWindow& window)
 	{
 		window.draw(player.sprite);
 		window.draw(player.headSprite);
+	}
+}
+
+void Game::DrawBombs(RenderWindow& window)
+{
+	for (vector<Boomb>::iterator it = bombs.begin();it != bombs.end(); ++it)
+	{
+		it->Draw(window, mySprites.bombState, mySprites.bombExplosion, gameTime);	
 	}
 }
 
@@ -367,9 +390,10 @@ void Game::DrawWindow(View& view, float& time, RenderWindow& window)
 	DrawBackground(view, window);
 	DrawMap(window);
 	DrawPlayersHealth(view, window);
+	DrawBombCount(view, window);
 	DrawChest(window);
-	DrawEnemies(window);
-	DrawPlayer(window);
+	DrawBombs(window);
 	SetCorrectDrawOrder(time, window);
+	DrawEnemies(window);
 }
 

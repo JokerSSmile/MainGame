@@ -16,7 +16,7 @@ const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
 const int FLY_WIDTH = 57;
 const int FLY_HEIGHT = 45;
-const float  ENEMY_DESTROY_EFFECT = 1;//0.03f;
+const float  ENEMY_DESTROY_EFFECT = 0.07f;
 
 const int HEIGHT_MAP = 20;//размер карты высота
 const int WIDTH_MAP = 45;//размер карты ширина 
@@ -40,3 +40,4 @@ const float SPEED_BONUS = 0.01f;
 const float DAMAGE_BONUS = 0.5f;
 const float HEAL_BONUS = 1;
 const int BOMB_BONUS = 1;
+const float TIME_BEFORE_EXPLOSION = 2;

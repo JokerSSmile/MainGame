@@ -54,23 +54,16 @@ public:
 	}
 
 	void LoadTextures();
-
 	int RandomNumber();
-
 	void SetFilling();
-
 	void CheckOpening(Player& p);
 
 	void GiveFirstPresent(RenderWindow& window);
-
 	void GiveSecondPresent(RenderWindow& window);
-
 	void GiveThirdPresent(RenderWindow& window);
-
 	void GiveForthPresent(RenderWindow& window);
 
 	void SetPresent(RenderWindow& window);
-
 	void CheckCollisionWithPresent(Player& p);
 
 	void Update(Player& p);

@@ -3,21 +3,21 @@
 #include "collision.h"
 
 
-void Player::setFrame(float time)
+void Player::setFrame(float& time)
 {
 	CurrentFrame += 0.005 * time;
 	if (CurrentFrame > 4) CurrentFrame -= 4;
 }
 
-void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float &lastShot)
+bool Player::DiagonalMoving(float& time)
 {
-	//move
 	if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::W))
 	{
 		dir = leftUp;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
+		return true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::S))
 	{
@@ -25,6 +25,7 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
+		return true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::W))
 	{
@@ -32,6 +33,7 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
+		return true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::S))
 	{
@@ -39,8 +41,14 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
+		return true;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::A))
+	return false;
+}
+
+void Player::StrightMoving(float& time)
+{
+	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
 		dir = left;
 		setFrame(time);
@@ -74,8 +82,10 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 		sprite.setTextureRect(IntRect(0, 0, 36, 26));
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 	}
+}
 
-	//Shoot
+void Player::MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot)
+{
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 	{
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
@@ -96,6 +106,31 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
 		Shoot(bullets, gameTime, lastShot, 7);
 	}
+}
+
+void Player::PlantBomb(vector<Boomb>& bombs, float& time)
+{
+	if (Keyboard::isKeyPressed(Keyboard::Space))
+	{
+		if (time > lastBombPlant + TIME_BEFORE_EXPLOSION || lastBombPlant == 0)
+		{
+			lastBombPlant = time;
+			Boomb newBomb;
+			newBomb.position = Vector2f(x - h / 2, y - h / 2);
+			newBomb.createTime = time;
+			bombs.push_back(newBomb);
+		}
+	}
+}
+
+void Player::Control(vector<Boomb>& bombs, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot)
+{
+	if (DiagonalMoving(time) == false)
+	{
+		StrightMoving(time);
+	}
+	MakeShoot(bullets, gameTime, lastShot);
+	PlantBomb(bombs, gameTime);
 }
 
 void Player::SetShootAnimation(int& dir)
@@ -234,11 +269,11 @@ void Player::setSpeed()
 	}
 }
 
-void Player::Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened)
+void Player::Update(vector<Boomb>& bombs, vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened)
 {
 	bool canMove = true;
 
-	Control(bullets, time, gameTime, lastShootPlayer);
+	Control(bombs, bullets, time, gameTime, lastShootPlayer);
 	CheckCollision(myMap, canMove, wallSprite, view, areDoorsOpened);
 
 	if (canMove == true)

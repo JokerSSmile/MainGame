@@ -7,6 +7,9 @@
 #include "map.h"
 #include "sprites.h"
 #include "chest.h"
+#include "bomb.h"
+
+#include <sstream>
 
 struct Game
 {
@@ -22,6 +25,7 @@ struct Game
 	vector<Enemy> enemies;
 	vector<Bullet> bullets;
 	vector<Chest> chests;
+	vector<Boomb> bombs;
 
 	float lastShootPlayer;
 	float hitTimer;
@@ -32,7 +36,7 @@ struct Game
 
 	void InitGame();
 
-	int Game::InitializeLevel();
+	int InitializeLevel();
 
 	bool IsLevelCleared();
 	bool IsRoomEmpty();
@@ -51,8 +55,10 @@ struct Game
 
 	void DrawBackground(View& view, RenderWindow& window);
 	void DrawPlayersHealth(View& view, RenderWindow& window);
+	void DrawBombCount(View& view, RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);
+	void DrawBombs(RenderWindow& window);
 	void SetCorrectDrawOrder(float& time, RenderWindow& window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);

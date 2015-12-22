@@ -96,14 +96,31 @@ void Enemy::Shoot(vector<Bullet>& bullets, float gameTime, int dir, int bulletSt
 	bullets.push_back(bullet);
 }
 
-void Enemy::DestroyEffect(float& gameTime, RenderWindow& window)
+void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture)
 {
-	window.draw(poofSprite);
+	poofSprite.setTexture(poofTexture);
+	poofSprite.setScale(1.5, 1.5);
+	poofSprite.setOrigin(48, 48);
+	poofSprite.setPosition(lastPosition.x + sprite.getGlobalBounds().width, lastPosition.y + sprite.getGlobalBounds().height);
+
 	if (gameTime < deathTime + ENEMY_DESTROY_EFFECT)
 	{
-		cout << "1" << endl;
-		poofSprite.setTextureRect(IntRect(0, 0, 64, 64));
-		poofSprite.setPosition(lastPosition);
+		poofSprite.setTextureRect(IntRect(64, 0, 64, 64));
+		window.draw(poofSprite);
+	}
+	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 2)
+	{
+		poofSprite.setTextureRect(IntRect(192, 0, 64, 64));
+		window.draw(poofSprite);
+	}
+	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT * 2 && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 3)
+	{
+		poofSprite.setTextureRect(IntRect(0, 64, 64, 64));
+		window.draw(poofSprite);
+	}
+	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT * 3 && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 4)
+	{
+		poofSprite.setTextureRect(IntRect(128, 64, 64, 64));
 		window.draw(poofSprite);
 	}
 }
@@ -138,6 +155,15 @@ void Enemy::Update(vector<Bullet>& bullets, float& time, float& gameTime, Render
 			{
 				sprite.setTextureRect(IntRect(38, 0, 38, 43));
 			}
+		}
+
+		if (health > 0)
+		{
+			life = true;
+		}
+		else
+		{
+			life = false;
 		}
 
 		x += dx * time;

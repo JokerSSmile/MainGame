@@ -7,6 +7,7 @@ using namespace std;
 #include "map.h"
 #include "character.h"
 #include "bullet.h"
+#include "bomb.h"
 
 struct Player :
 	public Character
@@ -22,6 +23,7 @@ struct Player :
 	float damage = 1;
 	float speed = 0.1f;
 	int bombCount = 1;
+	float lastBombPlant = 0;
 
 	Sprite headSprite;
 
@@ -41,14 +43,16 @@ struct Player :
 	}
 
 
-	void setFrame(float time);
+	void setFrame(float& time);
 
-	//player Control
-	void Control(vector<Bullet>& bullets, float time, float gameTime, float &lastShot);
+	bool DiagonalMoving(float& time);
+	void StrightMoving(float& time);
+	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot);
+	void PlantBomb(vector<Boomb>& bombs, float& time);
+	void Control(vector<Boomb>& bombs, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot);
 
 	void SetShootAnimation(int& dir);
 
-	//player shoots
 	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir);
 
 	void SetLastNotCollidedPosition();
@@ -57,5 +61,5 @@ struct Player :
 
 	void setSpeed();
 
-	void Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened);
+	void Update(vector<Boomb>& bombs, vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened);
 };

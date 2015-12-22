@@ -11,6 +11,7 @@ struct Sprites
 	Image wallBackground;
 	Texture wallBackgroundTexture;
 	Sprite wallBackgroundSprite;
+	Texture bombCount;
 
 	//background floor
 	Image floorBackground;
@@ -24,6 +25,7 @@ struct Sprites
 	//enemy image
 	Image enemyImage;
 	Texture enemyTexture;
+	Image poofImage;
 	Texture poofTexture;
 
 	//standAndShoot
@@ -38,6 +40,12 @@ struct Sprites
 	//hero Head
 	Texture headTexture;
 
+	//bombs
+	Texture bombExplosion;
+	Texture bombState;
+
+	Font font;
+
 	void LoadBackgroundSprites()
 	{
 		wallBackground.loadFromFile("images/walls.png");
@@ -46,6 +54,8 @@ struct Sprites
 		floorBackground.loadFromFile("images/floor.png");
 		floorBackgroundTexture.loadFromImage(floorBackground);
 		floorBackgroundSprite.setTexture(floorBackgroundTexture);
+
+		bombCount.loadFromFile("images/addBomb.png");
 	}
 
 	void LoadHeroImage()
@@ -61,7 +71,8 @@ struct Sprites
 		enemyTexture.loadFromImage(enemyImage);
 		standAndShootImage.loadFromFile("images/StandAndShoot.png");
 		standAndShootTexture.loadFromImage(standAndShootImage);
-		poofTexture.loadFromFile("images/enemy_destroy_effect.png");
+		poofImage.loadFromFile("images/enemy_destroy_effect.png");
+		poofTexture.loadFromImage(poofImage);
 	}
 
 	void LoadBulletTexture()
@@ -71,11 +82,23 @@ struct Sprites
 		bulletEffectTextureEnemy.loadFromFile("images/enemy_tears_effect.png");
 	}
 
+	void LoadFont()
+	{
+		font.loadFromFile("fonts/8bitfont.ttf");
+	}
+
+	void LoadBombsTextures()
+	{
+		bombExplosion.loadFromFile("images/explosion.png");
+		bombState.loadFromFile("images/bomb_state.png");
+	}
+
 	void InitImages()
 	{
 		LoadBackgroundSprites();
 		LoadHeroImage();
 		LoadEnemyImage();
 		LoadBulletTexture();
+		LoadBombsTextures();
 	}
 };
