@@ -1,18 +1,23 @@
 #include "bullet.h"
 #include "map.h"
 
-void Bullet::CheckCollisionBullet()
+void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& wallSprite)
 {
 	if (life == true)
 	{
-		for (int i = (y + BULLET_SIDE) / TILE_SIDE; i < (y + BULLET_SIDE) / TILE_SIDE; i++)
-			for (int j = (x / TILE_SIDE); j < ((x + BULLET_SIDE) / TILE_SIDE); j++)
+		for (vector<Map>::iterator it = myMap.begin(); it != myMap.end(); it++)
+		{
+			if (Collision::PixelPerfectTest(bulletSprite, it->sprite))
 			{
-				if (mapString[i][j] == '0' || mapString[i][j] == 's')
-				{
-					life = false;
-				}
+				deathTime = gameTime;
+				life = false;
 			}
+		}
+		if (Collision::PixelPerfectTest(bulletSprite, wallSprite))
+		{
+			deathTime = gameTime;
+			life = false;
+		}
 	}
 }
 
@@ -20,23 +25,58 @@ void Bullet::DeleteBullet(float gameTime)
 {
 	if (life == true)
 	{
-		if (gameTime > timeShot + LIFE_TIME)
+		if (gameTime > timeShot + BULLET_LIFE_TIME)
 		{
-			isPlayers = false;
+			deathTime = gameTime;
 			life = false;
-			x = 0;
-			y = 0;
 		}
 
 	}
 }
 
+void Bullet::BulletDestroyEffect(float gameTime, RenderWindow& window)
+{
+	if (isPlayers == true)
+	{
+		if (gameTime < deathTime + BULLET_ANIMATION_STEP_TIME)
+		{
+			bulletEffectSprite.setTextureRect(IntRect(0, 64, 64, 64));
+			bulletEffectSprite.setPosition(x - 16, y - 16);
+			window.draw(bulletEffectSprite);
+		}
+		else if (gameTime > deathTime + BULLET_ANIMATION_STEP_TIME && gameTime < deathTime + BULLET_ANIMATION_STEP_TIME * 2)
+		{
+			bulletEffectSprite.setTextureRect(IntRect(0, 128, 64, 64));
+			bulletEffectSprite.setPosition(x - 16, y - 16);
+			window.draw(bulletEffectSprite);
+		}
+	}
+	else
+	{
+		if (gameTime < deathTime + BULLET_ANIMATION_STEP_TIME)
+		{
+			bulletEnemyEffectSprite.setTextureRect(IntRect(192, 0, 64, 64));
+			bulletEnemyEffectSprite.setPosition(x - 16, y - 16);
+			window.draw(bulletEnemyEffectSprite);
+		}
+		else if (gameTime > deathTime + BULLET_ANIMATION_STEP_TIME && gameTime < deathTime + BULLET_ANIMATION_STEP_TIME * 2)
+		{
+			bulletEnemyEffectSprite.setTextureRect(IntRect(64, 64, 64, 64));
+			bulletEnemyEffectSprite.setPosition(x - 16, y - 16);
+			window.draw(bulletEnemyEffectSprite);
+		}
+	}
+}
 
-void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Texture & bulletTexture)
+void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Texture & bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture, vector<Map>& myMap, Sprite& wallSprite)
 {
 	if (life == true)
 	{
+		
+
 		bulletSprite.setTexture(bulletTexture);
+		bulletEffectSprite.setTexture(bulletEffectTexture);
+		bulletEnemyEffectSprite.setTexture(bulletEnemyEffectTexture);
 		if (isPlayers == true)
 		{
 			bulletSprite.setTextureRect(IntRect(96, 96, BULLET_SIDE, BULLET_SIDE));
@@ -65,7 +105,7 @@ void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Tex
 		bulletSprite.setPosition(x, y);
 
 		DeleteBullet(gameTime);
-		CheckCollisionBullet();
+		CheckCollisionBullet(gameTime, myMap, wallSprite);
 
 		window.draw(bulletSprite);
 	}

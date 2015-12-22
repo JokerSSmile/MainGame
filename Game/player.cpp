@@ -78,26 +78,50 @@ void Player::Control(vector<Bullet>& bullets, float time, float gameTime, float 
 	//Shoot
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 	{
+		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
 		Shoot(bullets, gameTime, lastShot, 4);
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Up))
+	else if (Keyboard::isKeyPressed(Keyboard::Up))
 	{
+		headSprite.setTextureRect(IntRect(128, 0, 32, 32));
 		Shoot(bullets, gameTime, lastShot, 5);
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Down))
+	else if (Keyboard::isKeyPressed(Keyboard::Down))
 	{
+		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 		Shoot(bullets, gameTime, lastShot, 6);
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Right))
+	else if (Keyboard::isKeyPressed(Keyboard::Right))
 	{
+		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
 		Shoot(bullets, gameTime, lastShot, 7);
+	}
+}
+
+void Player::SetShootAnimation(int& dir)
+{
+	if (dir == 0 || dir == 1 || dir == 4)
+	{
+		headSprite.setTextureRect(IntRect(224, 0, 32, 32));
+	}
+	else if (dir == 2 || dir == 3 || dir == 7)
+	{
+		headSprite.setTextureRect(IntRect(96, 0, 32, 32));
+	}
+	else if (dir == 5)
+	{
+		headSprite.setTextureRect(IntRect(160, 0, 32, 32));
+	}
+	else if (dir == 6 || dir == 8)
+	{
+		headSprite.setTextureRect(IntRect(32, 0, 32, 32));
 	}
 }
 
 //player shoots
 void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir)
 {
-	if (gameTime > (lastShootPlayer + 0.5))
+	if (gameTime > (lastShootPlayer + TIME_BETWEEN_SHOOTS_PLAYER))
 	{
 		Bullet bullet;
 		bullet.isPlayers = true;
@@ -106,14 +130,14 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
 		bullet.timeShot = gameTime;
 		bullet.direction = dir;
-		bullet.speed = 0.3;
+		bullet.speed = PLAYERS_BULLET_SPEED;
 		bullet.damage = damage;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
 	}
-	if (gameTime < lastShootPlayer + 0.1)
+	if (gameTime < lastShootPlayer + TIME_FOR_SHOOT_ANIMATION)
 	{
-		headSprite.setTextureRect(IntRect(headSprite.getTextureRect().width + 32, 0, 32, 32));
+		SetShootAnimation(dir);
 	}
 }
 
@@ -137,7 +161,7 @@ void Player::SetLastNotCollidedPosition()
 	}
 }
 
-void Player::CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite, View& view)
+void Player::CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite, View& view, bool areDoorsOpened)
 {
 	for (vector<Map>::iterator it = myMap.begin(); it != myMap.end(); ++it)
 	{
@@ -151,29 +175,32 @@ void Player::CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite
 				break;
 			}
 			//if collides with door
-			else if (it->pos == RIGHT)
+			if (areDoorsOpened == true)
 			{
-				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				x += TILE_SIDE * 4 + w;
-				break;
-			}
-			else if (it->pos == LEFT)
-			{
-				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				x -= TILE_SIDE * 4 + w;
-				break;
-			}
-			else if (it->pos == UP)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				y -= TILE_SIDE * 4 + h;
-				break;
-			}
-			else if (it->pos == DOWN)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				y += TILE_SIDE * 4 + h;
-				break;
+				if (it->pos == RIGHT)
+				{
+					view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
+					x += TILE_SIDE * 4 + w;
+					break;
+				}
+				else if (it->pos == LEFT)
+				{
+					view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
+					x -= TILE_SIDE * 4 + w;
+					break;
+				}
+				else if (it->pos == UP)
+				{
+					view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
+					y -= TILE_SIDE * 4 + h;
+					break;
+				}
+				else if (it->pos == DOWN)
+				{
+					view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
+					y += TILE_SIDE * 4 + h;
+					break;
+				}
 			}
 		}
 		else if (Collision::PixelPerfectTest(sprite, wallSprite))
@@ -207,12 +234,12 @@ void Player::setSpeed()
 	}
 }
 
-void Player::Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view)
+void Player::Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened)
 {
 	bool canMove = true;
 
 	Control(bullets, time, gameTime, lastShootPlayer);
-	CheckCollision(myMap, canMove, wallSprite, view);
+	CheckCollision(myMap, canMove, wallSprite, view, areDoorsOpened);
 
 	if (canMove == true)
 	{

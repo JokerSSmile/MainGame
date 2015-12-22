@@ -1,12 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #include "constants.h"
+#include "map.h"
+#include "collision.h"
+#include "sprites.h"
 
 using namespace sf;
-
-const int SIZE_BULLETS = 50;
-const float LIFE_TIME = 1;
+using namespace std;
 
 struct Bullet
 {
@@ -17,14 +19,19 @@ struct Bullet
 	float y = 0;
 	bool life = false;
 	float timeShot;
+	float deathTime = 0;
 	Sprite bulletSprite;
+	Sprite bulletEffectSprite;
+	Sprite bulletEnemyEffectSprite;
 	bool isPlayers = false;
 	float speed;
 	float damage = 0;
 
-	void CheckCollisionBullet();
+	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites);
 
 	void DeleteBullet(float gameTime);
 
-	void UpdateBullet(float time, RenderWindow & window, float gameTime, Texture & bulletTexture);
+	void BulletDestroyEffect(float gameTime, RenderWindow& window);
+
+	void UpdateBullet(float time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture, vector<Map>& myMap, Sprite& wallSprite);
 };

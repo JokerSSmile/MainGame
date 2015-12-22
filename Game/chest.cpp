@@ -103,12 +103,12 @@ void Chest::CheckCollisionWithPresent(Player& p)
 	if (Collision::PixelPerfectTest(p.sprite, increaseSpeedSprite))
 	{
 		isPresentTaken = true;
-		p.speed += 0.05;
+		p.speed += SPEED_BONUS;
 	}
 	else if (Collision::PixelPerfectTest(p.sprite, increaseDamageSprite))
 	{
 		isPresentTaken = true;
-		p.damage += 0.5;
+		p.damage += DAMAGE_BONUS;
 	}
 	else if (Collision::PixelPerfectTest(p.sprite, healthSprite))
 	{
@@ -119,17 +119,17 @@ void Chest::CheckCollisionWithPresent(Player& p)
 		}
 		else
 		{
-			p.health += 1;
+			p.health += HEAL_BONUS;
 		}
 	}
 	else if (Collision::PixelPerfectTest(p.sprite, bombSprite))
 	{
 		isPresentTaken = true;
-		p.bombCount += 1;
+		p.bombCount += BOMB_BONUS;
 	}
 }
 
-void Chest::Update(RenderWindow& window, Player& p)
+void Chest::Update(Player& p)
 {
 	chestSpriteOpened.setTexture(chestTexture);
 	chestSpriteClosed.setTexture(chestTexture);
@@ -139,16 +139,32 @@ void Chest::Update(RenderWindow& window, Player& p)
 		SetFilling();
 		chestSpriteClosed.setPosition(x - w / 2, y - h / 2);
 		CheckOpening(p);
-		window.draw(chestSpriteClosed);
 	}
 	else
 	{
 		chestSpriteOpened.setPosition(x - w / 2, y - h / 2);
-		window.draw(chestSpriteOpened);
+		if (isPresentTaken == false)
+		{
+			CheckCollisionWithPresent(p);
+		}
+	}
+}
+
+void Chest::DrawChest(RenderWindow& window)
+{
+	if (isOpened == false)
+	{
+		window.draw(chestSpriteClosed);
+	}
+	else
+	{
+		if (chestSpriteOpened.getPosition().x != 0)
+		{
+			window.draw(chestSpriteOpened);
+		}
 		if (isPresentTaken == false)
 		{
 			SetPresent(window);
-			CheckCollisionWithPresent(p);
 		}
 	}
 }

@@ -4,9 +4,10 @@
 void tileMap::LoadMapSprites()
 {
 	//rock
-	rockImage.loadFromFile("images/Rock1.png");
+	rockImage.loadFromFile("images/Rock.png");
 	rockTexture.loadFromImage(rockImage);
 	rockSprite.setTexture(rockTexture);
+	rockSprite.setScale(2, 2);
 
 	//closed door
 	closedDoorImage.loadFromFile("images/Door.png");

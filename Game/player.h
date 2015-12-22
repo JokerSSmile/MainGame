@@ -8,11 +8,11 @@ using namespace std;
 #include "character.h"
 #include "bullet.h"
 
-struct Player:
+struct Player :
 	public Character
 {
 	float CurrentFrame = 0;
-	Vector2f playerOldPosition = {x, y};
+	Vector2f playerOldPosition = { x, y };
 
 	enum
 	{
@@ -20,12 +20,13 @@ struct Player:
 	} dir;
 
 	float damage = 1;
-	float speed = 0.1;
+	float speed = 0.1f;
 	int bombCount = 1;
-	Texture headTexture;
+
 	Sprite headSprite;
 
-	Player(Texture & image, float X, float Y, int W, int H, String Name, float Health) :Character(image, X, Y, w, h, Name, health)
+	Player() {};
+	Player(Texture & image, float X, float Y, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, X, Y, w, h, Name, health)
 	{
 		dir = stay;
 		w = W;
@@ -33,13 +34,10 @@ struct Player:
 		x = X;
 		y = Y;
 		health = 6;
-		if (name == "Hero")
-		{
-			sprite.setTextureRect(IntRect(0, 0, w, h));
-			headTexture.loadFromFile("images/head.png");
-			headSprite.setTexture(headTexture);
-			headSprite.setScale(2, 2);
-		}
+
+		sprite.setTextureRect(IntRect(0, 0, w, h));
+		headSprite.setTexture(headTexture);
+		headSprite.setScale(2, 2);
 	}
 
 
@@ -47,15 +45,17 @@ struct Player:
 
 	//player Control
 	void Control(vector<Bullet>& bullets, float time, float gameTime, float &lastShot);
-	
+
+	void SetShootAnimation(int& dir);
+
 	//player shoots
 	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir);
-	
+
 	void SetLastNotCollidedPosition();
 
-	void CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite, View& view);
+	void CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite, View& view, bool areDoorsOpened);
 
 	void setSpeed();
 
-	void Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view);
+	void Update(vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened);
 };

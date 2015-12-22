@@ -6,19 +6,17 @@ const float PLAYER_POSITION_Y = 200;
 const int PLAYER_WIDTH = 36;
 const int PLAYER_HEIGHT = 26;
 const float MAX_PLAYER_HEALTH = 6;
+const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;
+const float TIME_FOR_SHOOT_ANIMATION = 0.2f;
 
-//enemies
-const int SIZE_ENEMIES = 10;
-
+//enemy
 const float FLY1_POSITION_X = 350;
 const float FLY1_POSITION_Y = 200;
 const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
 const int FLY_WIDTH = 57;
 const int FLY_HEIGHT = 45;
-
-//map
-const int SIZE_MAP_STRUCT = 50;
+const float  ENEMY_DESTROY_EFFECT = 1;//0.03f;
 
 const int HEIGHT_MAP = 20;//размер карты высота
 const int WIDTH_MAP = 45;//размер карты ширина 
@@ -32,3 +30,13 @@ const int TILE_SIDE = 64;
 
 //bullets
 const int BULLET_SIDE = 32;
+const float PLAYERS_BULLET_SPEED = 0.10f;
+const float ENEMY_BULLET_SPEED = 0.12f;
+const float BULLET_LIFE_TIME = 1.f;
+const float BULLET_ANIMATION_STEP_TIME = 0.05f;
+
+//bonuses
+const float SPEED_BONUS = 0.01f;
+const float DAMAGE_BONUS = 0.5f;
+const float HEAL_BONUS = 1;
+const int BOMB_BONUS = 1;

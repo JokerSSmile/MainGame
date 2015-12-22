@@ -48,8 +48,8 @@ public:
 		chestTexture.loadFromFile("images/chest.png");
 		chestSpriteOpened.setTextureRect(IntRect(64, 0, 64, 64));
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
-		h = chestSpriteClosed.getGlobalBounds().height;
-		w = chestSpriteClosed.getGlobalBounds().width;
+		h = int(chestSpriteClosed.getGlobalBounds().height);
+		w = int(chestSpriteClosed.getGlobalBounds().width);
 		level = Level;
 	}
 
@@ -73,5 +73,7 @@ public:
 
 	void CheckCollisionWithPresent(Player& p);
 
-	void Update(RenderWindow& window, Player& p);
+	void Update(Player& p);
+
+	void DrawChest(RenderWindow& window);
 };

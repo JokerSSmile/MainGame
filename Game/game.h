@@ -15,7 +15,6 @@ struct Game
 	Player player;
 	tileMap myTileMap;
 	Sprites mySprites;
-	RenderWindow window;
 	Clock clock;
 	Clock gameTimer;
 
@@ -33,5 +32,30 @@ struct Game
 
 	void InitGame();
 
-	void InitRoomNumber();
+	int Game::InitializeLevel();
+
+	bool IsLevelCleared();
+	bool IsRoomEmpty();
+
+	void AddChest(View& view);
+	bool IsChestInRoom();
+	bool IsIntersectsPlayerEnemy(Enemy& enemy);
+	void CheckEnemyCollidesPlayer();
+
+	void UpdateEnemies(float& time, RenderWindow& window);
+	void UpdateChests(RenderWindow& window);
+	void UpdatePlayer(float& time, View& view);
+	void DeleteBulletFromVector();
+	void UpdateBullets(float& time, RenderWindow& window);
+	void UpdateGame(float& time, View& view, RenderWindow& window);
+
+	void DrawBackground(View& view, RenderWindow& window);
+	void DrawPlayersHealth(View& view, RenderWindow& window);
+	void DrawEnemies(RenderWindow& window);
+	void DrawPlayer(RenderWindow& window);
+	void SetCorrectDrawOrder(float& time, RenderWindow& window);
+	void DrawMap(RenderWindow& window);
+	void DrawChest(RenderWindow& window);
+
+	void DrawWindow(View& view, float& time, RenderWindow& window);
 };

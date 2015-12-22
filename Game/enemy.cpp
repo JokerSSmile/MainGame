@@ -90,16 +90,27 @@ void Enemy::Shoot(vector<Bullet>& bullets, float gameTime, int dir, int bulletSt
 	bullet.y = bulletStartY;
 	bullet.timeShot = gameTime;
 	bullet.direction = dir;
-	bullet.speed = 0.2;
+	bullet.speed = ENEMY_BULLET_SPEED;
 	bullet.damage = damage;
 	lastShootEnemyStand = bullet.timeShot;
 	bullets.push_back(bullet);
 }
 
-
-void Enemy::Update(vector<Bullet>& bullets, float time, float gameTime, RenderWindow & window, int gameLevel)
+void Enemy::DestroyEffect(float& gameTime, RenderWindow& window)
 {
-	if (gameLevel == level)
+	window.draw(poofSprite);
+	if (gameTime < deathTime + ENEMY_DESTROY_EFFECT)
+	{
+		cout << "1" << endl;
+		poofSprite.setTextureRect(IntRect(0, 0, 64, 64));
+		poofSprite.setPosition(lastPosition);
+		window.draw(poofSprite);
+	}
+}
+
+void Enemy::Update(vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel)
+{
+	if (gameLevel == enemyLevel)
 	{
 		if (name == "EnemyFly")
 		{
