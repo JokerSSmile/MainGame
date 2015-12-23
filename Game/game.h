@@ -51,6 +51,8 @@ struct Game
 	void UpdatePlayer(float& time, View& view);
 	void DeleteBulletFromVector();
 	void UpdateBullets(float& time, RenderWindow& window);
+	void UpdateBombs(float& gameTime);
+	void UpdateTime();
 	void UpdateGame(float& time, View& view, RenderWindow& window);
 
 	void DrawBackground(View& view, RenderWindow& window);

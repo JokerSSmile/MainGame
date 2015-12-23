@@ -156,8 +156,30 @@ void Game::UpdateBullets(float& time, RenderWindow& window)
 	DeleteBulletFromVector();
 }
 
+void Game::UpdateBombs(float& gameTime)
+{
+	for (vector<Boomb>::iterator it = bombs.begin(); it != bombs.end(); ++it)
+	{
+		it->Update(gameTime);
+		it = bombs.erase(it);
+	}
+}
+
+void Game::UpdateTime()
+{
+	if (player.health > 0)
+	{
+		gameTime = gameTimer.getElapsedTime().asSeconds();
+	}
+}
+
 void Game::UpdateGame(float& time, View& view, RenderWindow& window)
 {
+	level = InitializeLevel();
+
+	AddChest(view);
+	CheckEnemyCollidesPlayer();
+	UpdateTime();
 	UpdatePlayer(time, view);
 	UpdateEnemies(time, window);
 	UpdateChests(window);
@@ -373,15 +395,25 @@ void Game::DrawChest(RenderWindow& window)
 
 void Game::SetCorrectDrawOrder(float& time, RenderWindow& window)
 {
-	if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
+	if (bombs.size() != 0)
 	{
-		UpdateBullets(time, window);
-		DrawPlayer(window);
+		for (vector<Boomb>::iterator it = bombs.begin();it != bombs.end(); ++it)
+		{
+			if (player.y + player.h < it->position.y + 40)
+			{
+				DrawPlayer(window);
+				DrawBombs(window);
+			}
+			else
+			{
+				DrawBombs(window);
+				DrawPlayer(window);
+			}
+		}
 	}
 	else
 	{
 		DrawPlayer(window);
-		UpdateBullets(time, window);
 	}
 }
 
@@ -392,8 +424,8 @@ void Game::DrawWindow(View& view, float& time, RenderWindow& window)
 	DrawPlayersHealth(view, window);
 	DrawBombCount(view, window);
 	DrawChest(window);
-	DrawBombs(window);
 	SetCorrectDrawOrder(time, window);
+	UpdateBullets(time, window);
 	DrawEnemies(window);
 }
 

@@ -18,8 +18,8 @@ const int FLY_WIDTH = 57;
 const int FLY_HEIGHT = 45;
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 
-const int HEIGHT_MAP = 20;//размер карты высота
-const int WIDTH_MAP = 45;//размер карты ширина 
+const int HEIGHT_MAP = 20;
+const int WIDTH_MAP = 45;
 
 //window
 const int WINDOW_WIDTH = 960;
@@ -34,6 +34,7 @@ const float PLAYERS_BULLET_SPEED = 0.10f;
 const float ENEMY_BULLET_SPEED = 0.12f;
 const float BULLET_LIFE_TIME = 1.f;
 const float BULLET_ANIMATION_STEP_TIME = 0.05f;
+const float BULLET_SHIFT_IF_SHOOT_UP = 20;
 
 //bonuses
 const float SPEED_BONUS = 0.01f;
@@ -41,3 +42,4 @@ const float DAMAGE_BONUS = 0.5f;
 const float HEAL_BONUS = 1;
 const int BOMB_BONUS = 1;
 const float TIME_BEFORE_EXPLOSION = 2;
+const float TIME_FOR_EXPLOSION = 1.f;

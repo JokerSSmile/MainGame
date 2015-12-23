@@ -118,6 +118,8 @@ void Player::PlantBomb(vector<Boomb>& bombs, float& time)
 			Boomb newBomb;
 			newBomb.position = Vector2f(x - h / 2, y - h / 2);
 			newBomb.createTime = time;
+			newBomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
+			newBomb.isAlive = true;
 			bombs.push_back(newBomb);
 		}
 	}
@@ -161,8 +163,15 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		Bullet bullet;
 		bullet.isPlayers = true;
 		bullet.life = true;
+		if (dir == 5)
+		{
+			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
+		}
+		else
+		{		
+			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
+		}
 		bullet.x = headSprite.getPosition().x + headSprite.getLocalBounds().width / 2;
-		bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
 		bullet.timeShot = gameTime;
 		bullet.direction = dir;
 		bullet.speed = PLAYERS_BULLET_SPEED;
