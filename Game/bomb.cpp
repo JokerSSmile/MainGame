@@ -1,80 +1,54 @@
 #include "bomb.h"
 
-void Boomb::AnimationBombBeforeExplosion(Texture& playersBombTexture, float& gameTime)
+void Boomb::AnimationBombBeforeExplosion(Texture& playersBombTexture, float& gameTime, float& time)
 {
 	bombSprite.setTexture(playersBombTexture);
 	bombSprite.setScale(2, 2);
-	if (gameTime < createTime + TIME_BEFORE_EXPLOSION * 0.25)
+	bombSprite.setPosition(position.x, position.y);
+	bombSprite.setTextureRect(IntRect(0, 32, 32, 32));
+
+	currentFrame += 0.005f * time;
+	if (currentFrame > 3)
 	{
-		bombSprite.setPosition(position.x, position.y);
-		bombSprite.setTextureRect(IntRect(0, 32, 32, 32));
+		currentFrame -= 3;
+	}
+
+	if (int(currentFrame) == 0)
+	{
 		bombSprite.setColor(Color::White);
 	}
-	else if (gameTime > createTime + TIME_BEFORE_EXPLOSION * 0.25 && gameTime < createTime + TIME_BEFORE_EXPLOSION * 0.5)
+	else if (int(currentFrame) == 1)
 	{
-		bombSprite.setPosition(position.x + 3, position.y + 3);
-		bombSprite.setTextureRect(IntRect(32, 32, 32, 32));
 		bombSprite.setColor(Color::Red);
 	}
-	else if (gameTime > createTime + TIME_BEFORE_EXPLOSION * 0.5 && gameTime < createTime + TIME_BEFORE_EXPLOSION * 0.75)
+	else
 	{
-		bombSprite.setPosition(position.x, position.y);
-		bombSprite.setTextureRect(IntRect(0, 32, 32, 32));
-		bombSprite.setColor(Color::White);
-	}
-	else if (gameTime > createTime + TIME_BEFORE_EXPLOSION * 0.75 && gameTime < createTime + TIME_BEFORE_EXPLOSION)
-	{
-		bombSprite.setPosition(position.x + 3, position.y + 3);
-		bombSprite.setTextureRect(IntRect(32, 32, 32, 32));
-		bombSprite.setColor(Color::Red);
+		bombSprite.setColor(Color::Yellow);
 	}
 }
 
-void Boomb::ExplosionAnimation(Texture& bombExplosionTexture, float& gameTime)
+void Boomb::ExplosionAnimation(Texture& bombExplosionTexture, float& gameTime, float& time)
 {
-	explosionSprite.setPosition(position.x - 64, position.y - 128);
+	explosionSprite.setPosition(position.x - EXPLOSION_ANIMATION_SHIFT.x, position.y - EXPLOSION_ANIMATION_SHIFT.y);
 	explosionSprite.setTexture(bombExplosionTexture);
 	explosionSprite.setScale(2, 2);
-	if (gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.1)
+
+	if (isAlive == true)
 	{
-		explosionSprite.setTextureRect(IntRect(0, 0, 96, 96));
+		damageZone.setSize(Vector2f(explosionSprite.getGlobalBounds().width * 0.75, explosionSprite.getGlobalBounds().height / 2 * 0.75));
+		damageZone.setPosition(explosionSprite.getPosition().x + BOMB_DAMAGE_ZONE_SHIFT.x, explosionSprite.getPosition().y + explosionSprite.getGlobalBounds().height / 2 + BOMB_DAMAGE_ZONE_SHIFT.y);
+		damageZone.setFillColor(Color::Green);
 	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.1 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.2)
+	else
 	{
-		explosionSprite.setTextureRect(IntRect(96, 0, 96, 96));
+		damageZone.setPosition(-TILE_SIDE * 2, -TILE_SIDE * 2);
 	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.2 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.3)
+	if (currentExplosionFrame < EXPLOSION_FRAMES_COUNT)
 	{
-		explosionSprite.setTextureRect(IntRect(192, 0, 96, 96));
+		currentExplosionFrame += 0.006f * time;
 	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.3 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.4)
-	{
-		explosionSprite.setTextureRect(IntRect(288, 0, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.4 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.5)
-	{
-		explosionSprite.setTextureRect(IntRect(0, 96, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.5 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.6)
-	{
-		explosionSprite.setTextureRect(IntRect(96, 96, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.6 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.7)
-	{
-		explosionSprite.setTextureRect(IntRect(192, 96, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.7 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.8)
-	{
-		explosionSprite.setTextureRect(IntRect(288, 96, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.8 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 0.9)
-	{
-		explosionSprite.setTextureRect(IntRect(96, 192, 96, 96));
-	}
-	else if (gameTime > explosionTime + TIME_FOR_EXPLOSION * 0.9 && gameTime < explosionTime + TIME_FOR_EXPLOSION * 1.0)
-	{
-		explosionSprite.setTextureRect(IntRect(192, 192, 96, 96));
-	}
+
+	explosionSprite.setTextureRect(IntRect(96 * (int(currentExplosionFrame) % 4), 96 * (int(currentExplosionFrame) / 4), 96, 96));
 }
 
 void Boomb::Update(float& gameTime)
@@ -85,16 +59,18 @@ void Boomb::Update(float& gameTime)
 	}
 }
 
-void Boomb::Draw(RenderWindow& window, Texture& playersBombTexture, Texture& bombExplosionTexture, float& gameTime)
+void Boomb::Draw(RenderWindow& window, Texture& playersBombTexture, Texture& bombExplosionTexture, float& gameTime, float& time)
 {
-	AnimationBombBeforeExplosion(playersBombTexture, gameTime);
-	ExplosionAnimation(bombExplosionTexture, gameTime);
-	if (gameTime < createTime + TIME_BEFORE_EXPLOSION)
+	if (gameTime < createTime + TIME_BEFORE_EXPLOSION && createTime != 0)
 	{
+		AnimationBombBeforeExplosion(playersBombTexture, gameTime, time);
 		window.draw(bombSprite);
+		currentExplosionFrame = 0;
 	}
-	else if (gameTime > explosionTime && gameTime < explosionTime + TIME_FOR_EXPLOSION)
+	else if (gameTime > explosionTime && gameTime < explosionTime + TIME_FOR_EXPLOSION && createTime != 0)
 	{
+		ExplosionAnimation(bombExplosionTexture, gameTime, time);
 		window.draw(explosionSprite);
+		currentFrame = 0;
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "character.h"
 #include "bullet.h"
+#include "bomb.h"
 
 using namespace sf;
 using namespace std;
@@ -21,6 +22,8 @@ struct Enemy :
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
 	float deathTime = 0;
+	float bombHitTime = 0;
+	float playerHitTime = 0;
 	Sprite poofSprite;
 	Vector2f lastPosition = {0, 0};
 
@@ -50,12 +53,10 @@ struct Enemy :
 	}
 
 	void CheckCollosionFly();
-
 	void CheckCollisionZombie();
-
+	void ExplosionCollision(Boomb& boomb, float& gameTime);
 	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture);
-
-	void Shoot(vector<Bullet>& bullets, float gameTime, int dir, int bulletStartX, int bulletStartY);
-
-	void Update(vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel);
+	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);
+	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
+	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel);
 };

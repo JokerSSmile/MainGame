@@ -5,10 +5,10 @@ void Chest::LoadTextures()
 {
 	if (areTexturesLoaded == false)
 	{
-		increaseSpeedTexture.loadFromFile("images/increaseSpeed.png");
-		IncreaseDamageTexture.loadFromFile("images/IncreaseDamage.png");
-		HealthTexture.loadFromFile("images/addHeart.png");
-		BombTexture.loadFromFile("images/addBomb.png");
+		increaseSpeedTexture.loadFromFile("resources/images/increaseSpeed.png");
+		IncreaseDamageTexture.loadFromFile("resources/images/IncreaseDamage.png");
+		HealthTexture.loadFromFile("resources/images/addHeart.png");
+		BombTexture.loadFromFile("resources/images/addBomb.png");
 
 		increaseSpeedSprite.setTexture(increaseSpeedTexture);
 		increaseDamageSprite.setTexture(IncreaseDamageTexture);

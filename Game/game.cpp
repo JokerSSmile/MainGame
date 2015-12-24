@@ -4,9 +4,15 @@ void Game::InitEnemies()
 {
 	enemies.push_back(Enemy(mySprites.enemyTexture, FLY1_POSITION_X, FLY1_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
 	enemies.push_back(Enemy(mySprites.enemyTexture, FLY2_POSITION_X, FLY2_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1400, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
-	//enemies.push_back(Enemy(mySprites.standAndShootTexture, 1500, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
-	//enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 400, 38, 43, "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1400, 200, 38, 43, "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1500, 200, 38, 43, "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 300, 38, 43, "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, 2100, 300, 38, 43, "EnemyStandAndShoot", 3, 3));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, 2600, 300, 38, 43, "EnemyStandAndShoot", 3, 3));
+	enemies.push_back(Enemy(mySprites.enemyTexture, 1500, 760, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, 1200, 1050, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, 2100, 950, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
+	enemies.push_back(Enemy(mySprites.enemyTexture, 1500, 800, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
 }
 
 void Game::InitGame()
@@ -15,13 +21,9 @@ void Game::InitGame()
 	hitTimer = 0;
 	level = 1;
 	float gameTime = 0;
-
 	InitEnemies();
-
 	player = Player(mySprites.heroTexture, PLAYER_POSITION_X, PLAYER_POSITION_Y, PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
-
 	myTileMap.LoadMapSprites();
-
 	mySprites.InitImages();
 	mySprites.LoadFont();
 }
@@ -76,81 +78,109 @@ int Game::InitializeLevel()
 	return 0;
 }
 
+void Game::DeleteEnemyFromVector()
+{
+	auto isDead = [](Enemy enemy)
+	{
+		return !(enemy.health > 0);
+	};
+	enemies.erase(remove_if(enemies.begin(), enemies.end(), isDead), enemies.end());
+}
+
 void Game::UpdateEnemies(float& time, RenderWindow& window)
 {
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
+	DeleteEnemyFromVector();
+	for (auto& enemy: enemies)
 	{
-		if (it->life == true)
+		if (enemy.life == true)
 		{
-			it->lastPosition = { it->x, it->y };
-			it->Update(bullets, time, gameTime, window, level);
-			it->deathTime = gameTime;
+			enemy.lastPosition = { enemy.x, enemy.y };
+			enemy.Update(boomb, bullets, time, gameTime, window, level);
+			enemy.ExplosionCollision(boomb, gameTime);
+			enemy.deathTime = gameTime;
 		}
 	}
 }
 
 void Game::UpdatePlayer(float& time, View& view)
 {
-	player.Update(bombs, myMap, bullets, time, gameTime, lastShootPlayer, mySprites.wallBackgroundSprite, view, IsLevelCleared());
+	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
+	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsLevelCleared());
+	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer);
+	player.ChangeColorAfterHit(gameTime, hitTimer);
+	if (Mouse::isButtonPressed(Mouse::Left))
+	{
+		player.canMove = true;
+	}
+	player.Moving(time);
 }
 
 void Game::UpdateChests(RenderWindow& window)
 {
-	for (vector<Chest>::iterator chest = chests.begin(); chest != chests.end(); ++chest)
+	for (auto& chest: chests)
 	{
-		chest->Update(player);
+		chest.Update(player);
 	}
 }
 
+
 void Game::DeleteBulletFromVector()
 {
-	for (vector<Bullet>::iterator it = bullets.begin();it != bullets.end(); ++it)
+	auto isDead = [](Bullet bullet) 
 	{
-		if (it->deathTime > it->deathTime + BULLET_ANIMATION_STEP_TIME * 2)
+		return (bullet.deathTime > bullet.deathTime + BULLET_ANIMATION_STEP_TIME * 2);
+	};
+	bullets.erase(remove_if(bullets.begin(), bullets.end(), isDead), bullets.end());
+}
+
+void Game::UpdatePlayersBullets(Bullet& bullet)
+{
+	for (auto& enemy: enemies)
+	{
+		if (enemy.health > 0 && bullet.isPlayers == true)
 		{
-			it = bullets.erase(it);
+			if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite))
+			{
+				bullet.deathTime = gameTime;
+				bullet.life = false;
+				enemy.health -= bullet.damage;
+				enemy.playerHitTime = gameTime;
+			}
+		}
+	}
+}
+
+void Game::UpdateEnemiesBullets(Bullet& bullet)
+{
+	if (bullet.isPlayers == false)
+	{
+		if (Collision::PixelPerfectTest(player.sprite, bullet.bulletSprite) || Collision::PixelPerfectTest(player.headSprite, bullet.bulletSprite))
+		{
+			bullet.life = false;
+			player.health -= bullet.damage;
+			player.lastHitTime = gameTime;
 		}
 	}
 }
 
 void Game::UpdateBullets(float& time, RenderWindow& window)
 {
-	for (vector<Bullet>::iterator it1 = bullets.begin();it1 != bullets.end(); ++it1)
+	for (auto& bullet: bullets)
 	{
-		if (it1->life == true)
+		if (bullet.life == true)
 		{
-			for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
-			{
-				if (it->health > 0)
-				{
-					if (it1->isPlayers == true)
-					{
-						if (Collision::PixelPerfectTest(it->sprite, it1->bulletSprite))
-						{
-							it1->deathTime = gameTime;
-							it1->life = false;
-							it->health -= it1->damage;
-						}
-					}
-				}
-			}
-			if (it1->isPlayers == false)
-			{
-				if (Collision::PixelPerfectTest(player.sprite, it1->bulletSprite) || Collision::PixelPerfectTest(player.headSprite, it1->bulletSprite))
-				{
-					it1->life = false;
-					player.health -= it1->damage;
-				}
-			}
+			UpdatePlayersBullets(bullet);
+			UpdateEnemiesBullets(bullet);
 			
-			it1->UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy, myMap, mySprites.wallBackgroundSprite);
-			it1->DeleteBullet(gameTime);
+			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBackgroundSprite);
+			bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
+			bullet.DeleteBullet(gameTime);
 
 			
 		}
 		else
 		{
-			it1->BulletDestroyEffect(gameTime, window);
+			bullet.BulletDestroyEffect(gameTime, window);
 		}
 	}
 	DeleteBulletFromVector();
@@ -158,11 +188,7 @@ void Game::UpdateBullets(float& time, RenderWindow& window)
 
 void Game::UpdateBombs(float& gameTime)
 {
-	for (vector<Boomb>::iterator it = bombs.begin(); it != bombs.end(); ++it)
-	{
-		it->Update(gameTime);
-		it = bombs.erase(it);
-	}
+	boomb.Update(gameTime);
 }
 
 void Game::UpdateTime()
@@ -178,9 +204,8 @@ void Game::UpdateGame(float& time, View& view, RenderWindow& window)
 	level = InitializeLevel();
 
 	AddChest(view);
-	CheckEnemyCollidesPlayer();
-	UpdateTime();
 	UpdatePlayer(time, view);
+	UpdateTime();
 	UpdateEnemies(time, window);
 	UpdateChests(window);
 	UpdateBullets(time, window);
@@ -218,18 +243,16 @@ void Game::DrawBombCount(View& view, RenderWindow& window)
 
 void Game::DrawPlayersHealth(View& view, RenderWindow& window)
 {
-	Texture heartTexture;
-	heartTexture.loadFromFile("images/hearts.png");
 	Sprite fullHP;
-	fullHP.setTexture(heartTexture);
+	fullHP.setTexture(mySprites.heartTexture);
 	fullHP.setTextureRect(IntRect(0, 0, 16, 16));
 	fullHP.setScale(2, 2);
 	Sprite halfHP;
-	halfHP.setTexture(heartTexture);
+	halfHP.setTexture(mySprites.heartTexture);
 	halfHP.setTextureRect(IntRect(16, 0, 16, 16));
 	halfHP.setScale(2, 2);
 	Sprite emptySprite;
-	emptySprite.setTexture(heartTexture);
+	emptySprite.setTexture(mySprites.heartTexture);
 	emptySprite.setTextureRect(IntRect(32, 0, 16, 16));
 	emptySprite.setScale(2, 2);
 
@@ -255,20 +278,20 @@ void Game::DrawPlayersHealth(View& view, RenderWindow& window)
 
 void Game::DrawEnemies(RenderWindow& window)
 {
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
+	for (auto& enemy: enemies)
 	{
-		if (it->life == true)
+		if (enemy.life == true)
 		{
-			if (it->enemyLevel == level)
+			if (enemy.enemyLevel == level)
 			{
-				window.draw(it->sprite);
+				window.draw(enemy.sprite);
 			}
 		}
 		else
 		{
-			it->DestroyEffect(gameTime, window, mySprites.poofTexture);
-			it->x = 0;
-			it->y = 0;
+			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture);
+			enemy.x = 0;
+			enemy.y = 0;
 		}
 	}
 }
@@ -282,23 +305,20 @@ void Game::DrawPlayer(RenderWindow& window)
 	}
 }
 
-void Game::DrawBombs(RenderWindow& window)
+void Game::DrawBombs(RenderWindow& window, float& time)
 {
-	for (vector<Boomb>::iterator it = bombs.begin();it != bombs.end(); ++it)
-	{
-		it->Draw(window, mySprites.bombState, mySprites.bombExplosion, gameTime);	
-	}
+	boomb.Draw(window, mySprites.bombState, mySprites.bombExplosion, gameTime, time);	
 }
 
 bool Game::IsLevelCleared()
 {
 	bool isAllDead = true;
 
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
+	for (auto& enemy: enemies)
 	{
-		if (it->enemyLevel == level)
+		if (enemy.enemyLevel == level)
 		{
-			if (it->health > 0)
+			if (enemy.health > 0)
 			{
 				isAllDead = false;
 			}
@@ -311,9 +331,9 @@ bool Game::IsRoomEmpty()
 {
 	bool isEmpty = true;
 
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
+	for (auto& enemy : enemies)
 	{
-		if (it->enemyLevel == level)
+		if (enemy.enemyLevel == level)
 		{
 			isEmpty = false;
 		}
@@ -328,9 +348,10 @@ bool Game::IsChestInRoom()
 		return false;
 	}
 	bool isChestInRoom = false;
-	for (vector<Chest>::iterator chest = chests.begin(); chest != chests.end(); ++chest)
+
+	for (auto& chest: chests)
 	{
-		if (level == chest->level)
+		if (level == chest.level)
 		{
 			isChestInRoom = true;
 		}
@@ -349,37 +370,6 @@ void Game::AddChest(View& view)
 	}
 }
 
-bool Game::IsIntersectsPlayerEnemy(Enemy& enemy)
-{
-	if (player.sprite.getGlobalBounds().contains(enemy.x + (enemy.sprite.getGlobalBounds().width / 2), enemy.y + (enemy.sprite.getGlobalBounds().height / 2)))
-	{
-		return true;
-	}
-	else if (player.headSprite.getGlobalBounds().contains(enemy.x + (enemy.sprite.getGlobalBounds().width / 2), enemy.y + (enemy.sprite.getGlobalBounds().height / 2)))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void Game::CheckEnemyCollidesPlayer()
-{
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
-	{
-		if (IsIntersectsPlayerEnemy(*it))
-		{
-			if (gameTime > hitTimer + 1 || hitTimer == 0)
-			{
-				player.health -= it->damage;
-				hitTimer = gameTime;
-			}
-		}
-	}
-}
-
 void Game::DrawMap(RenderWindow& window)
 {
 	myTileMap.drawMap(myMap, window, IsLevelCleared());
@@ -387,32 +377,22 @@ void Game::DrawMap(RenderWindow& window)
 
 void Game::DrawChest(RenderWindow& window)
 {
-	for (vector<Chest>::iterator it = chests.begin();it != chests.end(); ++it)
+	for (auto& chest: chests)
 	{
-			it->DrawChest(window);
+			chest.DrawChest(window);
 	}
 }
 
 void Game::SetCorrectDrawOrder(float& time, RenderWindow& window)
 {
-	if (bombs.size() != 0)
+	if (player.y + player.h < boomb.position.y + 64)
 	{
-		for (vector<Boomb>::iterator it = bombs.begin();it != bombs.end(); ++it)
-		{
-			if (player.y + player.h < it->position.y + 40)
-			{
-				DrawPlayer(window);
-				DrawBombs(window);
-			}
-			else
-			{
-				DrawBombs(window);
-				DrawPlayer(window);
-			}
-		}
+	    DrawPlayer(window);
+		DrawBombs(window, time);
 	}
 	else
 	{
+		DrawBombs(window, time);
 		DrawPlayer(window);
 	}
 }

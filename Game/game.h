@@ -20,12 +20,12 @@ struct Game
 	Sprites mySprites;
 	Clock clock;
 	Clock gameTimer;
+	Boomb boomb;
 
 	vector<Map> myMap;
 	vector<Enemy> enemies;
 	vector<Bullet> bullets;
 	vector<Chest> chests;
-	vector<Boomb> bombs;
 
 	float lastShootPlayer;
 	float hitTimer;
@@ -43,16 +43,17 @@ struct Game
 
 	void AddChest(View& view);
 	bool IsChestInRoom();
-	bool IsIntersectsPlayerEnemy(Enemy& enemy);
-	void CheckEnemyCollidesPlayer();
 
+	void DeleteEnemyFromVector();
 	void UpdateEnemies(float& time, RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer(float& time, View& view);
 	void DeleteBulletFromVector();
+	void UpdatePlayersBullets(Bullet& bullet);
+	void UpdateEnemiesBullets(Bullet& bullet);
 	void UpdateBullets(float& time, RenderWindow& window);
 	void UpdateBombs(float& gameTime);
-	void UpdateTime();
+	void UpdateTime(); 
 	void UpdateGame(float& time, View& view, RenderWindow& window);
 
 	void DrawBackground(View& view, RenderWindow& window);
@@ -60,7 +61,7 @@ struct Game
 	void DrawBombCount(View& view, RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);
-	void DrawBombs(RenderWindow& window);
+	void DrawBombs(RenderWindow& window, float& time);
 	void SetCorrectDrawOrder(float& time, RenderWindow& window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);

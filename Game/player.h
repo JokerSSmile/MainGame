@@ -8,11 +8,11 @@ using namespace std;
 #include "character.h"
 #include "bullet.h"
 #include "bomb.h"
+#include "enemy.h"
 
 struct Player :
 	public Character
 {
-	float CurrentFrame = 0;
 	Vector2f playerOldPosition = { x, y };
 
 	enum
@@ -22,8 +22,13 @@ struct Player :
 
 	float damage = 1;
 	float speed = 0.1f;
-	int bombCount = 1;
 	float lastBombPlant = 0;
+	float CurrentFrame = 0;
+	float lastHitTime = 0;
+
+	int bombCount;
+	
+	bool canMove = true;
 
 	Sprite headSprite;
 
@@ -35,11 +40,14 @@ struct Player :
 		h = H;
 		x = X;
 		y = Y;
-		health = 6;
+		health = MAX_PLAYER_HEALTH;
+
+		bombCount = 11;
 
 		sprite.setTextureRect(IntRect(0, 0, w, h));
 		headSprite.setTexture(headTexture);
 		headSprite.setScale(2, 2);
+
 	}
 
 
@@ -48,8 +56,8 @@ struct Player :
 	bool DiagonalMoving(float& time);
 	void StrightMoving(float& time);
 	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot);
-	void PlantBomb(vector<Boomb>& bombs, float& time);
-	void Control(vector<Boomb>& bombs, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot);
+	void PlantBomb(Boomb& bomb, float& time);
+	void Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot);
 
 	void SetShootAnimation(int& dir);
 
@@ -57,9 +65,12 @@ struct Player :
 
 	void SetLastNotCollidedPosition();
 
-	void CheckCollision(vector<Map> myMap, bool &canMove, Sprite& wallSprite, View& view, bool areDoorsOpened);
+	bool IsIntersectsPlayerEnemy(Enemy& enemy);
+	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer);
+	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
+	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
 
 	void setSpeed();
 
-	void Update(vector<Boomb>& bombs, vector<Map> myMap, vector<Bullet>& bullets, float time, float gameTime, float &lastShootPlayer, Sprite & wallSprite, View & view, bool areDoorsOpened);
+	void Moving(float& time);
 };

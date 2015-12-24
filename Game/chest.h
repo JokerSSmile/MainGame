@@ -45,7 +45,7 @@ public:
 	{
 		x = X;
 		y = Y;
-		chestTexture.loadFromFile("images/chest.png");
+		chestTexture.loadFromFile("resources/images/chest.png");
 		chestSpriteOpened.setTextureRect(IntRect(64, 0, 64, 64));
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
 		h = int(chestSpriteClosed.getGlobalBounds().height);

@@ -81,7 +81,7 @@ void Enemy::CheckCollisionZombie()
 		}
 }
 
-void Enemy::Shoot(vector<Bullet>& bullets, float gameTime, int dir, int bulletStartX, int bulletStartY)
+void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY)
 {
 	Bullet bullet;
 	bullet.isPlayers = false;
@@ -125,13 +125,52 @@ void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTe
 	}
 }
 
-void Enemy::Update(vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel)
+const FloatRect GetSpriteRect(const Sprite & sprite)
+{
+	const Vector2f pos = sprite.getPosition();
+	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
+	return FloatRect(pos, size);
+}
+
+void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
+{
+	FloatRect spriteRect = GetSpriteRect(sprite);
+	if (spriteRect.intersects(boomb.damageZone.getGlobalBounds()))
+	{
+		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + 0.5)
+		{
+			health -= BOMB_DAMAGE;
+			bombHitTime = gameTime;
+		}
+		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
+		{
+			boomb.isAlive = false;
+		}
+	}
+}
+
+
+void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
+{
+	if (gameTime < playerHitTime + CHANGE_COLOR_EFFECT || (gameTime > bombHitTime && gameTime < bombHitTime + 0.5))
+	{
+		sprite.setColor(COLOR_AFTER_HIT);
+	}
+	else
+	{
+		sprite.setColor(Color::White);
+	}
+}
+
+void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel)
 {
 	if (gameLevel == enemyLevel)
 	{
+		ChangeColorAfterHit(gameTime, boomb);
+
 		if (name == "EnemyFly")
 		{
-			currentFrame += 0.005 * time;
+			currentFrame += 0.005f * time;
 			if (currentFrame > 2) currentFrame -= 2;
 			sprite.setTextureRect(IntRect(57 * int(currentFrame), 0, 57, 45));
 			CheckCollosionFly();
