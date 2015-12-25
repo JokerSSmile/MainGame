@@ -5,7 +5,7 @@
 
 void Player::setFrame(float& time)
 {
-	CurrentFrame += 0.005 * time;
+	CurrentFrame += 0.005f * time;
 	if (CurrentFrame > 4) CurrentFrame -= 4;
 }
 
@@ -114,16 +114,14 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 	{
 		if (Keyboard::isKeyPressed(Keyboard::Space))
 		{
-			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION || lastBombPlant == 0)
+			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION + TIME_FOR_EXPLOSION || lastBombPlant == 0)
 			{
-				cout << bombCount << endl;
 				lastBombPlant = time;
 				bomb.position = Vector2f(x - h / 2, y - h / 2);
 				bomb.createTime = time;
 				bomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
 				bomb.isAlive = true;
 				bombCount--;
-				cout << bombCount << endl;
 			}
 		}
 	}
@@ -218,26 +216,23 @@ bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer)
 {
-	for (vector<Enemy>::iterator it = enemies.begin();it != enemies.end(); ++it)
+	for (auto& enemy: enemies)
 	{
-		if (it->life == true)
+		if (enemy.life == true)
 		{
-			if (IsIntersectsPlayerEnemy(*it) && (gameTime > hitTimer + 1 || hitTimer == 0))
+			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + 1 || hitTimer == 0))
 			{
-				health -= it->damage;
+				health -= enemy.damage;
 				hitTimer = gameTime;
 			}
-			if (Collision::PixelPerfectTest(sprite, it->sprite))
+			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
 			{
-				if (it->name == "EnemyStandAndShoot")
+				if (enemy.name == "EnemyStandAndShoot")
 				{
 					canMove = false;
 					SetLastNotCollidedPosition();
@@ -249,10 +244,10 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 
 void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 {
-	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT && hitTimer != 0)
+	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 )
 	{
-		sprite.setColor(Color(250, 150, 150));
-		headSprite.setColor(Color(250, 150, 150));
+		sprite.setColor(Color(COLOR_AFTER_HIT));
+		headSprite.setColor(Color(COLOR_AFTER_HIT));
 	}
 	else
 	{
@@ -263,11 +258,11 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 
 void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened)
 {
-	for (vector<Map>::iterator it = myMap.begin(); it != myMap.end(); ++it)
+	for (auto& map: myMap)
 	{
-		if (Collision::PixelPerfectTest(sprite, it->sprite))
+		if (Collision::PixelPerfectTest(sprite, map.sprite))
 		{
-			if (it->pos == NOTDOOR)
+			if (map.pos == NOTDOOR)
 			{
 				canMove = false;
 				SetLastNotCollidedPosition();
@@ -276,25 +271,25 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 			//if collides with door
 			if (areDoorsOpened == true)
 			{
-				if (it->pos == RIGHT)
+				if (map.pos == RIGHT)
 				{
 					view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
 					x += TILE_SIDE * 4 + w;
 					break;
 				}
-				else if (it->pos == LEFT)
+				else if (map.pos == LEFT)
 				{
 					view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
 					x -= TILE_SIDE * 4 + w;
 					break;
 				}
-				else if (it->pos == UP)
+				else if (map.pos == UP)
 				{
 					view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
 					y -= TILE_SIDE * 4 + h;
 					break;
 				}
-				else if (it->pos == DOWN)
+				else if (map.pos == DOWN)
 				{
 					view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
 					y += TILE_SIDE * 4 + h;
@@ -325,10 +320,10 @@ void Player::setSpeed()
 	case left: dx = -speed; dy = 0; break;
 	case down: dx = 0; dy = speed; break;
 	case up: dx = 0; dy = -speed; break;
-	case leftUp: dx = -speed*0.66; dy = -speed*0.66; break;
-	case leftDown: dx = -speed*0.66; dy = speed*0.66; break;
-	case rightUp: dx = speed*0.66; dy = -speed*0.66; break;
-	case rightDown: dx = speed*0.66; dy = speed*0.66; break;
+	case leftUp: dx = -speed*0.66f; dy = -speed*0.66f; break;
+	case leftDown: dx = -speed*0.66f; dy = speed*0.66f; break;
+	case rightUp: dx = speed*0.66f; dy = -speed*0.66; break;
+	case rightDown: dx = speed*0.66f; dy = speed*0.66f; break;
 	case stay: dx = 0; dy = 0;
 	}
 }

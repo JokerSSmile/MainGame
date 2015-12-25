@@ -28,10 +28,8 @@ struct Bullet
 	float damage = 0;
 
 	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites);
-
 	void DeleteBullet(float gameTime);
-
 	void BulletDestroyEffect(float gameTime, RenderWindow& window);
-
-	void UpdateBullet(float time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture, vector<Map>& myMap, Sprite& wallSprite);
+	void SetSpeed();
+	void UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture);
 };

@@ -5,9 +5,9 @@ void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& w
 {
 	if (life == true)
 	{
-		for (vector<Map>::iterator it = myMap.begin(); it != myMap.end(); it++)
+		for (auto& map: myMap)
 		{
-			if (Collision::PixelPerfectTest(bulletSprite, it->sprite))
+			if (Collision::PixelPerfectTest(bulletSprite, map.sprite))
 			{
 				deathTime = gameTime;
 				life = false;
@@ -68,7 +68,23 @@ void Bullet::BulletDestroyEffect(float gameTime, RenderWindow& window)
 	}
 }
 
-void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Texture & bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture, vector<Map>& myMap, Sprite& wallSprite)
+void Bullet::SetSpeed()
+{
+	switch (direction)
+	{
+	case 0: dx = float(-speed*0.66); dy = float(-speed*0.66); break;
+	case 1: dx = float(-speed*0.66); dy = float(speed*0.66); break;
+	case 2: dx = float(speed*0.66); dy = float(-speed*0.66); break;
+	case 3: dx = float(speed*0.66); dy = float(speed*0.66); break;
+	case 4: dx = -speed; dy = 0; break;
+	case 5: dx = 0; dy = -speed; break;
+	case 6: dx = 0; dy = speed; break;
+	case 7: dx = speed; dy = 0; break;
+	case 8: dx = 0; dy = speed; break;
+	}
+}
+
+void Bullet::UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture & bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture)
 {
 	if (life == true)
 	{
@@ -84,18 +100,7 @@ void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Tex
 			bulletSprite.setTextureRect(IntRect(96, 32, BULLET_SIDE, BULLET_SIDE));
 		}
 
-		switch (direction)
-		{
-		case 0: dx = float(-speed*0.66); dy = float(-speed*0.66); break;
-		case 1: dx = float(-speed*0.66); dy = float(speed*0.66); break;
-		case 2: dx = float(speed*0.66); dy = float(-speed*0.66); break;
-		case 3: dx = float(speed*0.66); dy = float(speed*0.66); break;
-		case 4: dx = -speed; dy = 0; break;
-		case 5: dx = 0; dy = -speed; break;
-		case 6: dx = 0; dy = speed; break;
-		case 7: dx = speed; dy = 0; break;
-		case 8: dx = 0; dy = speed; break;
-		}
+		SetSpeed();
 
 		x += dx * time;
 		y += dy * time;
@@ -103,7 +108,6 @@ void Bullet::UpdateBullet(float time, RenderWindow & window, float gameTime, Tex
 		bulletSprite.setPosition(x, y);
 
 		DeleteBullet(gameTime);
-		CheckCollisionBullet(gameTime, myMap, wallSprite);
 
 		window.draw(bulletSprite);
 	}

@@ -44,10 +44,13 @@ struct Game
 	void AddChest(View& view);
 	bool IsChestInRoom();
 
+	void DeleteEnemyFromVector();
 	void UpdateEnemies(float& time, RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer(float& time, View& view);
 	void DeleteBulletFromVector();
+	void UpdatePlayersBullets(Bullet& bullet);
+	void UpdateEnemiesBullets(Bullet& bullet);
 	void UpdateBullets(float& time, RenderWindow& window);
 	void UpdateBombs(float& gameTime);
 	void UpdateTime(); 
@@ -58,7 +61,7 @@ struct Game
 	void DrawBombCount(View& view, RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);
-	void DrawBombs(RenderWindow& window);
+	void DrawBombs(RenderWindow& window, float& time);
 	void SetCorrectDrawOrder(float& time, RenderWindow& window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);

@@ -1,23 +1,24 @@
 #include "map.h"
 #include "constants.h"
 
+const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
+const String DOOR_CLOSED_TEXTURE_PATH = "resources/images/Door.png";
+const String DOOR_OPENED_TEXTURE_PATH = "resources/images/openedDoor.png";
+
 void tileMap::LoadMapSprites()
 {
 	//rock
-	rockImage.loadFromFile("images/Rock.png");
-	rockTexture.loadFromImage(rockImage);
+	rockTexture.loadFromFile(ROCK_TEXTURE_PATH);
 	rockSprite.setTexture(rockTexture);
 	rockSprite.setScale(2, 2);
 
 	//closed door
-	closedDoorImage.loadFromFile("images/Door.png");
-	closedDoorTexture.loadFromImage(closedDoorImage);
+	closedDoorTexture.loadFromFile(DOOR_CLOSED_TEXTURE_PATH);
 	closedDoorSprite.setTexture(closedDoorTexture);
 	closedDoorSprite.setScale(2, 2);
 
 	//opened door
-	openedDoorImage.loadFromFile("images/openedDoor.png");
-	openedDoorTexture.loadFromImage(openedDoorImage);
+	openedDoorTexture.loadFromFile(DOOR_OPENED_TEXTURE_PATH);
 	openedDoorSprite.setTexture(openedDoorTexture);
 	openedDoorSprite.setScale(2, 2);
 }
@@ -105,35 +106,35 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClea
 
 void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
 {
-	for (vector<Map>::iterator it = myMap.begin(); it != myMap.end(); ++it)
+	for (auto& map: myMap)
 	{
-		if (it->pos == 0)
+		if (map.pos == 0)
 		{
-			it->sprite.setPosition(it->x, it->y);
+			map.sprite.setPosition(map.x, map.y);
 		}
 		else
 		{
-			if (it->pos == UP)
+			if (map.pos == UP)
 			{
-				it->sprite.setTextureRect(IntRect(0, 0, 64, 64));
-				it->sprite.setPosition(it->x, it->y);
+				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
+				map.sprite.setPosition(map.x, map.y);
 			}
-			else if (it->pos == DOWN)
+			else if (map.pos == DOWN)
 			{
-				it->sprite.setTextureRect(IntRect(64, 0, 64, 64));
-				it->sprite.setPosition(it->x, it->y);
+				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
+				map.sprite.setPosition(map.x, map.y);
 			}
-			else if (it->pos == LEFT)
+			else if (map.pos == LEFT)
 			{
-				it->sprite.setTextureRect(IntRect(192, 0, 64, 64));
-				it->sprite.setPosition(it->x, it->y);
+				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
+				map.sprite.setPosition(map.x, map.y);
 			}
-			else if (it->pos == RIGHT)
+			else if (map.pos == RIGHT)
 			{
-				it->sprite.setTextureRect(IntRect(128, 0, 64, 64));
-				it->sprite.setPosition(it->x, it->y);
+				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
+				map.sprite.setPosition(map.x, map.y);
 			}
 		}
-		window.draw(it->sprite);
+		window.draw(map.sprite);
 	}
 }

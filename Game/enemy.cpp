@@ -141,7 +141,6 @@ void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
 		{
 			health -= BOMB_DAMAGE;
 			bombHitTime = gameTime;
-			cout << "1" << endl;
 		}
 		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
 		{
@@ -155,7 +154,7 @@ void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 {
 	if (gameTime < playerHitTime + CHANGE_COLOR_EFFECT || (gameTime > bombHitTime && gameTime < bombHitTime + 0.5))
 	{
-		sprite.setColor(Color(250, 150, 150));
+		sprite.setColor(COLOR_AFTER_HIT);
 	}
 	else
 	{

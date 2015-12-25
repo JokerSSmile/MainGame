@@ -30,13 +30,13 @@ void ProcessEvents(RenderWindow& window)
 
 void StartGame()
 {
-	Game* game = new Game;
 	RenderWindow window (VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Game");
+	Game* game = new Game;
 	game->InitGame();
-	view.reset(FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	while (window.isOpen())
 	{
-		float time = game->clock.getElapsedTime().asMicroseconds();
+		float time = float(game->clock.getElapsedTime().asMicroseconds());
 		game->clock.restart();
 		time = time / 500;
 

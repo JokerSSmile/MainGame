@@ -13,7 +13,6 @@ using namespace std;
 struct Player :
 	public Character
 {
-	float CurrentFrame = 0;
 	Vector2f playerOldPosition = { x, y };
 
 	enum
@@ -23,8 +22,12 @@ struct Player :
 
 	float damage = 1;
 	float speed = 0.1f;
-	int bombCount;
 	float lastBombPlant = 0;
+	float CurrentFrame = 0;
+	float lastHitTime = 0;
+
+	int bombCount;
+	
 	bool canMove = true;
 
 	Sprite headSprite;
@@ -41,11 +44,10 @@ struct Player :
 
 		bombCount = 11;
 
-		cout << bombCount << endl;
-
 		sprite.setTextureRect(IntRect(0, 0, w, h));
 		headSprite.setTexture(headTexture);
 		headSprite.setScale(2, 2);
+
 	}
 
 
