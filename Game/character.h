@@ -9,9 +9,14 @@ using namespace std;
 struct Character
 {
 public:
-	float dx, dy, x, y, speed, health;
+	float dx;
+	float dy; 
+	float x;
+	float y; 
+	float speed;
+	float health;
 	int w, h;
-	bool life;
+	bool alive;
 	Texture texture;
 	Sprite sprite;
 	String name;
@@ -27,7 +32,7 @@ public:
 		health = Health;
 		dx = 0;
 		dy = 0;
-		life = true;
+		alive = true;
 		sprite.setTexture(texture);
 	}
 };

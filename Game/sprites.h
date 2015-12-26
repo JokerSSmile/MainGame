@@ -5,6 +5,7 @@
 using namespace sf;
 using namespace std;
 
+const String MAIN_MENU_TEXTURE_PATH = "resources/images/main_menu.png";
 const String FONT_8_BIT_PATH = "resources/fonts/8bitfont.ttf";
 const String WALL_TEXTURE_PATH = "resources/images/walls.png";
 const String FLOOR_TEXTURE_PATH = "resources/images/floor.png";
@@ -23,6 +24,10 @@ const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
 
 struct Sprites
 {
+	//main menu
+
+	Texture mainMenuTexture;
+
 	//background wall
 	Image wallBackground;
 	Texture wallBackgroundTexture;
@@ -103,6 +108,11 @@ struct Sprites
 		bulletEffectTextureEnemy.loadFromFile(ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH);
 	}
 
+	void LoadMainMenuTextures()
+	{
+		mainMenuTexture.loadFromFile(MAIN_MENU_TEXTURE_PATH);
+	}
+
 	void LoadFont()
 	{
 		font.loadFromFile(FONT_8_BIT_PATH);
@@ -116,6 +126,7 @@ struct Sprites
 
 	void InitImages()
 	{
+		LoadMainMenuTextures();
 		LoadBackgroundSprites();
 		LoadHeroImage();
 		LoadEnemyImage();

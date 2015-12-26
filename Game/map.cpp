@@ -23,19 +23,21 @@ void tileMap::LoadMapSprites()
 	openedDoorSprite.setScale(2, 2);
 }
 
-void tileMap::setDoorType(Map& myMap, bool isLevelClear)
+void tileMap::setDoorType(Map& myMap, bool isRoomClear)
 {
-	if (isLevelClear == false)
+	if (isRoomClear == false)
 	{
 		myMap.sprite = closedDoorSprite;
+		isOpened = false;
 	}
 	else
 	{
 		myMap.sprite = openedDoorSprite;
+		isOpened = true;
 	}
 }
 
-void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClear)
+void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear)
 {
 	if (isMapSpritesLoaded == false)
 	{
@@ -65,7 +67,7 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClea
 
 			else if (mapString[i][j] == 'u')
 			{
-				setDoorType(map, isLevelClear);
+				setDoorType(map, isRoomClear);
 				map.y = i * TILE_SIDE - TILE_SIDE;
 				map.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = UP;
@@ -74,7 +76,7 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClea
 			}
 			else if (mapString[i][j] == 'd')
 			{
-				setDoorType(map, isLevelClear);
+				setDoorType(map, isRoomClear);
 				map.y = i * TILE_SIDE;
 				map.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = DOWN;
@@ -83,7 +85,7 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClea
 			}
 			else if (mapString[i][j] == 'r')
 			{
-				setDoorType(map, isLevelClear);
+				setDoorType(map, isRoomClear);
 				map.y = i * TILE_SIDE;
 				map.x = j * TILE_SIDE;
 				map.pos = RIGHT;
@@ -92,7 +94,7 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isLevelClea
 			}
 			else if (mapString[i][j] == 'l')
 			{
-				setDoorType(map, isLevelClear);
+				setDoorType(map, isRoomClear);
 				map.y = i * TILE_SIDE;
 				map.x = j * TILE_SIDE - TILE_SIDE;
 				map.pos = LEFT;

@@ -46,6 +46,7 @@ static String mapString[45] = {
 struct tileMap
 {
 	bool isMapSpritesLoaded = false;
+	bool isOpened = false;
 
 	Image rockImage;
 	Texture rockTexture;
@@ -59,9 +60,9 @@ struct tileMap
 
 	void LoadMapSprites();
 
-	void setDoorType(Map& myMap, bool isLevelClear);
+	void setDoorType(Map& myMap, bool isRoomClear);
 
-	void drawMap(vector<Map>& myMap, RenderWindow & window, bool isLevelClear);
+	void drawMap(vector<Map>& myMap, RenderWindow & window, bool isRoomClear);
 
 	void drawTiles(vector<Map>& myMap, RenderWindow & window);
 };

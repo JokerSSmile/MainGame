@@ -1,40 +1,42 @@
 #include "bullet.h"
 #include "map.h"
 
-void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& wallSprite)
+void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& wallSprite, Sound& destroyBullet)
 {
-	if (life == true)
+	if (alive == true)
 	{
 		for (auto& map: myMap)
 		{
 			if (Collision::PixelPerfectTest(bulletSprite, map.sprite))
 			{
 				deathTime = gameTime;
-				life = false;
+				alive = false;
+				destroyBullet.play();
 			}
 		}
 		if (Collision::PixelPerfectTest(bulletSprite, wallSprite))
 		{
 			deathTime = gameTime;
-			life = false;
+			alive = false;
+			destroyBullet.play();
 		}
 	}
 }
 
-void Bullet::DeleteBullet(float gameTime)
+void Bullet::DeleteBullet(float& gameTime, Sound& destroyBullet)
 {
-	if (life == true)
+	if (alive == true)
 	{
 		if (gameTime > timeShot + BULLET_LIFE_TIME)
 		{
 			deathTime = gameTime;
-			life = false;
+			alive = false;
+			destroyBullet.play();
 		}
-
 	}
 }
 
-void Bullet::BulletDestroyEffect(float gameTime, RenderWindow& window)
+void Bullet::BulletDestroyEffect(float& gameTime, RenderWindow& window)
 {
 	if (isPlayers == true)
 	{
@@ -86,7 +88,7 @@ void Bullet::SetSpeed()
 
 void Bullet::UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture & bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture)
 {
-	if (life == true)
+	if (alive == true)
 	{
 		bulletSprite.setTexture(bulletTexture);
 		bulletEffectSprite.setTexture(bulletEffectTexture);
@@ -106,8 +108,6 @@ void Bullet::UpdateBullet(float& time, RenderWindow & window, float gameTime, Te
 		y += dy * time;
 
 		bulletSprite.setPosition(x, y);
-
-		DeleteBullet(gameTime);
 
 		window.draw(bulletSprite);
 	}

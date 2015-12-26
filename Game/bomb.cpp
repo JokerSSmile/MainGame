@@ -59,6 +59,15 @@ void Boomb::Update(float& gameTime)
 	}
 }
 
+void Boomb::PlaySound(Sound& explosionSound, float& gameTime)
+{
+	if (currentExplosionFrame == 0 & currentFrame != 0 && gameTime >= explosionTime)
+	{
+		cout << gameTime << " " << explosionTime << endl;
+		explosionSound.play();
+	}
+}
+
 void Boomb::Draw(RenderWindow& window, Texture& playersBombTexture, Texture& bombExplosionTexture, float& gameTime, float& time)
 {
 	if (gameTime < createTime + TIME_BEFORE_EXPLOSION && createTime != 0)

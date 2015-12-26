@@ -8,8 +8,30 @@
 #include "sprites.h"
 #include "chest.h"
 #include "bomb.h"
+#include "music.h"
 
 #include <sstream>
+
+static enum 
+{
+	NOT_STATED,
+	FIRST,
+	SECOND,
+	THIRD,
+	FORTH,
+	FIFTH,
+	SIXTH,
+	SEVENTH,
+	EIGHTH,
+	NINTH
+} currentRoom;
+
+static enum
+{
+	MAIN_MENU,
+	GAME,
+	PAUSE
+} gameState;
 
 struct Game
 {
@@ -21,6 +43,9 @@ struct Game
 	Clock clock;
 	Clock gameTimer;
 	Boomb boomb;
+	Sounds mySounds;
+
+	Sprite mainMenuSprite;
 
 	vector<Map> myMap;
 	vector<Enemy> enemies;
@@ -30,15 +55,15 @@ struct Game
 	float lastShootPlayer;
 	float hitTimer;
 	float gameTime;
-	int level;
+	int room;
 
 	void InitEnemies();
 
 	void InitGame();
 
-	int InitializeLevel();
+	int InitializeRoom();
 
-	bool IsLevelCleared();
+	bool IsRoomCleared();
 	bool IsRoomEmpty();
 
 	void AddChest(View& view);
@@ -52,8 +77,9 @@ struct Game
 	void UpdatePlayersBullets(Bullet& bullet);
 	void UpdateEnemiesBullets(Bullet& bullet);
 	void UpdateBullets(float& time, RenderWindow& window);
-	void UpdateBombs(float& gameTime);
+	void UpdateBombs();
 	void UpdateTime(); 
+	void UpdateMusic();
 	void UpdateGame(float& time, View& view, RenderWindow& window);
 
 	void DrawBackground(View& view, RenderWindow& window);

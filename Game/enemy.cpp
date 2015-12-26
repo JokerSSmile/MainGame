@@ -85,7 +85,7 @@ void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bull
 {
 	Bullet bullet;
 	bullet.isPlayers = false;
-	bullet.life = true;
+	bullet.alive = true;
 	bullet.x = bulletStartX;
 	bullet.y = bulletStartY;
 	bullet.timeShot = gameTime;
@@ -162,9 +162,9 @@ void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 	}
 }
 
-void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel)
+void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameRoom)
 {
-	if (gameLevel == enemyLevel)
+	if (gameRoom == enemyRoom)
 	{
 		ChangeColorAfterHit(gameTime, boomb);
 
@@ -198,11 +198,11 @@ void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& ga
 
 		if (health > 0)
 		{
-			life = true;
+			alive = true;
 		}
 		else
 		{
-			life = false;
+			alive = false;
 		}
 
 		x += dx * time;

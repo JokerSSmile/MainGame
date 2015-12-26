@@ -66,7 +66,7 @@ struct Player :
 	void SetLastNotCollidedPosition();
 
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
-	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer);
+	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
 	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
 	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
 

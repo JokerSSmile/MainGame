@@ -163,7 +163,7 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 	{
 		Bullet bullet;
 		bullet.isPlayers = true;
-		bullet.life = true;
+		bullet.alive = true;
 		if (dir == 5)
 		{
 			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
@@ -219,16 +219,17 @@ bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 	return false;
 }
 
-void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer)
+void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.life == true)
+		if (enemy.alive == true)
 		{
 			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + 1 || hitTimer == 0))
 			{
 				health -= enemy.damage;
 				hitTimer = gameTime;
+				tearDestroy.play();
 			}
 			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
 			{

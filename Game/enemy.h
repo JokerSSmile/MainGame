@@ -18,7 +18,7 @@ struct Enemy :
 	int randNum;
 	int bulletStartX = 0;
 	int bulletStartY = 0;
-	int enemyLevel = 0;
+	int enemyRoom = 0;
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
 	float deathTime = 0;
@@ -28,14 +28,14 @@ struct Enemy :
 	Vector2f lastPosition = {0, 0};
 
 	Enemy() {};
-	Enemy(Texture & image, float X, float Y, int W, int H, String Name, float Health, int Level) :Character(image, X, Y, w, h, Name, health)
+	Enemy(Texture & image, float X, float Y, int W, int H, String Name, float Health, int Room) :Character(image, X, Y, w, h, Name, health)
 	{
 		w = W;
 		h = H;
 		x = X;
 		y = Y;
 		health = Health;
-		enemyLevel = Level;
+		enemyRoom = Room;
 
 		if (name == "EnemyFly")
 		{
@@ -58,5 +58,5 @@ struct Enemy :
 	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture);
 	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
-	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel);
+	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameRoom);
 };

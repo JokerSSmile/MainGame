@@ -19,60 +19,61 @@ void Game::InitGame()
 {
 	lastShootPlayer = 0;
 	hitTimer = 0;
-	level = 1;
-	float gameTime = 0;
+	room = 1;
+	gameState = MAIN_MENU;
 	InitEnemies();
 	player = Player(mySprites.heroTexture, PLAYER_POSITION_X, PLAYER_POSITION_Y, PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
 	myTileMap.LoadMapSprites();
 	mySprites.InitImages();
 	mySprites.LoadFont();
+	mySounds.LoadMusic();
 }
 
-int Game::InitializeLevel()
+int Game::InitializeRoom()
 {
 	if (player.x > 0 && player.x < WINDOW_WIDTH)
 	{
 		if (player.y > 0 && player.y < WINDOW_HEIGHT)
 		{
-			return 1;
+			return FIRST;
 		}
 		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
 		{
-			return 4;
+			return FORTH;
 		}
 		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
 		{
-			return 7;
+			return SEVENTH;
 		}
 	}
 	else if (player.x > WINDOW_WIDTH && player.x < WINDOW_WIDTH * 2)
 	{
 		if (player.y > 0 && player.y < WINDOW_HEIGHT)
 		{
-			return 2;
+			return SECOND;
 		}
 		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
 		{
-			return 5;
+			return FIFTH;
 		}
 		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
 		{
-			return 8;
+			return EIGHTH;
 		}
 	}
 	else if (player.x > WINDOW_WIDTH * 2 && player.x < WINDOW_WIDTH * 3)
 	{
 		if (player.y > 0 && player.y < WINDOW_HEIGHT)
 		{
-			return 3;
+			return THIRD;
 		}
 		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
 		{
-			return 6;
+			return SIXTH;
 		}
 		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
 		{
-			return 9;
+			return NINTH;
 		}
 	}
 	return 0;
@@ -82,7 +83,7 @@ void Game::DeleteEnemyFromVector()
 {
 	auto isDead = [](Enemy enemy)
 	{
-		return !(enemy.health > 0);
+		return (enemy.health < 0);
 	};
 	enemies.erase(remove_if(enemies.begin(), enemies.end(), isDead), enemies.end());
 }
@@ -92,10 +93,10 @@ void Game::UpdateEnemies(float& time, RenderWindow& window)
 	DeleteEnemyFromVector();
 	for (auto& enemy: enemies)
 	{
-		if (enemy.life == true)
+		if (enemy.alive == true)
 		{
 			enemy.lastPosition = { enemy.x, enemy.y };
-			enemy.Update(boomb, bullets, time, gameTime, window, level);
+			enemy.Update(boomb, bullets, time, gameTime, window, room);
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
 		}
@@ -105,8 +106,8 @@ void Game::UpdateEnemies(float& time, RenderWindow& window)
 void Game::UpdatePlayer(float& time, View& view)
 {
 	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
-	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsLevelCleared());
-	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer);
+	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsRoomCleared());
+	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer, mySounds.playerHurts);
 	player.ChangeColorAfterHit(gameTime, hitTimer);
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
@@ -119,7 +120,7 @@ void Game::UpdateChests(RenderWindow& window)
 {
 	for (auto& chest: chests)
 	{
-		chest.Update(player);
+		chest.Update(player, mySounds.chestOpening);
 	}
 }
 
@@ -142,9 +143,10 @@ void Game::UpdatePlayersBullets(Bullet& bullet)
 			if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite))
 			{
 				bullet.deathTime = gameTime;
-				bullet.life = false;
+				bullet.alive = false;
 				enemy.health -= bullet.damage;
 				enemy.playerHitTime = gameTime;
+				mySounds.tearDestroy.play();
 			}
 		}
 	}
@@ -156,9 +158,11 @@ void Game::UpdateEnemiesBullets(Bullet& bullet)
 	{
 		if (Collision::PixelPerfectTest(player.sprite, bullet.bulletSprite) || Collision::PixelPerfectTest(player.headSprite, bullet.bulletSprite))
 		{
-			bullet.life = false;
+			bullet.alive = false;
 			player.health -= bullet.damage;
 			player.lastHitTime = gameTime;
+			mySounds.playerHurts.play();
+			mySounds.tearDestroy.play();		
 		}
 	}
 }
@@ -167,16 +171,14 @@ void Game::UpdateBullets(float& time, RenderWindow& window)
 {
 	for (auto& bullet: bullets)
 	{
-		if (bullet.life == true)
+		if (bullet.alive == true)
 		{
 			UpdatePlayersBullets(bullet);
 			UpdateEnemiesBullets(bullet);
 			
-			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBackgroundSprite);
+			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBackgroundSprite, mySounds.tearDestroy);
 			bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
-			bullet.DeleteBullet(gameTime);
-
-			
+			bullet.DeleteBullet(gameTime, mySounds.tearDestroy);
 		}
 		else
 		{
@@ -186,9 +188,10 @@ void Game::UpdateBullets(float& time, RenderWindow& window)
 	DeleteBulletFromVector();
 }
 
-void Game::UpdateBombs(float& gameTime)
+void Game::UpdateBombs()
 {
 	boomb.Update(gameTime);
+	boomb.PlaySound(mySounds.bombExplosion, gameTime);
 }
 
 void Game::UpdateTime()
@@ -199,16 +202,25 @@ void Game::UpdateTime()
 	}
 }
 
+void Game::UpdateMusic()
+{
+	mySounds.UpdateMusic();
+}
+
 void Game::UpdateGame(float& time, View& view, RenderWindow& window)
 {
-	level = InitializeLevel();
+	if (gameState == GAME)
+	{
+		room = InitializeRoom();
 
-	AddChest(view);
-	UpdatePlayer(time, view);
-	UpdateTime();
-	UpdateEnemies(time, window);
-	UpdateChests(window);
-	UpdateBullets(time, window);
+		AddChest(view);
+		UpdatePlayer(time, view);
+		UpdateTime();
+		UpdateEnemies(time, window);
+		UpdateChests(window);
+		UpdateBullets(time, window);
+		UpdateBombs();
+	}	
 }
 
 void Game::DrawBackground(View& view, RenderWindow& window)
@@ -280,9 +292,9 @@ void Game::DrawEnemies(RenderWindow& window)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.life == true)
+		if (enemy.alive == true)
 		{
-			if (enemy.enemyLevel == level)
+			if (enemy.enemyRoom == room)
 			{
 				window.draw(enemy.sprite);
 			}
@@ -310,21 +322,22 @@ void Game::DrawBombs(RenderWindow& window, float& time)
 	boomb.Draw(window, mySprites.bombState, mySprites.bombExplosion, gameTime, time);	
 }
 
-bool Game::IsLevelCleared()
+bool Game::IsRoomCleared()
 {
 	bool isAllDead = true;
 
 	for (auto& enemy: enemies)
 	{
-		if (enemy.enemyLevel == level)
+		if (enemy.enemyRoom == room && enemy.health > 0)
 		{
-			if (enemy.health > 0)
-			{
-				isAllDead = false;
-			}
+			return false;
 		}
 	}
-	return isAllDead;
+	if (myTileMap.isOpened == false)
+	{
+		mySounds.doorOpening.play();
+	}
+	return true;
 }
 
 bool Game::IsRoomEmpty()
@@ -333,7 +346,7 @@ bool Game::IsRoomEmpty()
 
 	for (auto& enemy : enemies)
 	{
-		if (enemy.enemyLevel == level)
+		if (enemy.enemyRoom == room)
 		{
 			isEmpty = false;
 		}
@@ -343,15 +356,11 @@ bool Game::IsRoomEmpty()
 
 bool Game::IsChestInRoom()
 {
-	if (chests.size() == 0)
-	{
-		return false;
-	}
 	bool isChestInRoom = false;
 
 	for (auto& chest: chests)
 	{
-		if (level == chest.level)
+		if (room == chest.room)
 		{
 			isChestInRoom = true;
 		}
@@ -361,18 +370,18 @@ bool Game::IsChestInRoom()
 
 void Game::AddChest(View& view)
 {
-	if (IsLevelCleared() && !IsRoomEmpty())
+	if (IsRoomCleared() && !IsRoomEmpty())
 	{
 		if (IsChestInRoom() == false)
 		{
-			chests.push_back(Chest(view.getCenter().x, view.getCenter().y, level));
+			chests.push_back(Chest(view.getCenter().x, view.getCenter().y, room));
 		}
 	}
 }
 
 void Game::DrawMap(RenderWindow& window)
 {
-	myTileMap.drawMap(myMap, window, IsLevelCleared());
+	myTileMap.drawMap(myMap, window, IsRoomCleared());
 }
 
 void Game::DrawChest(RenderWindow& window)
@@ -399,13 +408,23 @@ void Game::SetCorrectDrawOrder(float& time, RenderWindow& window)
 
 void Game::DrawWindow(View& view, float& time, RenderWindow& window)
 {
-	DrawBackground(view, window);
-	DrawMap(window);
-	DrawPlayersHealth(view, window);
-	DrawBombCount(view, window);
-	DrawChest(window);
-	SetCorrectDrawOrder(time, window);
-	UpdateBullets(time, window);
-	DrawEnemies(window);
+	if (gameState == MAIN_MENU)
+	{
+		cout << gameState << endl;
+		mainMenuSprite.setScale(2, 2);
+		mainMenuSprite.setTexture(mySprites.mainMenuTexture);
+		window.draw(mainMenuSprite);
+	}
+	else if (gameState == GAME)
+	{
+		DrawBackground(view, window);
+		DrawMap(window);
+		DrawPlayersHealth(view, window);
+		DrawBombCount(view, window);
+		DrawChest(window);
+		SetCorrectDrawOrder(time, window);
+		UpdateBullets(time, window);
+		DrawEnemies(window);
+	}
 }
 

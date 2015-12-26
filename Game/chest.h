@@ -19,7 +19,7 @@ static enum
 struct Chest
 {
 public:
-	int level;
+	int room;
 	float x;
 	float y;
 	int h;
@@ -41,7 +41,7 @@ public:
 	bool areTexturesLoaded = false;
 	bool isPresentTaken = false;
 	Chest() {};
-	Chest(float X, float Y, int Level)
+	Chest(float X, float Y, int Room)
 	{
 		x = X;
 		y = Y;
@@ -50,13 +50,13 @@ public:
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
 		h = int(chestSpriteClosed.getGlobalBounds().height);
 		w = int(chestSpriteClosed.getGlobalBounds().width);
-		level = Level;
+		room = Room;
 	}
 
 	void LoadTextures();
 	int RandomNumber();
 	void SetFilling();
-	void CheckOpening(Player& p);
+	void CheckOpening(Player& p, Sound& openingSound);
 
 	void GiveFirstPresent(RenderWindow& window);
 	void GiveSecondPresent(RenderWindow& window);
@@ -66,7 +66,7 @@ public:
 	void SetPresent(RenderWindow& window);
 	void CheckCollisionWithPresent(Player& p);
 
-	void Update(Player& p);
+	void Update(Player& p, Sound& openingSound);
 
 	void DrawChest(RenderWindow& window);
 };
