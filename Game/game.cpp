@@ -17,16 +17,22 @@ void Game::InitEnemies()
 
 void Game::InitGame()
 {
+
 	lastShootPlayer = 0;
 	hitTimer = 0;
 	room = 1;
+	volume = 30;
 	gameState = MAIN_MENU;
+	//gameState = GAME;
 	InitEnemies();
 	player = Player(mySprites.heroTexture, PLAYER_POSITION_X, PLAYER_POSITION_Y, PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
+	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	myTileMap.LoadMapSprites();
 	mySprites.InitImages();
 	mySprites.LoadFont();
 	mySounds.LoadMusic();
+	menu.InitMenu(mySprites.mainMenuTexture, mySprites.font);
+	mySounds.menuMusic.play();
 }
 
 int Game::InitializeRoom()
@@ -88,7 +94,7 @@ void Game::DeleteEnemyFromVector()
 	enemies.erase(remove_if(enemies.begin(), enemies.end(), isDead), enemies.end());
 }
 
-void Game::UpdateEnemies(float& time, RenderWindow& window)
+void Game::UpdateEnemies(RenderWindow& window)
 {
 	DeleteEnemyFromVector();
 	for (auto& enemy: enemies)
@@ -103,16 +109,13 @@ void Game::UpdateEnemies(float& time, RenderWindow& window)
 	}
 }
 
-void Game::UpdatePlayer(float& time, View& view)
+void Game::UpdatePlayer()
 {
 	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
 	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsRoomCleared());
 	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer, mySounds.playerHurts);
 	player.ChangeColorAfterHit(gameTime, hitTimer);
-	if (Mouse::isButtonPressed(Mouse::Left))
-	{
-		player.canMove = true;
-	}
+	player.CheckExplosionCollision(boomb, gameTime);
 	player.Moving(time);
 }
 
@@ -167,7 +170,7 @@ void Game::UpdateEnemiesBullets(Bullet& bullet)
 	}
 }
 
-void Game::UpdateBullets(float& time, RenderWindow& window)
+void Game::UpdateBullets(RenderWindow& window)
 {
 	for (auto& bullet: bullets)
 	{
@@ -202,28 +205,51 @@ void Game::UpdateTime()
 	}
 }
 
-void Game::UpdateMusic()
+void Game::UpdateTimePerFrame()
 {
-	mySounds.UpdateMusic();
+	time = float(clock.getElapsedTime().asMicroseconds());
+	clock.restart();
+	time = time / 500;
 }
 
-void Game::UpdateGame(float& time, View& view, RenderWindow& window)
+void Game::UpdateSounds()
 {
-	if (gameState == GAME)
+	mySounds.UpdateMusic(volume);
+}
+
+void Game::ProcessEvents(RenderWindow& window)
+{
+	while (window.pollEvent(event))
 	{
-		room = InitializeRoom();
-
-		AddChest(view);
-		UpdatePlayer(time, view);
-		UpdateTime();
-		UpdateEnemies(time, window);
-		UpdateChests(window);
-		UpdateBullets(time, window);
-		UpdateBombs();
-	}	
+		if (event.type == Event::Closed)
+			window.close();
+	}
 }
 
-void Game::DrawBackground(View& view, RenderWindow& window)
+void Game::UpdateGame(RenderWindow& window)
+{
+	UpdateTimePerFrame();
+	if (gameState == MAIN_MENU)
+	{
+		menu.Update(volume, view);
+	}
+	else if (gameState == GAME)
+	{
+		mySounds.menuMusic.stop();
+		room = InitializeRoom();
+		AddChest(view);
+		UpdatePlayer();
+		UpdateTime();
+		UpdateEnemies(window);
+		UpdateChests(window);
+		UpdateBullets(window);
+		UpdateBombs();
+		UpdateSounds();
+	}	
+	ProcessEvents(window);
+}
+
+void Game::DrawBackground(RenderWindow& window)
 {
 	mySprites.wallBackgroundSprite.setOrigin(mySprites.wallBackgroundSprite.getGlobalBounds().width / 2, mySprites.wallBackgroundSprite.getGlobalBounds().height / 2);
 	mySprites.wallBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
@@ -233,7 +259,7 @@ void Game::DrawBackground(View& view, RenderWindow& window)
 	window.draw(mySprites.floorBackgroundSprite);
 }
 
-void Game::DrawBombCount(View& view, RenderWindow& window)
+void Game::DrawBombCount(RenderWindow& window)
 {
 	Sprite bombCountSprite;
 	bombCountSprite.setTexture(mySprites.bombCount);
@@ -253,7 +279,7 @@ void Game::DrawBombCount(View& view, RenderWindow& window)
 	window.draw(textBombs);
 }
 
-void Game::DrawPlayersHealth(View& view, RenderWindow& window)
+void Game::DrawPlayersHealth(RenderWindow& window)
 {
 	Sprite fullHP;
 	fullHP.setTexture(mySprites.heartTexture);
@@ -317,7 +343,7 @@ void Game::DrawPlayer(RenderWindow& window)
 	}
 }
 
-void Game::DrawBombs(RenderWindow& window, float& time)
+void Game::DrawBombs(RenderWindow& window)
 {
 	boomb.Draw(window, mySprites.bombState, mySprites.bombExplosion, gameTime, time);	
 }
@@ -375,6 +401,7 @@ void Game::AddChest(View& view)
 		if (IsChestInRoom() == false)
 		{
 			chests.push_back(Chest(view.getCenter().x, view.getCenter().y, room));
+			mySounds.chestDrop.play();
 		}
 	}
 }
@@ -392,38 +419,36 @@ void Game::DrawChest(RenderWindow& window)
 	}
 }
 
-void Game::SetCorrectDrawOrder(float& time, RenderWindow& window)
+void Game::SetCorrectDrawOrder(RenderWindow& window)
 {
 	if (player.y + player.h < boomb.position.y + 64)
 	{
 	    DrawPlayer(window);
-		DrawBombs(window, time);
+		DrawBombs(window);
 	}
 	else
 	{
-		DrawBombs(window, time);
+		DrawBombs(window);
 		DrawPlayer(window);
 	}
 }
 
-void Game::DrawWindow(View& view, float& time, RenderWindow& window)
+void Game::DrawWindow(RenderWindow& window)
 {
+	window.setView(view);
 	if (gameState == MAIN_MENU)
 	{
-		cout << gameState << endl;
-		mainMenuSprite.setScale(2, 2);
-		mainMenuSprite.setTexture(mySprites.mainMenuTexture);
-		window.draw(mainMenuSprite);
+		menu.Draw(window, gameState, event);
 	}
 	else if (gameState == GAME)
 	{
-		DrawBackground(view, window);
+		DrawBackground(window);
 		DrawMap(window);
-		DrawPlayersHealth(view, window);
-		DrawBombCount(view, window);
+		DrawPlayersHealth(window);
+		DrawBombCount(window);
 		DrawChest(window);
-		SetCorrectDrawOrder(time, window);
-		UpdateBullets(time, window);
+		SetCorrectDrawOrder(window);
+		UpdateBullets(window);
 		DrawEnemies(window);
 	}
 }

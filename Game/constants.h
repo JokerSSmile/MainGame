@@ -3,8 +3,27 @@
 
 using namespace sf;
 
+static FloatRect GetSpriteRect(const Sprite & sprite)
+{
+	const Vector2f pos = sprite.getPosition();
+	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
+	return FloatRect(pos, size);
+}
+
+static enum GameState
+{
+	MAIN_MENU,
+	GAME,
+	PAUSE
+};
+
 //colors
 const Color COLOR_AFTER_HIT = { 255, 150, 150 };//255,150,150
+const Color COLOR_WHILE_MOUSE_ON_TEXT = { 125, 125, 135 };
+
+//main menu
+const Vector2f START_GAME_TEXT_SHIFT = { 10, 100 };
+const Vector2f EXIT_GAME_TEXT_SHIFT = { -10, -100 };
 
 //player
 const float PLAYER_POSITION_X = 250;

@@ -25,6 +25,7 @@ struct Player :
 	float lastBombPlant = 0;
 	float CurrentFrame = 0;
 	float lastHitTime = 0;
+	float bombHitTime = 0;
 
 	int bombCount;
 	
@@ -66,6 +67,7 @@ struct Player :
 	void SetLastNotCollidedPosition();
 
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
+	void CheckExplosionCollision(Boomb& boomb, float& gameTime);
 	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
 	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
 	void ChangeColorAfterHit(float& gameTime, float& hitTimer);

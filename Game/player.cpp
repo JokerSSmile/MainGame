@@ -208,11 +208,7 @@ void Player::SetLastNotCollidedPosition()
 
 bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 {
-	if (Collision::PixelPerfectTest(sprite, enemy.sprite))
-	{
-		return true;
-	}
-	else if (Collision::PixelPerfectTest(headSprite, enemy.sprite))
+	if (Collision::PixelPerfectTest(sprite, enemy.sprite) || Collision::PixelPerfectTest(headSprite, enemy.sprite))
 	{
 		return true;
 	}
@@ -245,7 +241,7 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 
 void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 {
-	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 )
+	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
 		sprite.setColor(Color(COLOR_AFTER_HIT));
 		headSprite.setColor(Color(COLOR_AFTER_HIT));
@@ -262,6 +258,7 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 	for (auto& map: myMap)
 	{
 		if (Collision::PixelPerfectTest(sprite, map.sprite))
+		//if (Collision::BoundingBoxTest(sprite, map.sprite))
 		{
 			if (map.pos == NOTDOOR)
 			{
@@ -309,6 +306,31 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 			playerOldPosition.x = x;
 			playerOldPosition.y = y;
 			canMove = true;
+		}
+	}
+}
+/*
+static FloatRect GetSpriteRect(const Sprite & sprite)
+{
+	const Vector2f pos = sprite.getPosition();
+	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
+	return FloatRect(pos, size);
+}
+*/
+void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime)
+{
+	FloatRect spriteRect = GetSpriteRect(sprite);
+	FloatRect headSpriteRect = GetSpriteRect(headSprite);
+	if (spriteRect.intersects(boomb.damageZone.getGlobalBounds()) || headSpriteRect.intersects(boomb.damageZone.getGlobalBounds()))
+	{
+		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + 0.5)
+		{
+			health -= BOMB_DAMAGE;
+			bombHitTime = gameTime;
+		}
+		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
+		{
+			boomb.isAlive = false;
 		}
 	}
 }

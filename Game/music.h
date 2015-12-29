@@ -2,6 +2,9 @@
 
 #include <SFML\Graphics.hpp>
 #include <SFML\Audio.hpp>
+#include <iostream>
+
+#include "constants.h"
 
 using namespace sf;
 using namespace std;
@@ -16,6 +19,7 @@ static enum
 struct Sounds
 {
 	int currentMusic;
+
 	Music backgroundMusic1;
 	Music backgroundMusic2;
 	Music backgroundMusic3;
@@ -36,7 +40,11 @@ struct Sounds
 
 	SoundBuffer playerHurtsBuffer;
 	Sound playerHurts;
+
+	SoundBuffer chestDropBuffer;
+	Sound chestDrop;
 	
 	void LoadMusic();
-	void UpdateMusic();
+	void SetVolume(int& volume);
+	void UpdateMusic(int& volume);
 };

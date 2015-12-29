@@ -9,6 +9,7 @@
 #include "chest.h"
 #include "bomb.h"
 #include "music.h"
+#include "menu.h"
 
 #include <sstream>
 
@@ -26,17 +27,11 @@ static enum
 	NINTH
 } currentRoom;
 
-static enum
-{
-	MAIN_MENU,
-	GAME,
-	PAUSE
-} gameState;
-
 struct Game
 {
 	Game() {};
 
+	MainMenu menu;
 	Player player;
 	tileMap myTileMap;
 	Sprites mySprites;
@@ -44,6 +39,9 @@ struct Game
 	Clock gameTimer;
 	Boomb boomb;
 	Sounds mySounds;
+	GameState gameState;
+	View view;
+	Event event;
 
 	Sprite mainMenuSprite;
 
@@ -55,7 +53,9 @@ struct Game
 	float lastShootPlayer;
 	float hitTimer;
 	float gameTime;
+	float time;
 	int room;
+	int volume;
 
 	void InitEnemies();
 
@@ -70,27 +70,29 @@ struct Game
 	bool IsChestInRoom();
 
 	void DeleteEnemyFromVector();
-	void UpdateEnemies(float& time, RenderWindow& window);
+	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
-	void UpdatePlayer(float& time, View& view);
+	void UpdatePlayer();
 	void DeleteBulletFromVector();
 	void UpdatePlayersBullets(Bullet& bullet);
 	void UpdateEnemiesBullets(Bullet& bullet);
-	void UpdateBullets(float& time, RenderWindow& window);
+	void UpdateBullets(RenderWindow& window);
 	void UpdateBombs();
+	void UpdateTimePerFrame();
 	void UpdateTime(); 
-	void UpdateMusic();
-	void UpdateGame(float& time, View& view, RenderWindow& window);
+	void UpdateSounds();
+	void ProcessEvents(RenderWindow& window);
+	void UpdateGame(RenderWindow& window);
 
-	void DrawBackground(View& view, RenderWindow& window);
-	void DrawPlayersHealth(View& view, RenderWindow& window);
-	void DrawBombCount(View& view, RenderWindow& window);
+	void DrawBackground(RenderWindow& window);
+	void DrawPlayersHealth(RenderWindow& window);
+	void DrawBombCount(RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);
-	void DrawBombs(RenderWindow& window, float& time);
-	void SetCorrectDrawOrder(float& time, RenderWindow& window);
+	void DrawBombs(RenderWindow& window);
+	void SetCorrectDrawOrder(RenderWindow& window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);
 
-	void DrawWindow(View& view, float& time, RenderWindow& window);
+	void DrawWindow(RenderWindow& window);
 };

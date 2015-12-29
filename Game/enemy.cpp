@@ -1,7 +1,6 @@
 #include "enemy.h"
 
 #include "map.h"
-#include "view.h"
 
 void Enemy::CheckCollosionFly()//ф-ция взаимодействия с картой
 {
@@ -35,50 +34,7 @@ void Enemy::CheckCollosionFly()//ф-ция взаимодействия с картой
 
 void Enemy::CheckCollisionZombie()
 {
-	for (int i = (y + h / 1.5) / TILE_SIDE; i < (y + h) / TILE_SIDE; i++)
-		for (int j = (x / TILE_SIDE); j < (x + w) / TILE_SIDE; j++)
-		{
-			if (mapString[i][j] == '0' || mapString[i][j] == 's')
-			{
-				if (dy > 0)//вниз
-				{
-					y--;
-				}
-				if (dy < 0)//up
-				{
-					y++;
-				}
-				if (dx > 0)//right
-				{
-					//x = j * TILE_SIDE - w;
-					x--;
-				}
-				if (dx < 0)//left
-				{
-					x++;
-				}
-			}
-			else if (mapString[i][j] == 'd' && dy > 0)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				y = y + TILE_SIDE * 4 + h / 2;
-			}
-			else if (mapString[i][j] == 'u' && dy < 0)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				y = y - TILE_SIDE * 4 - h / 2;
-			}
-			else if (mapString[i][j] == 'l' && dx < 0)
-			{
-				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				x = x - TILE_SIDE * 4 - w - 5;
-			}
-			else if (mapString[i][j] == 'r' && dx > 0)
-			{
-				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				x = x + TILE_SIDE * 4 + w + 5;
-			}
-		}
+	
 }
 
 void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY)
@@ -123,13 +79,6 @@ void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTe
 		poofSprite.setTextureRect(IntRect(128, 64, 64, 64));
 		window.draw(poofSprite);
 	}
-}
-
-const FloatRect GetSpriteRect(const Sprite & sprite)
-{
-	const Vector2f pos = sprite.getPosition();
-	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
-	return FloatRect(pos, size);
 }
 
 void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
