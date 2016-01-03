@@ -8,9 +8,10 @@ static FloatRect GetSpriteRect(const Sprite & sprite)
 	const Vector2f pos = sprite.getPosition();
 	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
 	return FloatRect(pos, size);
+	//return sprite.getGlobalBounds();
 }
 
-static enum GameState
+enum GameState
 {
 	MAIN_MENU,
 	GAME,
@@ -33,6 +34,7 @@ const int PLAYER_HEIGHT = 26;
 const float MAX_PLAYER_HEALTH = 10;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
+const float TIME_FOR_PLAYER_HIT_CD = 1;
 
 //enemy
 const float FLY1_POSITION_X = 350;

@@ -63,7 +63,6 @@ void Boomb::PlaySound(Sound& explosionSound, float& gameTime)
 {
 	if (currentExplosionFrame == 0 & currentFrame != 0 && gameTime >= explosionTime)
 	{
-		cout << gameTime << " " << explosionTime << endl;
 		explosionSound.play();
 	}
 }

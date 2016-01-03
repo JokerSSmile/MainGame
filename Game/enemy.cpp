@@ -4,37 +4,81 @@
 
 void Enemy::CheckCollosionFly()//ф-ция взаимодействия с картой
 {
-	for (int i = y / TILE_SIDE; i < (y + h) / TILE_SIDE; i++)
-		for (int j = x / TILE_SIDE; j < (x + w) / TILE_SIDE; j++)
+	for (int i = position.y / TILE_SIDE; i < (position.y + h) / TILE_SIDE; i++)
+		for (int j = position.x / TILE_SIDE; j < (position.x + w) / TILE_SIDE; j++)
 		{
 			if (mapString[i][j] == '0' || mapString[i][j] == 's')
 			{
 
-				if (dx > 0)//right
+				if (moving.x > 0)//right
 				{
-					x = j * TILE_SIDE - w;
+					position.x = j * TILE_SIDE - w;
 				}
-				else if (dx < 0)//left
+				else if (moving.x < 0)//left
 				{
-					x = j * TILE_SIDE + TILE_SIDE;
+					position.x = j * TILE_SIDE + TILE_SIDE;
 				}
-				else if (dy > 0)
+				else if (moving.y > 0)
 				{
-					y = i * TILE_SIDE;
+					position.y = i * TILE_SIDE;
 				}
-				else if (dy < 0)
+				else if (moving.y < 0)
 				{
-					y = i * TILE_SIDE;
+					position.y = i * TILE_SIDE;
 				}
-				dy = -dy;
-				dx = -dx;
+				moving.y = -moving.y;
+				moving.x = -moving.x;
 			}
 		}
 }
 
-void Enemy::CheckCollisionZombie()
+void Enemy::SetLastNotCollidedPosition()
 {
-	
+	if (moving.x > 0)
+	{
+		position.x = enemyOldPosition.x - 1;
+	}
+	else if (moving.x < 0)
+	{
+		position.x = enemyOldPosition.x + 1;
+	}
+	if (moving.y > 0)
+	{
+		position.y = enemyOldPosition.y - 1;
+	}
+	else if (moving.y < 0)
+	{
+		position.y = enemyOldPosition.y + 1;
+	}
+}
+
+void Enemy::CheckCollisionZombie(vector<Map> myMap, Sprite& wallSprite)
+{
+	for (auto& map : myMap)
+	{
+		//if (Collision::PixelPerfectTest(sprite, map.sprite))
+		if (GetSpriteRect(sprite).intersects(GetSpriteRect(map.sprite)))
+		{
+			if (map.pos == NOTDOOR)
+			{
+				canMove = false;
+				SetLastNotCollidedPosition();
+				break;
+			}
+		}
+		else if (Collision::PixelPerfectTest(sprite, wallSprite))
+		{
+			canMove = false;
+			SetLastNotCollidedPosition();
+			break;
+		}
+		else
+		{
+			enemyOldPosition.x = position.x;
+			enemyOldPosition.y = position.y;
+			canMove = true;
+		}
+	}
 }
 
 void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY)
@@ -111,52 +155,80 @@ void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 	}
 }
 
+void Enemy::UpdateFly(float& time)
+{
+	if (name == "EnemyFly")
+	{
+		currentFrame += 0.005f * time;
+		if (currentFrame > 2) currentFrame -= 2;
+		sprite.setTextureRect(IntRect(57 * int(currentFrame), 0, 57, 45));
+		CheckCollosionFly();
+	}
+}
+
+void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
+{
+	if (name == "EnemyStandAndShoot")
+	{
+		if (gameTime > (lastShootEnemyStand + TIME_BETWEEN_SHOOT_ENEMY_STAND))
+		{
+			for (int i = 4; i <= 7; i++)
+			{
+				Shoot(bullets, gameTime, i, sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - 16, sprite.getPosition().y + 32);
+			}
+		}
+		sprite.setScale(2, 2);
+		if (lastShootEnemyStand + 0.3 <= gameTime)
+		{
+			sprite.setTextureRect(IntRect(0, 0, 38, 43));
+		}
+		else
+		{
+			sprite.setTextureRect(IntRect(38, 0, 38, 43));
+		}
+	}
+}
+
+void Enemy::UpdateFollowEnemy(float& gameTime)
+{
+	if (name == "EnemyFollow")
+	{
+		sprite.setScale(2, 2);
+		sprite.setTextureRect(IntRect(0, 0, 32, 32));
+	}
+}
+
+void Enemy::CheckIsAlive()
+{
+	if (health > 0)
+	{
+		alive = true;
+	}
+	else
+	{
+		alive = false;
+	}
+}
+
+void Enemy::SetPosition(float& time)
+{
+	position.x += moving.x * time;
+	position.y += moving.y * time;
+
+	sprite.setPosition(position.x, position.y);
+}
+
 void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameRoom)
 {
 	if (gameRoom == enemyRoom)
 	{
 		ChangeColorAfterHit(gameTime, boomb);
 
-		if (name == "EnemyFly")
-		{
-			currentFrame += 0.005f * time;
-			if (currentFrame > 2) currentFrame -= 2;
-			sprite.setTextureRect(IntRect(57 * int(currentFrame), 0, 57, 45));
-			CheckCollosionFly();
-		}
-
-		else if (name == "EnemyStandAndShoot")
-		{
-			if (gameTime > (lastShootEnemyStand + TIME_BETWEEN_SHOOT_ENEMY_STAND))
-			{
-				for (int i = 4; i <= 7; i++)
-				{
-					Shoot(bullets, gameTime, i, sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - 16, sprite.getPosition().y + 32);
-				}
-			}
-			sprite.setScale(2, 2);
-			if (lastShootEnemyStand + 0.3 <= gameTime)
-			{
-				sprite.setTextureRect(IntRect(0, 0, 38, 43));
-			}
-			else
-			{
-				sprite.setTextureRect(IntRect(38, 0, 38, 43));
-			}
-		}
-
-		if (health > 0)
-		{
-			alive = true;
-		}
-		else
-		{
-			alive = false;
-		}
-
-		x += dx * time;
-		y += dy * time;
-
-		sprite.setPosition(x, y);
+		UpdateFly(time);
+		UpdateStandAndShoot(bullets, gameTime);
+		
+		CheckIsAlive();
+		
+		SetPosition(time);	
 	}
 }

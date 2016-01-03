@@ -13,7 +13,7 @@ using namespace std;
 struct Player :
 	public Character
 {
-	Vector2f playerOldPosition = { x, y };
+	Vector2f playerOldPosition = { position.x, position.y };
 
 	enum
 	{
@@ -29,18 +29,20 @@ struct Player :
 
 	int bombCount;
 	
-	bool canMove = true;
+	bool canMove;
+	bool isSetSpeed;
 
 	Sprite headSprite;
 
 	Player() {};
-	Player(Texture & image, float X, float Y, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, X, Y, w, h, Name, health)
+	Player(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, pos, w, h, Name, health)
 	{
 		dir = stay;
 		w = W;
 		h = H;
-		x = X;
-		y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
+
 		health = MAX_PLAYER_HEALTH;
 
 		bombCount = 11;

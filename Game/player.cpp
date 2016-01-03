@@ -117,7 +117,7 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION + TIME_FOR_EXPLOSION || lastBombPlant == 0)
 			{
 				lastBombPlant = time;
-				bomb.position = Vector2f(x - h / 2, y - h / 2);
+				bomb.position = Vector2f(position.x - h / 2, position.y - h / 2);
 				bomb.createTime = time;
 				bomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
 				bomb.isAlive = true;
@@ -188,21 +188,21 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 
 void Player::SetLastNotCollidedPosition()
 {
-	if (dx > 0)
+	if (moving.x > 0)
 	{
-		x = playerOldPosition.x - 1;
+		position.x = playerOldPosition.x - 1;
 	}
-	else if (dx < 0)
+	else if (moving.x < 0)
 	{
-		x = playerOldPosition.x + 1;
+		position.x = playerOldPosition.x + 1;
 	}
-	if (dy > 0)
+	if (moving.y > 0)
 	{
-		y = playerOldPosition.y - 1;
+		position.y = playerOldPosition.y - 1;
 	}
-	else if (dy < 0)
+	else if (moving.y < 0)
 	{
-		y = playerOldPosition.y + 1;
+		position.y = playerOldPosition.y + 1;
 	}
 }
 
@@ -221,7 +221,7 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 	{
 		if (enemy.alive == true)
 		{
-			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + 1 || hitTimer == 0))
+			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 			{
 				health -= enemy.damage;
 				hitTimer = gameTime;
@@ -255,15 +255,91 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 
 void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened)
 {
+	isSetSpeed = false;
 	for (auto& map: myMap)
 	{
-		if (Collision::PixelPerfectTest(sprite, map.sprite))
-		//if (Collision::BoundingBoxTest(sprite, map.sprite))
+		//if (Collision::PixelPerfectTest(sprite, map.sprite))
+		if (GetSpriteRect(sprite).intersects(GetSpriteRect(map.sprite)))
 		{
 			if (map.pos == NOTDOOR)
 			{
-				canMove = false;
-				SetLastNotCollidedPosition();
+				FloatRect upRect = FloatRect(Vector2f(sprite.getPosition().x, sprite.getPosition().y - h), Vector2f(w, h));
+				FloatRect rightRect = FloatRect(Vector2f(sprite.getPosition().x + w, sprite.getPosition().y), Vector2f(w, h));
+				FloatRect downRect = FloatRect(Vector2f(sprite.getPosition().x, sprite.getPosition().y + h), Vector2f(w, h));
+				FloatRect leftRect = FloatRect(Vector2f(sprite.getPosition().x - w, sprite.getPosition().y), Vector2f(w, h));
+				if (moving.x > 0 && moving.y > 0)
+				{
+					if (downRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().x >= map.x - h)
+					{
+						position.x = position.x + speed;
+						moving.x = 0;
+					}
+					else
+					{
+						position.y = position.y + speed;
+						moving.y = 0;
+					}
+					isSetSpeed = true;
+				}
+				else if (moving.x > 0 && moving.y < 0)
+				{
+					if (upRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().x >= map.x - h)
+					{
+						position.x = position.x + speed;
+						moving.x = 0;
+					}
+					else
+					{
+						position.y = position.y - speed;
+						moving.y = 0;
+					}
+					isSetSpeed = true;
+				}
+				else if (moving.x < 0 && moving.y < 0)
+				{
+					if (upRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().y >= map.y + TILE_SIDE - h / 2)
+					{
+						position.x = position.x - speed;
+						moving.x = 0;
+					}
+					else
+					{
+						position.y = position.y - speed;
+						moving.y = 0;
+					}
+					isSetSpeed = true;
+				}
+				else if (moving.x < 0 && moving.y > 0)
+				{
+					cout << int(sprite.getPosition().x) << " " << int(map.x + TILE_SIDE) << endl;
+					if (downRect.intersects(map.sprite.getGlobalBounds()) && int(sprite.getPosition().x) < int(map.x + TILE_SIDE - 1))
+					{
+						position.x = position.x - speed;
+						moving.x = 0;
+					}
+					else
+					{
+						position.y = position.y + speed;
+						moving.y = 0;
+					}
+					isSetSpeed = true;
+				}
+				else if (moving.x == 0 && moving.y > 0)
+				{ 
+					position.y = map.sprite.getPosition().y - h;
+				}
+				else if (moving.x == 0 && moving.y < 0)
+				{ 
+					position.y = map.sprite.getPosition().y + TILE_SIDE;
+				}
+				else if (moving.x > 0 && moving.y == 0)
+				{ 
+					position.x = map.sprite.getPosition().x - w;
+				}
+				else if (moving.x < 0 && moving.y == 0)
+				{ 
+					position.x = map.sprite.getPosition().x + TILE_SIDE;
+				}
 				break;
 			}
 			//if collides with door
@@ -272,25 +348,25 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 				if (map.pos == RIGHT)
 				{
 					view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-					x += TILE_SIDE * 4 + w;
+					position.x += TILE_SIDE * 4 + w;
 					break;
 				}
 				else if (map.pos == LEFT)
 				{
 					view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-					x -= TILE_SIDE * 4 + w;
+					position.x -= TILE_SIDE * 4 + w;
 					break;
 				}
 				else if (map.pos == UP)
 				{
 					view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-					y -= TILE_SIDE * 4 + h;
+					position.y -= TILE_SIDE * 4 + h;
 					break;
 				}
 				else if (map.pos == DOWN)
 				{
 					view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-					y += TILE_SIDE * 4 + h;
+					position.y += TILE_SIDE * 4 + h;
 					break;
 				}
 			}
@@ -303,20 +379,13 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 		}
 		else
 		{
-			playerOldPosition.x = x;
-			playerOldPosition.y = y;
+			playerOldPosition.x = position.x;
+			playerOldPosition.y = position.y;
 			canMove = true;
 		}
 	}
 }
-/*
-static FloatRect GetSpriteRect(const Sprite & sprite)
-{
-	const Vector2f pos = sprite.getPosition();
-	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
-	return FloatRect(pos, size);
-}
-*/
+
 void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime)
 {
 	FloatRect spriteRect = GetSpriteRect(sprite);
@@ -337,29 +406,32 @@ void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime)
 
 void Player::setSpeed()
 {
-	switch (dir)
-	{
-	case right: dx = speed; dy = 0; break;
-	case left: dx = -speed; dy = 0; break;
-	case down: dx = 0; dy = speed; break;
-	case up: dx = 0; dy = -speed; break;
-	case leftUp: dx = -speed*0.66f; dy = -speed*0.66f; break;
-	case leftDown: dx = -speed*0.66f; dy = speed*0.66f; break;
-	case rightUp: dx = speed*0.66f; dy = -speed*0.66; break;
-	case rightDown: dx = speed*0.66f; dy = speed*0.66f; break;
-	case stay: dx = 0; dy = 0;
-	}
+		switch (dir)
+		{
+		case right: moving.x = speed; moving.y = 0; break;
+		case left: moving.x = -speed; moving.y = 0; break;
+		case down: moving.x = 0; moving.y = speed; break;
+		case up: moving.x = 0; moving.y = -speed; break;
+		case leftUp: moving.x = -speed*0.66f; moving.y = -speed*0.66f; break;
+		case leftDown: moving.x = -speed*0.66f; moving.y = speed*0.66f; break;
+		case rightUp: moving.x = speed*0.66f; moving.y = -speed*0.66f; break;
+		case rightDown: moving.x = speed*0.66f; moving.y = speed*0.66f; break;
+		case stay: moving.x = 0; moving.y = 0;
+		}
 }
 
 void Player::Moving(float& time)
 {
 	if (canMove == true)
 	{
-		setSpeed();
-		x += dx * time;
-		y += dy * time;
+		if (isSetSpeed == false)
+		{
+			setSpeed();
+			position.x += moving.x * time;
+			position.y += moving.y * time;
+		}
 	}
 
-	sprite.setPosition(x, y);
-	headSprite.setPosition(x - 14, y - 43);
+	sprite.setPosition(position.x, position.y);
+	headSprite.setPosition(position.x - 14, position.y - 43);
 }

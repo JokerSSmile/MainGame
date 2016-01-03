@@ -2,17 +2,18 @@
 
 void Game::InitEnemies()
 {
-	enemies.push_back(Enemy(mySprites.enemyTexture, FLY1_POSITION_X, FLY1_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
-	enemies.push_back(Enemy(mySprites.enemyTexture, FLY2_POSITION_X, FLY2_POSITION_Y, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1400, 200, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1500, 200, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 1300, 300, 38, 43, "EnemyStandAndShoot", 3, 2));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 2100, 300, 38, 43, "EnemyStandAndShoot", 3, 3));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, 2600, 300, 38, 43, "EnemyStandAndShoot", 3, 3));
-	enemies.push_back(Enemy(mySprites.enemyTexture, 1500, 760, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
-	enemies.push_back(Enemy(mySprites.enemyTexture, 1200, 1050, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
-	enemies.push_back(Enemy(mySprites.enemyTexture, 2100, 950, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
-	enemies.push_back(Enemy(mySprites.enemyTexture, 1500, 800, FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X, FLY1_POSITION_Y), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X, FLY2_POSITION_Y), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), 38, 43, "EnemyStandAndShoot", 3, 2));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), 38, 43, "EnemyStandAndShoot", 3, 3));
+	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), 38, 43, "EnemyStandAndShoot", 3, 3));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 760), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
+	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
+	//enemies.push_back(Enemy(mySprites.enemyFollowTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
 }
 
 void Game::InitGame()
@@ -22,10 +23,10 @@ void Game::InitGame()
 	hitTimer = 0;
 	room = 1;
 	volume = 30;
-	gameState = MAIN_MENU;
-	//gameState = GAME;
+	//gameState = MAIN_MENU;
+	gameState = GAME;
 	InitEnemies();
-	player = Player(mySprites.heroTexture, PLAYER_POSITION_X, PLAYER_POSITION_Y, PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
+	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X, PLAYER_POSITION_Y), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
 	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	myTileMap.LoadMapSprites();
 	mySprites.InitImages();
@@ -37,47 +38,47 @@ void Game::InitGame()
 
 int Game::InitializeRoom()
 {
-	if (player.x > 0 && player.x < WINDOW_WIDTH)
+	if (player.position.x > 0 && player.position.x < WINDOW_WIDTH)
 	{
-		if (player.y > 0 && player.y < WINDOW_HEIGHT)
+		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
 			return FIRST;
 		}
-		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
+		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
 			return FORTH;
 		}
-		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
+		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
 			return SEVENTH;
 		}
 	}
-	else if (player.x > WINDOW_WIDTH && player.x < WINDOW_WIDTH * 2)
+	else if (player.position.x > WINDOW_WIDTH && player.position.x < WINDOW_WIDTH * 2)
 	{
-		if (player.y > 0 && player.y < WINDOW_HEIGHT)
+		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
 			return SECOND;
 		}
-		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
+		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
 			return FIFTH;
 		}
-		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
+		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
 			return EIGHTH;
 		}
 	}
-	else if (player.x > WINDOW_WIDTH * 2 && player.x < WINDOW_WIDTH * 3)
+	else if (player.position.x > WINDOW_WIDTH * 2 && player.position.x < WINDOW_WIDTH * 3)
 	{
-		if (player.y > 0 && player.y < WINDOW_HEIGHT)
+		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
 			return THIRD;
 		}
-		else if (player.y > WINDOW_HEIGHT && player.y < WINDOW_HEIGHT * 2)
+		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
 			return SIXTH;
 		}
-		else if (player.y > WINDOW_HEIGHT * 2 && player.y < WINDOW_HEIGHT * 3)
+		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
 			return NINTH;
 		}
@@ -101,7 +102,7 @@ void Game::UpdateEnemies(RenderWindow& window)
 	{
 		if (enemy.alive == true)
 		{
-			enemy.lastPosition = { enemy.x, enemy.y };
+			enemy.lastPosition = { enemy.position.x, enemy.position.y };
 			enemy.Update(boomb, bullets, time, gameTime, window, room);
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
@@ -113,10 +114,10 @@ void Game::UpdatePlayer()
 {
 	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
 	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsRoomCleared());
+	player.Moving(time);
 	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer, mySounds.playerHurts);
 	player.ChangeColorAfterHit(gameTime, hitTimer);
 	player.CheckExplosionCollision(boomb, gameTime);
-	player.Moving(time);
 }
 
 void Game::UpdateChests(RenderWindow& window)
@@ -328,8 +329,8 @@ void Game::DrawEnemies(RenderWindow& window)
 		else
 		{
 			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture);
-			enemy.x = 0;
-			enemy.y = 0;
+			enemy.position.x = 0;
+			enemy.position.y = 0;
 		}
 	}
 }
@@ -339,7 +340,7 @@ void Game::DrawPlayer(RenderWindow& window)
 	if (player.health > 0)
 	{
 		window.draw(player.sprite);
-		window.draw(player.headSprite);
+		//window.draw(player.headSprite);
 	}
 }
 
@@ -421,7 +422,7 @@ void Game::DrawChest(RenderWindow& window)
 
 void Game::SetCorrectDrawOrder(RenderWindow& window)
 {
-	if (player.y + player.h < boomb.position.y + 64)
+	if (player.position.y + player.h < boomb.position.y + 64)
 	{
 	    DrawPlayer(window);
 		DrawBombs(window);
@@ -450,6 +451,21 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
+
+
+
+
+		RectangleShape rectangle;
+		rectangle.setSize(Vector2f(player.w, player.h));
+		rectangle.setPosition(player.sprite.getPosition().x, player.sprite.getPosition().y - player.h);
+		window.draw(rectangle);
+
+		RectangleShape rect1;
+		rect1.setSize(Vector2f(player.w, player.h));
+		rect1.setPosition(player.sprite.getPosition().x + player.w, player.sprite.getPosition().y);
+		window.draw(rect1);
+
+		//FloatRect(Vector2f(sprite.getPosition().x + w, sprite.getPosition().y), Vector2f(w, h));
 	}
 }
 

@@ -1,7 +1,8 @@
 #include "map.h"
 #include "constants.h"
 
-const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
+//const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
+const String ROCK_TEXTURE_PATH = "resources/images/rock_test.png";
 const String DOOR_CLOSED_TEXTURE_PATH = "resources/images/Door.png";
 const String DOOR_OPENED_TEXTURE_PATH = "resources/images/openedDoor.png";
 
@@ -112,29 +113,29 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
 	{
 		if (map.pos == 0)
 		{
-			map.sprite.setPosition(map.x, map.y);
+			map.sprite.setPosition(float(map.x), float(map.y));
 		}
 		else
 		{
 			if (map.pos == UP)
 			{
 				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
-				map.sprite.setPosition(map.x, map.y);
+				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == DOWN)
 			{
 				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
-				map.sprite.setPosition(map.x, map.y);
+				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == LEFT)
 			{
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
-				map.sprite.setPosition(map.x, map.y);
+				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == RIGHT)
 			{
 				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
-				map.sprite.setPosition(map.x, map.y);
+				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 		}
 		window.draw(map.sprite);

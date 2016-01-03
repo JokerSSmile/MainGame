@@ -10,11 +10,13 @@ const String FONT_8_BIT_PATH = "resources/fonts/8bitfont.ttf";
 const String WALL_TEXTURE_PATH = "resources/images/walls.png";
 const String FLOOR_TEXTURE_PATH = "resources/images/floor.png";
 const String BOMB_TEXTURE_IN_STATUS_BAR = "resources/images/addBomb.png";
-const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
+//const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
+const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/player_test.png";
 const String PLAYERS_HEAD_TEXTURE_PATH = "resources/images/head.png";
 const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
 const String ENEMY_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_destroy_effect.png";
+const String ENEMY_FOLLOW_TEXTURE_PATH = "resources/images/enemy_follow.png";
 const String BULLET_TEXTURE_PATH = "resources/images/bullets.png";
 const String TEARS_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/tears_effect.png";
 const String ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_tears_effect.png";
@@ -55,6 +57,9 @@ struct Sprites
 	//standAndShoot
 	Image standAndShootImage;
 	Texture  standAndShootTexture;
+
+	//enemy follow
+	Texture enemyFollowTexture;
 
 	//bullets
 	Texture bulletTexture;
@@ -99,6 +104,7 @@ struct Sprites
 		standAndShootTexture.loadFromImage(standAndShootImage);
 		poofImage.loadFromFile(ENEMY_DESTROY_EFFECT_TEXTURE_PATH);
 		poofTexture.loadFromImage(poofImage);
+		enemyFollowTexture.loadFromFile(ENEMY_FOLLOW_TEXTURE_PATH);
 	}
 
 	void LoadBulletTexture()

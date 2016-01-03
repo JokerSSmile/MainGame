@@ -41,16 +41,16 @@ void Sounds::LoadMusic()
 
 void Sounds::SetVolume(int& volume)
 {
-	backgroundMusic1.setVolume(volume / 2);
-	backgroundMusic2.setVolume(volume / 2);
-	backgroundMusic3.setVolume(volume / 2);
-	tearDestroy.setVolume(volume);
-	bombExplosion.setVolume(volume);
-	chestDrop.setVolume(volume);
-	chestOpening.setVolume(volume);
-	doorOpening.setVolume(volume);
-	playerHurts.setVolume(volume);
-	menuMusic.setVolume(volume);
+	backgroundMusic1.setVolume(float(volume / 2));
+	backgroundMusic2.setVolume(float(volume / 2));
+	backgroundMusic3.setVolume(float(volume / 2));
+	tearDestroy.setVolume(float(volume));
+	bombExplosion.setVolume(float(volume));
+	chestDrop.setVolume(float(volume));
+	chestOpening.setVolume(float(volume));
+	doorOpening.setVolume(float(volume));
+	playerHurts.setVolume(float(volume));
+	menuMusic.setVolume(float(volume));
 }
 
 void Sounds::UpdateMusic(int& volume)

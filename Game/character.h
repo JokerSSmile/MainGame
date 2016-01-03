@@ -9,29 +9,36 @@ using namespace std;
 struct Character
 {
 public:
-	float dx;
-	float dy; 
-	float x;
-	float y; 
+	Vector2f moving;
+	//float dx;
+	//float dy; 
+	Vector2f position;
+	//float x;
+	//float y; 
 	float speed;
 	float health;
-	int w, h;
+	int w;
+	int h;
 	bool alive;
 	Texture texture;
 	Sprite sprite;
 	String name;
 	Character() {};
-	Character(Texture & texture, float X, float Y, int W, int H, String Name, float Health)
+	Character(Texture & texture, Vector2f& pos, int W, int H, String Name, float Health)
 	{
-		x = X;
-		y = Y;
+		//x = X;
+		//y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
 		w = W;
 		h = H;
 		name = Name;
 		speed = 0;
 		health = Health;
-		dx = 0;
-		dy = 0;
+		moving.x = 0;
+		moving.y = 0;
+		//dx = 0;
+		//dy = 0;
 		alive = true;
 		sprite.setTexture(texture);
 	}
