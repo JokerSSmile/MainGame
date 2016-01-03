@@ -1,20 +1,20 @@
 #include "bullet.h"
 #include "map.h"
 
-void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& wallSprite, Sound& destroyBullet)
+void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& wallBulletSprite, Sound& destroyBullet)
 {
 	if (alive == true)
 	{
 		for (auto& map: myMap)
 		{
-			if (Collision::PixelPerfectTest(bulletSprite, map.sprite))
+			if (Collision::PixelPerfectTest(bulletSprite, map.collisionSprite))
 			{
 				deathTime = gameTime;
 				alive = false;
 				destroyBullet.play();
 			}
 		}
-		if (Collision::PixelPerfectTest(bulletSprite, wallSprite))
+		if (Collision::PixelPerfectTest(bulletSprite, wallBulletSprite))
 		{
 			deathTime = gameTime;
 			alive = false;

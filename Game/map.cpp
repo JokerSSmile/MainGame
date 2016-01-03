@@ -1,8 +1,8 @@
 #include "map.h"
 #include "constants.h"
 
-//const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
-const String ROCK_TEXTURE_PATH = "resources/images/rock_test.png";
+const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
+const String ROCK_BUL_TEXTURE_PATH = "resources/images/Rock_bullet.png";
 const String DOOR_CLOSED_TEXTURE_PATH = "resources/images/Door.png";
 const String DOOR_OPENED_TEXTURE_PATH = "resources/images/openedDoor.png";
 
@@ -12,6 +12,10 @@ void tileMap::LoadMapSprites()
 	rockTexture.loadFromFile(ROCK_TEXTURE_PATH);
 	rockSprite.setTexture(rockTexture);
 	rockSprite.setScale(2, 2);
+
+	rockBulTexture.loadFromFile(ROCK_BUL_TEXTURE_PATH);
+	rockBulSprite.setTexture(rockBulTexture);
+	rockBulSprite.setScale(2, 2);
 
 	//closed door
 	closedDoorTexture.loadFromFile(DOOR_CLOSED_TEXTURE_PATH);
@@ -61,6 +65,7 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 				map.y = i * TILE_SIDE;
 				map.x = j * TILE_SIDE;
 				map.sprite = rockSprite;
+				map.collisionSprite = rockBulSprite;
 				map.pos = NOTDOOR;
 				myMap.push_back(map);
 				counter++;
@@ -114,6 +119,7 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
 		if (map.pos == 0)
 		{
 			map.sprite.setPosition(float(map.x), float(map.y));
+			map.collisionSprite.setPosition(float(map.x), float(map.y));
 		}
 		else
 		{

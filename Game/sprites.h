@@ -8,10 +8,10 @@ using namespace std;
 const String MAIN_MENU_TEXTURE_PATH = "resources/images/main_menu.png";
 const String FONT_8_BIT_PATH = "resources/fonts/8bitfont.ttf";
 const String WALL_TEXTURE_PATH = "resources/images/walls.png";
+const String WALL_BULLET_TEXTURE_PATH = "resources/images/bullet_wall.png";
 const String FLOOR_TEXTURE_PATH = "resources/images/floor.png";
 const String BOMB_TEXTURE_IN_STATUS_BAR = "resources/images/addBomb.png";
-//const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
-const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/player_test.png";
+const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
 const String PLAYERS_HEAD_TEXTURE_PATH = "resources/images/head.png";
 const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
@@ -35,6 +35,8 @@ struct Sprites
 	Texture wallBackgroundTexture;
 	Sprite wallBackgroundSprite;
 	Texture bombCount;
+	Texture wallBulletTexture;
+	Sprite wallBulletSprite;
 
 	//background floor
 	Image floorBackground;
@@ -84,6 +86,8 @@ struct Sprites
 		floorBackground.loadFromFile(FLOOR_TEXTURE_PATH);
 		floorBackgroundTexture.loadFromImage(floorBackground);
 		floorBackgroundSprite.setTexture(floorBackgroundTexture);
+		wallBulletTexture.loadFromFile(WALL_BULLET_TEXTURE_PATH);
+		wallBulletSprite.setTexture(wallBulletTexture);
 
 		bombCount.loadFromFile(BOMB_TEXTURE_IN_STATUS_BAR);
 	}

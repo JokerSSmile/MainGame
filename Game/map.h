@@ -16,6 +16,7 @@ struct Map
 	int x;
 	int y;
 	Sprite sprite;
+	Sprite collisionSprite;
 	DoorPosition pos;
 	String TileMap;
 };
@@ -51,6 +52,8 @@ struct tileMap
 	Image rockImage;
 	Texture rockTexture;
 	Sprite rockSprite;
+	Texture rockBulTexture;
+	Sprite rockBulSprite;
 	Image closedDoorImage;
 	Texture closedDoorTexture;
 	Sprite closedDoorSprite;

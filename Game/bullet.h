@@ -18,6 +18,7 @@ struct Bullet
 	int direction;
 	float x = 0;
 	float y = 0;
+	Vector2f startPos;
 	bool alive = false;
 	float timeShot;
 	float deathTime = 0;
@@ -27,6 +28,7 @@ struct Bullet
 	bool isPlayers = false;
 	float speed;
 	float damage = 0;
+	bool isInWall;
 
 	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites, Sound& destroyBullet);
 	void DeleteBullet(float& gameTime, Sound& destroyBullet);

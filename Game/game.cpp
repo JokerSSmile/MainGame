@@ -13,7 +13,7 @@ void Game::InitEnemies()
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
-	//enemies.push_back(Enemy(mySprites.enemyFollowTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
+	enemies.push_back(Enemy(mySprites.enemyFollowTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
 }
 
 void Game::InitGame()
@@ -179,8 +179,7 @@ void Game::UpdateBullets(RenderWindow& window)
 		{
 			UpdatePlayersBullets(bullet);
 			UpdateEnemiesBullets(bullet);
-			
-			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBackgroundSprite, mySounds.tearDestroy);
+			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBulletSprite, mySounds.tearDestroy);
 			bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
 			bullet.DeleteBullet(gameTime, mySounds.tearDestroy);
 		}
@@ -256,8 +255,12 @@ void Game::DrawBackground(RenderWindow& window)
 	mySprites.wallBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
 	mySprites.floorBackgroundSprite.setOrigin(mySprites.floorBackgroundSprite.getGlobalBounds().width / 2, mySprites.floorBackgroundSprite.getGlobalBounds().height / 2);
 	mySprites.floorBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
+	mySprites.wallBulletSprite.setOrigin(mySprites.wallBulletSprite.getGlobalBounds().width / 2, mySprites.wallBulletSprite.getGlobalBounds().height / 2);
+	mySprites.wallBulletSprite.setPosition(view.getCenter().x, view.getCenter().y);
+
 	window.draw(mySprites.wallBackgroundSprite);
 	window.draw(mySprites.floorBackgroundSprite);
+	window.draw(mySprites.wallBulletSprite);
 }
 
 void Game::DrawBombCount(RenderWindow& window)
@@ -340,7 +343,7 @@ void Game::DrawPlayer(RenderWindow& window)
 	if (player.health > 0)
 	{
 		window.draw(player.sprite);
-		//window.draw(player.headSprite);
+		window.draw(player.headSprite);
 	}
 }
 
@@ -451,21 +454,6 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
-
-
-
-
-		RectangleShape rectangle;
-		rectangle.setSize(Vector2f(player.w, player.h));
-		rectangle.setPosition(player.sprite.getPosition().x, player.sprite.getPosition().y - player.h);
-		window.draw(rectangle);
-
-		RectangleShape rect1;
-		rect1.setSize(Vector2f(player.w, player.h));
-		rect1.setPosition(player.sprite.getPosition().x + player.w, player.sprite.getPosition().y);
-		window.draw(rect1);
-
-		//FloatRect(Vector2f(sprite.getPosition().x + w, sprite.getPosition().y), Vector2f(w, h));
 	}
 }
 

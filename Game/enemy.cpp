@@ -226,6 +226,7 @@ void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& ga
 
 		UpdateFly(time);
 		UpdateStandAndShoot(bullets, gameTime);
+		UpdateFollowEnemy(gameTime);
 		
 		CheckIsAlive();
 		

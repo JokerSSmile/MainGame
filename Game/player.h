@@ -50,7 +50,6 @@ struct Player :
 		sprite.setTextureRect(IntRect(0, 0, w, h));
 		headSprite.setTexture(headTexture);
 		headSprite.setScale(2, 2);
-
 	}
 
 
@@ -71,6 +70,9 @@ struct Player :
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
 	void CheckExplosionCollision(Boomb& boomb, float& gameTime);
 	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
+	void DiagonalCollision(Map& map);
+	void StraightCollision(Map& map);
+	void DoorCollision(Map& map, View& view, bool& areDoorsOpened);
 	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
 	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
 

@@ -190,19 +190,19 @@ void Player::SetLastNotCollidedPosition()
 {
 	if (moving.x > 0)
 	{
-		position.x = playerOldPosition.x - 1;
+		position.x = playerOldPosition.x ;
 	}
 	else if (moving.x < 0)
 	{
-		position.x = playerOldPosition.x + 1;
+		position.x = playerOldPosition.x ;
 	}
 	if (moving.y > 0)
 	{
-		position.y = playerOldPosition.y - 1;
+		position.y = playerOldPosition.y ;
 	}
 	else if (moving.y < 0)
 	{
-		position.y = playerOldPosition.y + 1;
+		position.y = playerOldPosition.y ;
 	}
 }
 
@@ -253,123 +253,141 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 	}
 }
 
+bool IsRockOnTheLeft(vector<Map> myMap, int& x)
+{
+	for (auto& map : myMap)
+	{
+		if (map.x == x + TILE_SIDE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Player::DiagonalCollision(Map& map)
+{
+	if (moving.x > 0 && moving.y > 0)
+	{
+		if (sprite.getPosition().x >= map.x - h)
+		{
+			position.x = position.x + speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y + speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x > 0 && moving.y < 0)
+	{
+		if (sprite.getPosition().x >= map.x - h)
+		{
+			position.x = position.x + speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y - speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x < 0 && moving.y < 0)
+	{
+		if (sprite.getPosition().y >= map.y + TILE_SIDE - h / 2)
+		{
+			position.x = position.x - speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y - speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x < 0 && moving.y > 0)
+	{
+		if (sprite.getPosition().y + h <= map.y + h / 2)
+		{
+			position.x = position.x - speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y + speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+}
+
+void Player::StraightCollision(Map& map)
+{
+	if (moving.x == 0 && moving.y > 0)
+	{
+		position.y = map.sprite.getPosition().y - h;
+	}
+	else if (moving.x == 0 && moving.y < 0)
+	{
+		position.y = map.sprite.getPosition().y + TILE_SIDE;
+	}
+	else if (moving.x > 0 && moving.y == 0)
+	{
+		position.x = map.sprite.getPosition().x - w;
+	}
+	else if (moving.x < 0 && moving.y == 0)
+	{
+		position.x = map.sprite.getPosition().x + TILE_SIDE;
+	}
+}
+
+void Player::DoorCollision(Map& map, View& view, bool& areDoorsOpened)
+{
+	if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
+	{
+		if (map.pos == RIGHT)
+		{
+			view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
+			position.x += TILE_SIDE * 4 + w;
+		}
+		else if (map.pos == LEFT)
+		{
+			view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
+			position.x -= TILE_SIDE * 4 + w;
+		}
+		else if (map.pos == UP)
+		{
+			view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
+			position.y -= TILE_SIDE * 4 + h;
+		}
+		else if (map.pos == DOWN)
+		{
+			view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
+			position.y += TILE_SIDE * 4 + h;
+		}
+	}
+}
+
 void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened)
 {
 	isSetSpeed = false;
 	for (auto& map: myMap)
 	{
-		//if (Collision::PixelPerfectTest(sprite, map.sprite))
 		if (GetSpriteRect(sprite).intersects(GetSpriteRect(map.sprite)))
 		{
 			if (map.pos == NOTDOOR)
 			{
-				FloatRect upRect = FloatRect(Vector2f(sprite.getPosition().x, sprite.getPosition().y - h), Vector2f(w, h));
-				FloatRect rightRect = FloatRect(Vector2f(sprite.getPosition().x + w, sprite.getPosition().y), Vector2f(w, h));
-				FloatRect downRect = FloatRect(Vector2f(sprite.getPosition().x, sprite.getPosition().y + h), Vector2f(w, h));
-				FloatRect leftRect = FloatRect(Vector2f(sprite.getPosition().x - w, sprite.getPosition().y), Vector2f(w, h));
-				if (moving.x > 0 && moving.y > 0)
-				{
-					if (downRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().x >= map.x - h)
-					{
-						position.x = position.x + speed;
-						moving.x = 0;
-					}
-					else
-					{
-						position.y = position.y + speed;
-						moving.y = 0;
-					}
-					isSetSpeed = true;
-				}
-				else if (moving.x > 0 && moving.y < 0)
-				{
-					if (upRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().x >= map.x - h)
-					{
-						position.x = position.x + speed;
-						moving.x = 0;
-					}
-					else
-					{
-						position.y = position.y - speed;
-						moving.y = 0;
-					}
-					isSetSpeed = true;
-				}
-				else if (moving.x < 0 && moving.y < 0)
-				{
-					if (upRect.intersects(map.sprite.getGlobalBounds()) && sprite.getPosition().y >= map.y + TILE_SIDE - h / 2)
-					{
-						position.x = position.x - speed;
-						moving.x = 0;
-					}
-					else
-					{
-						position.y = position.y - speed;
-						moving.y = 0;
-					}
-					isSetSpeed = true;
-				}
-				else if (moving.x < 0 && moving.y > 0)
-				{
-					cout << int(sprite.getPosition().x) << " " << int(map.x + TILE_SIDE) << endl;
-					if (downRect.intersects(map.sprite.getGlobalBounds()) && int(sprite.getPosition().x) < int(map.x + TILE_SIDE - 1))
-					{
-						position.x = position.x - speed;
-						moving.x = 0;
-					}
-					else
-					{
-						position.y = position.y + speed;
-						moving.y = 0;
-					}
-					isSetSpeed = true;
-				}
-				else if (moving.x == 0 && moving.y > 0)
-				{ 
-					position.y = map.sprite.getPosition().y - h;
-				}
-				else if (moving.x == 0 && moving.y < 0)
-				{ 
-					position.y = map.sprite.getPosition().y + TILE_SIDE;
-				}
-				else if (moving.x > 0 && moving.y == 0)
-				{ 
-					position.x = map.sprite.getPosition().x - w;
-				}
-				else if (moving.x < 0 && moving.y == 0)
-				{ 
-					position.x = map.sprite.getPosition().x + TILE_SIDE;
-				}
+
+				DiagonalCollision(map);
+				StraightCollision(map);
 				break;
 			}
-			//if collides with door
-			if (areDoorsOpened == true)
-			{
-				if (map.pos == RIGHT)
-				{
-					view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-					position.x += TILE_SIDE * 4 + w;
-					break;
-				}
-				else if (map.pos == LEFT)
-				{
-					view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-					position.x -= TILE_SIDE * 4 + w;
-					break;
-				}
-				else if (map.pos == UP)
-				{
-					view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-					position.y -= TILE_SIDE * 4 + h;
-					break;
-				}
-				else if (map.pos == DOWN)
-				{
-					view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-					position.y += TILE_SIDE * 4 + h;
-					break;
-				}
-			}
+			DoorCollision(map, view, areDoorsOpened);
+			
 		}
 		else if (Collision::PixelPerfectTest(sprite, wallSprite))
 		{
@@ -431,7 +449,7 @@ void Player::Moving(float& time)
 			position.y += moving.y * time;
 		}
 	}
-
+	
 	sprite.setPosition(position.x, position.y);
 	headSprite.setPosition(position.x - 14, position.y - 43);
 }
