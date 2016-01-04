@@ -29,15 +29,18 @@ struct Enemy :
 	float deathTime = 0;
 	float bombHitTime = 0;
 	float playerHitTime = 0;
+	float speed;
 	Sprite poofSprite;
 	Vector2f lastPosition = {0, 0};
 	Vector2f enemyOldPosition = { position.x, position.y };
 	bool canMove = true;
+	bool isSetSpeed;
 
 
 	Enemy() {};
 	Enemy(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, int Room) :Character(image, pos, w, h, Name, health)
 	{
+		speed = ENEMY_FOLLOW_SPEED;
 		w = W;
 		h = H;
 		position.x = pos.x;
@@ -49,15 +52,9 @@ struct Enemy :
 		{
 			moving.x = -0.1f;
 		}
-		else if (name == "EnemyStandAndShoot")
-		{
-			
-		}
 		else if (name == "EnemyFollow")
 		{
-			moving.x = 0;
-			moving.y = 0;
-			dir = down;
+			dir = stay;
 		}
 	}
 
@@ -70,8 +67,14 @@ struct Enemy :
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
 	void UpdateFly(float& time);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
-	void Enemy::UpdateFollowEnemy(float& gameTime);
+
+	void SetDirection(Vector2f& playerPosition);
+	void DiagonalCollision(Map& map);
+	void StraightCollision(Map& map);
+	void SetSpeed();
+
+	void UpdateFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map> myMap, float& time);
 	void CheckIsAlive();
 	void SetPosition(float& time);
-	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameRoom);
+	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, Vector2f& playerPosition);
 };

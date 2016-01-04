@@ -13,7 +13,7 @@ void Game::InitEnemies()
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
-	enemies.push_back(Enemy(mySprites.enemyFollowTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
 }
 
 void Game::InitGame()
@@ -103,7 +103,11 @@ void Game::UpdateEnemies(RenderWindow& window)
 		if (enemy.alive == true)
 		{
 			enemy.lastPosition = { enemy.position.x, enemy.position.y };
-			enemy.Update(boomb, bullets, time, gameTime, window, room);
+			if (room == enemy.enemyRoom)
+			{
+				enemy.UpdateFollowEnemy(gameTime, player.position, myMap, time);
+				enemy.Update(boomb, bullets, time, gameTime, player.position);
+			}
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
 		}
@@ -112,7 +116,6 @@ void Game::UpdateEnemies(RenderWindow& window)
 
 void Game::UpdatePlayer()
 {
-	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
 	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsRoomCleared());
 	player.Moving(time);
 	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer, mySounds.playerHurts);
@@ -224,6 +227,7 @@ void Game::ProcessEvents(RenderWindow& window)
 		if (event.type == Event::Closed)
 			window.close();
 	}
+	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
 }
 
 void Game::UpdateGame(RenderWindow& window)
@@ -245,8 +249,11 @@ void Game::UpdateGame(RenderWindow& window)
 		UpdateBullets(window);
 		UpdateBombs();
 		UpdateSounds();
-	}	
-	ProcessEvents(window);
+	}
+	if (window.hasFocus())
+	{
+		ProcessEvents(window);
+	}
 }
 
 void Game::DrawBackground(RenderWindow& window)
@@ -454,6 +461,29 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
+
+
+// 		RectangleShape rect1;
+// 		rect1.setFillColor(Color::Red);
+// 		RectangleShape rect2;
+// 		rect2.setFillColor(Color::Green);
+// 		for (auto& map : myMap)
+// 		{
+// 			rect1.setSize(Vector2f(5, 5));
+// 			rect1.setPosition(map.x, map.y + TILE_SIDE + player.h / 2);
+// 			window.draw(rect1);
+// 
+// 
+// 			rect2.setSize(Vector2f(5, 5));
+// 			rect2.setPosition(map.x, map.y + player.h / 2);
+// 			window.draw(rect2);
+// 		}
+// 
+// 		RectangleShape rect3;
+// 		rect3.setFillColor(Color::White);
+// 		rect3.setSize(Vector2f(player.w, 2));
+// 		rect3.setPosition(player.position.x, player.position.y + player.h);
+// 		window.draw(rect3);
 	}
 }
 

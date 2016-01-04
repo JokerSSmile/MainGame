@@ -54,6 +54,7 @@ void Enemy::SetLastNotCollidedPosition()
 
 void Enemy::CheckCollisionZombie(vector<Map> myMap, Sprite& wallSprite)
 {
+	/*
 	for (auto& map : myMap)
 	{
 		//if (Collision::PixelPerfectTest(sprite, map.sprite))
@@ -79,6 +80,7 @@ void Enemy::CheckCollisionZombie(vector<Map> myMap, Sprite& wallSprite)
 			canMove = true;
 		}
 	}
+	*/
 }
 
 void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY)
@@ -189,12 +191,186 @@ void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
 	}
 }
 
-void Enemy::UpdateFollowEnemy(float& gameTime)
+void Enemy::DiagonalCollision(Map& map)
+{
+	if (moving.x > 0 && moving.y > 0)
+	{
+		if (sprite.getPosition().x >= map.x - h)
+		{
+			position.x = position.x + speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y + speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x > 0 && moving.y < 0)
+	{
+		if (sprite.getPosition().x >= map.x - h)
+		{
+			position.x = position.x + speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y - speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x < 0 && moving.y < 0)
+	{
+		if (sprite.getPosition().y + h >= map.y + TILE_SIDE + h / 2 && position.x < map.x + TILE_SIDE - h / 2)
+		{
+			position.x = position.x - speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y - speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+	else if (moving.x < 0 && moving.y > 0)
+	{
+		if (sprite.getPosition().y + h <= map.y + h / 2)
+		{
+			position.x = position.x - speed;
+			moving.x = 0;
+		}
+		else
+		{
+			position.y = position.y + speed;
+			moving.y = 0;
+		}
+		isSetSpeed = true;
+	}
+}
+
+void Enemy::StraightCollision(Map& map)
+{
+	if (moving.x == 0 && moving.y > 0)
+	{
+		position.y = map.sprite.getPosition().y - h;
+	}
+	else if (moving.x == 0 && moving.y < 0)
+	{
+		position.y = map.sprite.getPosition().y + TILE_SIDE;
+	}
+	else if (moving.x > 0 && moving.y == 0)
+	{
+		position.x = map.sprite.getPosition().x - w;
+	}
+	else if (moving.x < 0 && moving.y == 0)
+	{
+		position.x = map.sprite.getPosition().x + TILE_SIDE;
+	}
+}
+
+void Enemy::SetSpeed()
+{
+	cout << dir << endl;
+	switch (dir)
+	{
+	case right: moving.x = speed; moving.y = 0;  break;
+	case left: moving.x = -speed; moving.y = 0; break;
+	case down: moving.x = 0; moving.y = speed; break;
+	case up: moving.x = 0; moving.y = -speed; break;
+	case leftUp: moving.x = -speed*0.66f; moving.y = -speed*0.66f; break;
+	case leftDown: moving.x = -speed*0.66f; moving.y = speed*0.66f; break;
+	case rightUp: moving.x = speed*0.66f; moving.y = -speed*0.66f; break;
+	case rightDown: moving.x = speed*0.66f; moving.y = speed*0.66f; break;
+	case stay: moving.x = 0; moving.y = 0;
+	}
+}
+
+void Enemy::SetDirection(Vector2f& playerPosition)
+{
+	if (position.x == playerPosition.x && position.x == playerPosition.x)
+	{
+		if (position.y > playerPosition.y)
+		{
+			cout << "up" << endl;
+			dir = up;
+		}
+		else
+		{
+			cout << "down" << endl;
+			dir = down;
+		}
+	}
+	else if (position.y == playerPosition.y && position.y == playerPosition.y)
+	{
+		if (position.x > playerPosition.x)
+		{
+			cout << "left" << endl;
+			dir = left;
+		}
+		else
+		{
+			cout << "right" << endl;
+			dir = right;
+		}
+	}
+	else if (position.x > playerPosition.x && position.y > playerPosition.y)
+	{
+		cout << "leftUp" << endl;
+		dir == leftUp;
+	}
+	else if (position.x > playerPosition.x && position.y < playerPosition.y)
+	{
+		cout << "leftDown" << endl;
+		dir = leftDown;
+	}
+	else if (position.x < playerPosition.x && position.y > playerPosition.y)
+	{
+		cout << "rightUp" << endl;
+		dir = rightUp;
+	}
+	else if (position.x < playerPosition.x && position.y < playerPosition.y)
+	{
+		cout << "rightDown" << endl;
+		dir = rightDown;
+	}
+	//else 
+	{
+// 		cout << "stay" << endl;
+// 		dir = stay;
+	}
+	//cout << dir << endl;
+}
+
+void Enemy::UpdateFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map> myMap, float& time)
 {
 	if (name == "EnemyFollow")
 	{
-		sprite.setScale(2, 2);
 		sprite.setTextureRect(IntRect(0, 0, 32, 32));
+		SetDirection(playerPosition);
+		isSetSpeed = false;
+		for (auto& map : myMap)
+		{
+			if (GetSpriteRect(sprite).intersects(GetSpriteRect(map.sprite)))
+			{
+				if (map.pos == NOTDOOR)
+				{
+
+					DiagonalCollision(map);
+					StraightCollision(map);
+					break;
+				}
+			}
+		}
+		if (isSetSpeed == false)
+		{
+			SetSpeed();
+			position.x += moving.x * time;
+			position.y += moving.y * time;
+			sprite.setPosition(position.x, position.y);
+		}
 	}
 }
 
@@ -218,18 +394,17 @@ void Enemy::SetPosition(float& time)
 	sprite.setPosition(position.x, position.y);
 }
 
-void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameRoom)
+void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, Vector2f& playerPosition)
 {
-	if (gameRoom == enemyRoom)
-	{
-		ChangeColorAfterHit(gameTime, boomb);
+	ChangeColorAfterHit(gameTime, boomb);
 
-		UpdateFly(time);
-		UpdateStandAndShoot(bullets, gameTime);
-		UpdateFollowEnemy(gameTime);
+	UpdateFly(time);
+	UpdateStandAndShoot(bullets, gameTime);
 		
-		CheckIsAlive();
-		
-		SetPosition(time);	
+	CheckIsAlive();
+	
+	if (name != "EnemyFollow")
+	{
+		SetPosition(time);
 	}
 }

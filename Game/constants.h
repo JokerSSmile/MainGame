@@ -8,7 +8,6 @@ static FloatRect GetSpriteRect(const Sprite & sprite)
 	const Vector2f pos = sprite.getPosition();
 	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
 	return FloatRect(pos, size);
-	//return sprite.getGlobalBounds();
 }
 
 enum GameState
@@ -37,7 +36,7 @@ const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
 
 //enemy
-const float FLY1_POSITION_X = 350;
+const float FLY1_POSITION_X = 200;
 const float FLY1_POSITION_Y = 200;
 const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
@@ -45,6 +44,7 @@ const int FLY_WIDTH = 57;
 const int FLY_HEIGHT = 45;
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
+const float ENEMY_FOLLOW_SPEED = 0.01f;
 
 const int HEIGHT_MAP = 20;
 const int WIDTH_MAP = 45;
@@ -60,7 +60,7 @@ const int TILE_SIDE = 64;
 const int BULLET_SIDE = 32;
 const float PLAYERS_BULLET_SPEED = 0.10f;//0.1
 const float ENEMY_BULLET_SPEED = 0.12f;//0.12
-const float BULLET_LIFE_TIME = 1.f;//1
+const float BULLET_LIFE_TIME = 0.7f;//1
 const float BULLET_ANIMATION_STEP_TIME = 0.05f;//0.05
 const float BULLET_SHIFT_IF_SHOOT_UP = 20.f;
 

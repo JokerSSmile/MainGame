@@ -297,7 +297,7 @@ void Player::DiagonalCollision(Map& map)
 	}
 	else if (moving.x < 0 && moving.y < 0)
 	{
-		if (sprite.getPosition().y >= map.y + TILE_SIDE - h / 2)
+		if (sprite.getPosition().y + h >= map.y + TILE_SIDE + h / 2 && position.x < map.x + TILE_SIDE - h / 2)
 		{
 			position.x = position.x - speed;
 			moving.x = 0;
