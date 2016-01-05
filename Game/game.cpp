@@ -26,7 +26,7 @@ void Game::InitGame()
 	//gameState = MAIN_MENU;
 	gameState = GAME;
 	InitEnemies();
-	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X, PLAYER_POSITION_Y), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
+	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
 	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	myTileMap.LoadMapSprites();
 	mySprites.InitImages();

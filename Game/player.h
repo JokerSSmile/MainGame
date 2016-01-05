@@ -70,7 +70,7 @@ struct Player :
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
 	void CheckExplosionCollision(Boomb& boomb, float& gameTime);
 	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
-	void DiagonalCollision(Map& map);
+	void DiagonalCollision(Map& map, vector<Map>& myMap);
 	void StraightCollision(Map& map);
 	void DoorCollision(Map& map, View& view, bool& areDoorsOpened);
 	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);

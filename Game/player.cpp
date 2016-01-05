@@ -253,11 +253,11 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 	}
 }
 
-bool IsRockOnTheLeft(vector<Map> myMap, int& x)
+bool IsRockDown(vector<Map> myMap, float& y, float& x)
 {
 	for (auto& map : myMap)
 	{
-		if (map.x == x + TILE_SIDE)
+		if (map.sprite.getGlobalBounds().contains(x + PLAYER_WIDTH / 2, y - 5))
 		{
 			return true;
 		}
@@ -265,7 +265,7 @@ bool IsRockOnTheLeft(vector<Map> myMap, int& x)
 	return false;
 }
 
-void Player::DiagonalCollision(Map& map)
+void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
 {
 	if (moving.x > 0 && moving.y > 0)
 	{
@@ -297,7 +297,8 @@ void Player::DiagonalCollision(Map& map)
 	}
 	else if (moving.x < 0 && moving.y < 0)
 	{
-		if (sprite.getPosition().y + h >= map.y + TILE_SIDE + h / 2 && position.x < map.x + TILE_SIDE - h / 2)
+		if (sprite.getPosition().y + h >= map.y + TILE_SIDE + h / 2 && position.x < map.x + TILE_SIDE - h / 2
+			|| map.sprite.getGlobalBounds().contains(position.x - 10, position.y - 5) && IsRockDown(myMap,  position.y,  position.x) == true)
 		{
 			position.x = position.x - speed;
 			moving.x = 0;
@@ -382,9 +383,9 @@ void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, b
 			if (map.pos == NOTDOOR)
 			{
 
-				DiagonalCollision(map);
+				DiagonalCollision(map, myMap);
 				StraightCollision(map);
-				break;
+				//break;
 			}
 			DoorCollision(map, view, areDoorsOpened);
 			

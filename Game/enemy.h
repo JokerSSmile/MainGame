@@ -68,12 +68,13 @@ struct Enemy :
 	void UpdateFly(float& time);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
 
+	void SetFrameFollowEnemy(float& time);
 	void SetDirection(Vector2f& playerPosition);
-	void DiagonalCollision(Map& map);
+	void DiagonalCollision(Map& map, vector<Map>& myMap);
 	void StraightCollision(Map& map);
 	void SetSpeed();
 
-	void UpdateFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map> myMap, float& time);
+	void UpdateFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time);
 	void CheckIsAlive();
 	void SetPosition(float& time);
 	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, Vector2f& playerPosition);

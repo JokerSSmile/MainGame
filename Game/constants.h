@@ -44,7 +44,7 @@ const int FLY_WIDTH = 57;
 const int FLY_HEIGHT = 45;
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
-const float ENEMY_FOLLOW_SPEED = 0.01f;
+const float ENEMY_FOLLOW_SPEED = 0.05f;
 
 const int HEIGHT_MAP = 20;
 const int WIDTH_MAP = 45;
