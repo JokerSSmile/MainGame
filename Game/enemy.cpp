@@ -304,7 +304,6 @@ void Enemy::SetDirection(Vector2f& playerPosition)
 {
 	if (position.x >= playerPosition.x - PLAYER_WIDTH / 2 && position.x <= playerPosition.x + PLAYER_WIDTH + PLAYER_WIDTH / 2)
 	{
-		cout << "1" << endl;
 		if (position.y > playerPosition.y)
 		{
 			dir = up;

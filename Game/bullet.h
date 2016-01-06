@@ -35,4 +35,5 @@ struct Bullet
 	void BulletDestroyEffect(float& gameTime, RenderWindow& window);
 	void SetSpeed();
 	void UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture);
+	void DrawBullet(RenderWindow & window);
 };

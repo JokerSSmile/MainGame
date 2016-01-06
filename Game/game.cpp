@@ -23,8 +23,8 @@ void Game::InitGame()
 	hitTimer = 0;
 	room = 1;
 	volume = 30;
-	//gameState = MAIN_MENU;
-	gameState = GAME;
+	gameState = MAIN_MENU;
+	//gameState = GAME;
 	InitEnemies();
 	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
 	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
@@ -33,6 +33,7 @@ void Game::InitGame()
 	mySprites.LoadFont();
 	mySounds.LoadMusic();
 	menu.InitMenu(mySprites.mainMenuTexture, mySprites.font);
+	isKeyPressed = false;
 	mySounds.menuMusic.play();
 }
 
@@ -180,11 +181,15 @@ void Game::UpdateBullets(RenderWindow& window)
 	{
 		if (bullet.alive == true)
 		{
-			UpdatePlayersBullets(bullet);
-			UpdateEnemiesBullets(bullet);
-			bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBulletSprite, mySounds.tearDestroy);
-			bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
-			bullet.DeleteBullet(gameTime, mySounds.tearDestroy);
+			if (gameState == GAME)
+			{
+				UpdatePlayersBullets(bullet);
+				UpdateEnemiesBullets(bullet);
+				bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
+				bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBulletSprite, mySounds.tearDestroy);
+				bullet.DeleteBullet(gameTime, mySounds.tearDestroy);
+			}
+			bullet.DrawBullet(window);
 		}
 		else
 		{
@@ -230,27 +235,52 @@ void Game::ProcessEvents(RenderWindow& window)
 	player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
 }
 
+void Game::UpdatePause()
+{
+	if (Keyboard::isKeyPressed(Keyboard::Escape) && isKeyPressed == false)
+	{
+		isKeyPressed = true;
+		if (gameState == GAME)
+		{
+			gameState = PAUSE;
+		}
+		else
+		{
+			gameState = GAME;
+		}
+	}
+	else if (Keyboard::isKeyPressed(Keyboard::Escape) == false)
+	{
+		isKeyPressed = false;
+	}
+}
+
 void Game::UpdateGame(RenderWindow& window)
 {
+	cout << gameTime << endl;
+	UpdatePause();
 	UpdateTimePerFrame();
 	if (gameState == MAIN_MENU)
 	{
 		menu.Update(volume, view);
 	}
-	else if (gameState == GAME)
+	else
 	{
 		mySounds.menuMusic.stop();
-		room = InitializeRoom();
-		AddChest(view);
-		UpdatePlayer();
-		UpdateTime();
-		UpdateEnemies(window);
-		UpdateChests(window);
-		UpdateBullets(window);
-		UpdateBombs();
-		UpdateSounds();
+		if (gameState == GAME)
+		{
+			room = InitializeRoom();
+			AddChest(view);
+			UpdatePlayer();
+			UpdateTime();
+			UpdateEnemies(window);
+			UpdateChests(window);
+			//UpdateBullets(window);
+			UpdateBombs();
+			UpdateSounds();
+		}
 	}
-	if (window.hasFocus())
+	if (window.hasFocus() && gameState != PAUSE)
 	{
 		ProcessEvents(window);
 	}
@@ -451,7 +481,7 @@ void Game::DrawWindow(RenderWindow& window)
 	{
 		menu.Draw(window, gameState, event);
 	}
-	else if (gameState == GAME)
+	else
 	{
 		DrawBackground(window);
 		DrawMap(window);
@@ -461,29 +491,6 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
-
-
-// 		RectangleShape rect1;
-// 		rect1.setFillColor(Color::Red);
-// 		RectangleShape rect2;
-// 		rect2.setFillColor(Color::Green);
-// 		for (auto& map : myMap)
-// 		{
-// 			rect1.setSize(Vector2f(5, 5));
-// 			rect1.setPosition(map.x, map.y + TILE_SIDE + player.h / 2);
-// 			window.draw(rect1);
-// 
-// 
-// 			rect2.setSize(Vector2f(5, 5));
-// 			rect2.setPosition(map.x, map.y + player.h / 2);
-// 			window.draw(rect2);
-// 		}
-// 
-// 		RectangleShape rect3;
-// 		rect3.setFillColor(Color::White);
-// 		rect3.setSize(Vector2f(player.w, 2));
-// 		rect3.setPosition(player.position.x, player.position.y + player.h);
-// 		window.draw(rect3);
 	}
 }
 

@@ -18,7 +18,7 @@ static enum
 
 struct Sounds
 {
-	int currentMusic;
+	//int currentMusic;
 
 	Music backgroundMusic1;
 	Music backgroundMusic2;

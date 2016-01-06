@@ -54,8 +54,11 @@ struct Game
 	float hitTimer;
 	float gameTime;
 	float time;
+
 	int room;
 	int volume;
+
+	bool isKeyPressed;
 
 	void InitEnemies();
 
@@ -82,6 +85,7 @@ struct Game
 	void UpdateTime(); 
 	void UpdateSounds();
 	void ProcessEvents(RenderWindow& window);
+	void UpdatePause();
 	void UpdateGame(RenderWindow& window);
 
 	void DrawBackground(RenderWindow& window);

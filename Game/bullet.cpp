@@ -27,11 +27,15 @@ void Bullet::DeleteBullet(float& gameTime, Sound& destroyBullet)
 {
 	if (alive == true)
 	{
-		if (gameTime > timeShot + BULLET_LIFE_TIME)
+// 		if (gameTime > timeShot + BULLET_LIFE_TIME)
+// 		{
+// 			deathTime = gameTime;
+// 			alive = false;
+// 			destroyBullet.play();
+// 		}
+		if ()
 		{
-			deathTime = gameTime;
-			alive = false;
-			destroyBullet.play();
+
 		}
 	}
 }
@@ -109,6 +113,11 @@ void Bullet::UpdateBullet(float& time, RenderWindow & window, float gameTime, Te
 
 		bulletSprite.setPosition(x, y);
 
-		window.draw(bulletSprite);
+		//window.draw(bulletSprite);
 	}
+}
+
+void Bullet::DrawBullet(RenderWindow & window)
+{
+	window.draw(bulletSprite);
 }
