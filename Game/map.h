@@ -2,6 +2,7 @@
 
 #include <SFML\Graphics.hpp>
 #include <string>
+#include <iostream>
 
 using namespace sf;
 using namespace std;
@@ -13,7 +14,7 @@ enum DoorPosition
 
 struct Map
 {
-	bool alive = true;
+	bool alive;
 	Vector2f position;
 	Sprite sprite;
 	Sprite collisionSprite;
@@ -65,7 +66,7 @@ struct tileMap
 
 	void setDoorType(Map& myMap, bool isRoomClear);
 
-	void drawMap(vector<Map>& myMap, RenderWindow & window, bool isRoomClear);
+	void initMap(vector<Map>& myMap);
 
-	void drawTiles(vector<Map>& myMap, RenderWindow & window);
+	void drawTiles(vector<Map>& myMap, RenderWindow & window, bool isRoomClear);
 };

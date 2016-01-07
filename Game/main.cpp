@@ -8,8 +8,6 @@
 using namespace sf;
 using namespace std;
 
-//TODO: sound when bomb exploded
-
 void StartGame()
 {
 	RenderWindow window (VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Game");

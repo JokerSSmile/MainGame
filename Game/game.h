@@ -44,6 +44,7 @@ struct Game
 	Event event;
 
 	Sprite mainMenuSprite;
+	RectangleShape pauseRect;
 
 	vector<Map> myMap;
 	vector<Enemy> enemies;
@@ -65,6 +66,8 @@ struct Game
 	void InitGame();
 
 	int InitializeRoom();
+
+	void SetPause();
 
 	bool IsRoomCleared();
 	bool IsRoomEmpty();

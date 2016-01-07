@@ -13,12 +13,6 @@ using namespace std;
 struct Player :
 	public Character
 {
-	Vector2f playerOldPosition = { position.x, position.y };
-
-	enum
-	{
-		leftUp, leftDown, rightUp, rightDown, left, up, down, right, stay
-	} dir;
 
 	float damage = 1;
 	float speed = 0.1f;
@@ -65,18 +59,12 @@ struct Player :
 
 	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir);
 
-	void SetLastNotCollidedPosition();
-
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
-	void CheckExplosionCollision(Boomb& boomb, float& gameTime);
+	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
 	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
-	void DiagonalCollision(Map& map, vector<Map>& myMap);
-	void StraightCollision(Map& map);
-	void DoorCollision(Map& map, View& view, bool& areDoorsOpened);
-	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
+	void DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened);
+	bool IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened);
 	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
 
-	void setSpeed();
-
-	void Moving(float& time);
+	void Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOpened, Sprite& wallSprite);
 };

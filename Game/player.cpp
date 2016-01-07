@@ -187,26 +187,6 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 	}
 }
 
-void Player::SetLastNotCollidedPosition()
-{
-	if (moving.x > 0)
-	{
-		position.x = playerOldPosition.x ;
-	}
-	else if (moving.x < 0)
-	{
-		position.x = playerOldPosition.x ;
-	}
-	if (moving.y > 0)
-	{
-		position.y = playerOldPosition.y ;
-	}
-	else if (moving.y < 0)
-	{
-		position.y = playerOldPosition.y ;
-	}
-}
-
 bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 {
 	if (Collision::PixelPerfectTest(sprite, enemy.sprite) || Collision::PixelPerfectTest(headSprite, enemy.sprite))
@@ -233,7 +213,6 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 				if (enemy.name == "EnemyStandAndShoot")
 				{
 					canMove = false;
-					SetLastNotCollidedPosition();
 				}
 			}
 		}
@@ -254,168 +233,60 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 	}
 }
 
-bool IsRockDown(vector<Map> myMap, float& y, float& x)
+void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
+{
+	for (auto&map : myMap)
+	{
+		if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
+		{
+			if (map.pos == RIGHT)
+			{
+				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
+				position.x += TILE_SIDE * 4 + w;
+			}
+			else if (map.pos == LEFT)
+			{
+				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
+				position.x -= TILE_SIDE * 4 + w;
+			}
+			else if (map.pos == UP)
+			{
+				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
+				position.y -= TILE_SIDE * 4 + h;
+			}
+			else if (map.pos == DOWN)
+			{
+				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
+				position.y += TILE_SIDE * 4 + h;
+			}
+		}
+	}
+}
+
+bool Player::IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened)
 {
 	for (auto& map : myMap)
 	{
-		if (map.sprite.getGlobalBounds().contains(x + PLAYER_WIDTH / 2, y - 5))
+		if (Collision::BoundingBoxTest(sprite, map.sprite))
 		{
-			return true;
+			if (map.pos == 0)
+			{
+				return true;
+			}
 		}
 	}
 	return false;
 }
 
-void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
+void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts)
 {
-	if (moving.x > 0 && moving.y > 0)
-	{
-		if (sprite.getPosition().x >= map.position.x - h)
-		{
-			position.x = position.x + speed;
-			moving.x = 0;
-		}
-		else
-		{
-			position.y = position.y + speed;
-			moving.y = 0;
-		}
-		isSetSpeed = true;
-	}
-	else if (moving.x > 0 && moving.y < 0)
-	{
-		if (sprite.getPosition().x >= map.position.x - h)
-		{
-			position.x = position.x + speed;
-			moving.x = 0;
-		}
-		else
-		{
-			position.y = position.y - speed;
-			moving.y = 0;
-		}
-		isSetSpeed = true;
-	}
-	else if (moving.x < 0 && moving.y < 0)
-	{
-		if (sprite.getPosition().y + h >= map.position.y + TILE_SIDE + h / 2 && position.x < map.position.x + TILE_SIDE - h / 2
-			|| map.sprite.getGlobalBounds().contains(position.x - 10, position.y - 5) && IsRockDown(myMap,  position.y,  position.x) == true)
-		{
-			position.x = position.x - speed;
-			moving.x = 0;
-		}
-		else
-		{
-			position.y = position.y - speed;
-			moving.y = 0;
-		}
-		isSetSpeed = true;
-	}
-	else if (moving.x < 0 && moving.y > 0)
-	{
-		if (sprite.getPosition().y + h <= map.position.y + h / 2)
-		{
-			position.x = position.x - speed;
-			moving.x = 0;
-		}
-		else
-		{
-			position.y = position.y + speed;
-			moving.y = 0;
-		}
-		isSetSpeed = true;
-	}
-}
-
-void Player::StraightCollision(Map& map)
-{
-	if (moving.x == 0 && moving.y > 0)
-	{
-		position.y = map.sprite.getPosition().y - h;
-	}
-	else if (moving.x == 0 && moving.y < 0)
-	{
-		position.y = map.sprite.getPosition().y + TILE_SIDE;
-	}
-	else if (moving.x > 0 && moving.y == 0)
-	{
-		position.x = map.sprite.getPosition().x - w;
-	}
-	else if (moving.x < 0 && moving.y == 0)
-	{
-		position.x = map.sprite.getPosition().x + TILE_SIDE;
-	}
-}
-
-void Player::DoorCollision(Map& map, View& view, bool& areDoorsOpened)
-{
-	if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
-	{
-		if (map.pos == RIGHT)
-		{
-			view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-			position.x += TILE_SIDE * 4 + w;
-		}
-		else if (map.pos == LEFT)
-		{
-			view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-			position.x -= TILE_SIDE * 4 + w;
-		}
-		else if (map.pos == UP)
-		{
-			view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-			position.y -= TILE_SIDE * 4 + h;
-		}
-		else if (map.pos == DOWN)
-		{
-			view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-			position.y += TILE_SIDE * 4 + h;
-		}
-	}
-}
-
-void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened)
-{
-	isSetSpeed = false;
-	for (auto& map: myMap)
-	{
-		if (GetSpriteRect(sprite).intersects(GetSpriteRect(map.sprite)))
-		{
-			if (map.pos == NOTDOOR)
-			{
-
-				DiagonalCollision(map, myMap);
-				StraightCollision(map);
-				//break;
-			}
-			DoorCollision(map, view, areDoorsOpened);
-			
-		}
-		else if (Collision::PixelPerfectTest(sprite, wallSprite))
-		{
-			canMove = false;
-			SetLastNotCollidedPosition();
-			break;
-		}
-		else
-		{
-			playerOldPosition.x = position.x;
-			playerOldPosition.y = position.y;
-			canMove = true;
-		}
-	}
-}
-
-void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime)
-{
-	FloatRect spriteRect = GetSpriteRect(sprite);
-	FloatRect headSpriteRect = GetSpriteRect(headSprite);
-	if (spriteRect.intersects(boomb.damageZone.getGlobalBounds()) || headSpriteRect.intersects(boomb.damageZone.getGlobalBounds()))
+	if (sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()) || headSprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
 	{
 		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + 0.5)
 		{
 			health -= BOMB_DAMAGE;
 			bombHitTime = gameTime;
+			playerHurts.play();
 		}
 		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
 		{
@@ -424,34 +295,28 @@ void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime)
 	}
 }
 
-void Player::setSpeed()
+void Player::Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOpened, Sprite& wallSprite)
 {
-		switch (dir)
-		{
-		case right: moving.x = speed; moving.y = 0; break;
-		case left: moving.x = -speed; moving.y = 0; break;
-		case down: moving.x = 0; moving.y = speed; break;
-		case up: moving.x = 0; moving.y = -speed; break;
-		case leftUp: moving.x = -speed*0.66f; moving.y = -speed*0.66f; break;
-		case leftDown: moving.x = -speed*0.66f; moving.y = speed*0.66f; break;
-		case rightUp: moving.x = speed*0.66f; moving.y = -speed*0.66f; break;
-		case rightDown: moving.x = speed*0.66f; moving.y = speed*0.66f; break;
-		case stay: moving.x = 0; moving.y = 0;
-		}
-}
-
-void Player::Moving(float& time)
-{
-	if (canMove == true)
+	DoorCollision(myMap, view, areDoorsOpened);
+	Vector2f playerOldPosition = sprite.getPosition();
+	SetPosition(time, speed);
+	sprite.setPosition(position);
+	if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
 	{
-		if (isSetSpeed == false)
+		sprite.setPosition(playerOldPosition);
+		if (position.x != playerOldPosition.x && position.y != playerOldPosition.y)
 		{
-			setSpeed();
-			position.x += moving.x * time;
-			position.y += moving.y * time;
+			sprite.setPosition(playerOldPosition.x, position.y);
+			if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
+			{
+				sprite.setPosition(position.x, playerOldPosition.y);
+				if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
+				{
+					sprite.setPosition(playerOldPosition);
+				}
+			}
 		}
 	}
-	
-	sprite.setPosition(position.x, position.y);
-	headSprite.setPosition(position.x - 14, position.y - 43);
+	position = sprite.getPosition();
+	headSprite.setPosition(sprite.getPosition().x - 14, sprite.getPosition().y - 43);
 }

@@ -42,18 +42,15 @@ void tileMap::setDoorType(Map& myMap, bool isRoomClear)
 	}
 }
 
-void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear)
+void tileMap::initMap(vector<Map>& myMap)
 {
 	if (isMapSpritesLoaded == false)
 	{
 		LoadMapSprites();
 		isMapSpritesLoaded = true;
 	}
-
-
-	myMap.clear();
-
 	Map map;
+	map.alive = true;
 	for (int i = 0; i < HEIGHT_MAP; i++)
 	{
 		for (int j = 0; j < WIDTH_MAP; j++)
@@ -70,7 +67,6 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 
 			else if (mapString[i][j] == 'u')
 			{
-				setDoorType(map, isRoomClear);
 				map.position.y = i * TILE_SIDE - TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = UP;
@@ -78,7 +74,6 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 			}
 			else if (mapString[i][j] == 'd')
 			{
-				setDoorType(map, isRoomClear);
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = DOWN;
@@ -86,7 +81,6 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 			}
 			else if (mapString[i][j] == 'r')
 			{
-				setDoorType(map, isRoomClear);
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE;
 				map.pos = RIGHT;
@@ -94,7 +88,6 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 			}
 			else if (mapString[i][j] == 'l')
 			{
-				setDoorType(map, isRoomClear);
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE;
 				map.pos = LEFT;
@@ -102,10 +95,9 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 			}
 		}
 	}
-	drawTiles(myMap, window);
 }
 
-void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
+void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomClear)
 {
 	for (auto& map: myMap)
 	{
@@ -116,21 +108,28 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
 		}
 		else
 		{
-			map.sprite.setPosition(float(map.position.x), float(map.position.y));
 			if (map.pos == UP)
 			{
+				setDoorType(map, isRoomClear);
+				map.sprite.setPosition(float(map.position.x), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
 			}
 			else if (map.pos == DOWN)
 			{
+				setDoorType(map, isRoomClear);
+				map.sprite.setPosition(float(map.position.x), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
 			}
 			else if (map.pos == LEFT)
 			{
+				setDoorType(map, isRoomClear);
+				map.sprite.setPosition(float(map.position.x), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
 			}
 			else if (map.pos == RIGHT)
 			{
+				setDoorType(map, isRoomClear);
+				map.sprite.setPosition(float(map.position.x), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
 			}
 		}

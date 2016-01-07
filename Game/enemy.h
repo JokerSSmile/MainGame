@@ -13,11 +13,6 @@ const int TIME_BETWEEN_SHOOT_ENEMY_STAND = 1;
 struct Enemy :
 	public Character
 {
-	enum
-	{
-		leftUp, leftDown, rightUp, rightDown, left, up, down, right, stay
-	} dir;
-
 	float moveTimer = 0;
 	float currentFrame = 0;
 	int randNum;
@@ -58,24 +53,19 @@ struct Enemy :
 		}
 	}
 
-	void CheckCollosionFly();
-	void SetLastNotCollidedPosition();
-	void CheckCollisionZombie(vector<Map> myMap, Sprite& wallSprite);
+	void CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite);
 	void ExplosionCollision(Boomb& boomb, float& gameTime);
-	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture);
+	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time);
 	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
-	void UpdateFly(float& time);
+	void UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
 
 	void SetFrameFollowEnemy(float& time);
+	bool IsIntersectsMap(vector<Map>& myMap);
 	void SetDirection(Vector2f& playerPosition);
-	void DiagonalCollision(Map& map, vector<Map>& myMap);
-	void StraightCollision(Map& map);
-	void SetSpeed();
 
-	void UpdateFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time);
+	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time);
 	void CheckIsAlive();
-	void SetPosition(float& time);
-	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, Vector2f& playerPosition);
+	void Update(Boomb& boomb, float& gameTime);
 };

@@ -3,19 +3,15 @@
 
 using namespace sf;
 
-static FloatRect GetSpriteRect(const Sprite & sprite)
-{
-	const Vector2f pos = sprite.getPosition();
-	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
-	return FloatRect(pos, size);
-}
-
 enum GameState
 {
 	MAIN_MENU,
 	GAME,
 	PAUSE
 };
+
+//global
+const float GAME_TIME_DIFFERENCE = 500;
 
 //colors
 const Color COLOR_AFTER_HIT = { 255, 150, 150 };//255,150,150
@@ -40,12 +36,15 @@ const float FLY1_POSITION_X = 200;
 const float FLY1_POSITION_Y = 200;
 const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
-const int FLY_WIDTH = 57;
-const int FLY_HEIGHT = 45;
+const Vector2i FLY_SIZE = { 17, 14 };
+const float FLY_UPDATE_FRAME_TIME = 0.005f;
+const float ENEMY_STAND_AND_SHOOT_FRAME_TIME = 0.3f;
+const Vector2f STAND_AND_SHOOT_SIZE = { 38, 43 };
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED = 0.05f;
 
+//map
 const int HEIGHT_MAP = 20;
 const int WIDTH_MAP = 45;
 
@@ -58,10 +57,9 @@ const int TILE_SIDE = 64;
 
 //bullets
 const int BULLET_SIDE = 32;
-const float PLAYERS_BULLET_SPEED = 0.2f;//0.1
-const float ENEMY_BULLET_SPEED = 0.24f;//0.12
-//const float BULLET_LIFE_TIME = 0.7f;//1
-const float BULLET_MAX_DISTANCE = 300.f;
+const float PLAYERS_BULLET_SPEED = 0.2f;//0.2
+const float ENEMY_BULLET_SPEED = 0.24f;//0.24
+const float BULLET_MAX_DISTANCE = 300.f;//300
 const float BULLET_ANIMATION_STEP_TIME = 0.05f;//0.05
 const float BULLET_SHIFT_IF_SHOOT_UP = 20.f;
 
@@ -78,3 +76,18 @@ const float BOMB_DAMAGE = 1.f;//1
 const int EXPLOSION_FRAMES_COUNT = 12;
 const Vector2f EXPLOSION_ANIMATION_SHIFT = { 64, 128 };
 const Vector2f BOMB_DAMAGE_ZONE_SHIFT = { 23.f, 20.f };
+const int EXPLOSION_TEXTURE_IMAGE_SIZE = 64;
+const int EXPLOSION_FRAME_COUNT = 4;
+const float FRAME_CHANGE_TIME_EXPLOSION = 0.02f;
+
+//interface
+const int FONT_INTERFACE_SIZE = 20;
+const float BOMB_IMAGE_SCALE = 1.5;
+const Vector2f BOMB_IMAGE_SHIFT = { 28, 32 };
+const Vector2f TEXT_SHIFT = { 80, 45 };
+const Vector2f HP_SHIFT = { 35, 10 };
+const int HEALTH_TEXTURE_SIZE = 16;
+const int HP_SCALE = 2;
+
+//
+const float FRAME_CHANGE_TIME = 0.5f;

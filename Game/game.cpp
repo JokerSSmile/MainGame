@@ -2,9 +2,9 @@
 
 void Game::InitEnemies()
 {
-	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X, FLY1_POSITION_Y), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 1));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X, FLY2_POSITION_Y), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 1));
-	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
 	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
 	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), 38, 43, "EnemyStandAndShoot", 3, 2));
 	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), 38, 43, "EnemyStandAndShoot", 3, 3));
@@ -13,7 +13,7 @@ void Game::InitEnemies()
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 6));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), FLY_WIDTH, FLY_HEIGHT, "EnemyFly", 1, 5));
-	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(300, 300), 32, 32, "EnemyFollow", 2, 1));
+	//enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), 32, 32, "EnemyFollow", 2, 1));
 }
 
 void Game::InitGame()
@@ -27,7 +27,7 @@ void Game::InitGame()
 	InitEnemies();
 	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
 	view.reset(FloatRect(0, 0, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
-	myTileMap.LoadMapSprites();
+	myTileMap.initMap(myMap);
 	mySprites.InitImages();
 	mySprites.LoadFont();
 	mySounds.LoadMusic();
@@ -86,6 +86,14 @@ int Game::InitializeRoom()
 	return 0;
 }
 
+void Game::SetPause()
+{
+	pauseRect.setFillColor(Color(0, 0, 0, 150));
+	pauseRect.setSize(Vector2f(view.getSize().x, view.getSize().y));
+	pauseRect.setOrigin(pauseRect.getSize().x / 2, pauseRect.getSize().y / 2);
+	pauseRect.setPosition(view.getCenter());
+}
+
 void Game::DeleteEnemyFromVector()
 {
 	auto isDead = [](Enemy enemy)
@@ -102,11 +110,12 @@ void Game::UpdateEnemies(RenderWindow& window)
 	{
 		if (enemy.alive == true)
 		{
-			enemy.lastPosition = { enemy.position.x, enemy.position.y };
 			if (room == enemy.enemyRoom)
 			{
-				enemy.UpdateFollowEnemy(gameTime, player.position, myMap, time);
-				enemy.Update(boomb, bullets, time, gameTime, player.position);
+				enemy.MoveFollowEnemy(gameTime, player.position, myMap, time);
+				enemy.UpdateFly(time, myMap, mySprites.wallBackgroundSprite);
+				enemy.UpdateStandAndShoot(bullets, gameTime);
+				enemy.Update(boomb, gameTime);
 			}
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
@@ -116,11 +125,10 @@ void Game::UpdateEnemies(RenderWindow& window)
 
 void Game::UpdatePlayer()
 {
-	player.CheckCollision(myMap, mySprites.wallBackgroundSprite, view, IsRoomCleared());
-	player.Moving(time);
+	player.Moving(time, myMap, view, IsRoomCleared(), mySprites.wallBackgroundSprite);
 	player.CheckEnemyCollidesPlayer(enemies, gameTime, hitTimer, mySounds.playerHurts);
 	player.ChangeColorAfterHit(gameTime, hitTimer);
-	player.CheckExplosionCollision(boomb, gameTime);
+	player.CheckExplosionCollision(boomb, gameTime, mySounds.playerHurts);
 }
 
 void Game::UpdateChests(RenderWindow& window)
@@ -205,13 +213,16 @@ void Game::UpdateBombs()
 	boomb.PlaySound(mySounds.bombExplosion, gameTime);
 	for (auto& map : myMap)
 	{
-		if (map.sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
+		if (map.sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()) && map.pos == 0)
 		{
-			cout << map.alive << endl;
 			map.alive = false;
-			cout << map.alive << endl;
 		}
 	}
+	auto isDestroyed = [](Map map)
+	{
+		return (map.alive == false);
+	};
+	myMap.erase(remove_if(myMap.begin(), myMap.end(), isDestroyed), myMap.end());
 }
 
 void Game::UpdateTime()
@@ -226,7 +237,7 @@ void Game::UpdateTimePerFrame()
 {
 	time = float(clock.getElapsedTime().asMicroseconds());
 	clock.restart();
-	time = time / 500;
+	time = time / GAME_TIME_DIFFERENCE;
 }
 
 void Game::UpdateSounds()
@@ -311,14 +322,14 @@ void Game::DrawBombCount(RenderWindow& window)
 {
 	Sprite bombCountSprite;
 	bombCountSprite.setTexture(mySprites.bombCount);
-	bombCountSprite.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + 28, view.getCenter().y - WINDOW_HEIGHT / 2 + 32);
-	bombCountSprite.setScale(1.5, 1.5);
+	bombCountSprite.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + BOMB_IMAGE_SHIFT.x, view.getCenter().y - WINDOW_HEIGHT / 2 + BOMB_IMAGE_SHIFT.y);
+	bombCountSprite.setScale(BOMB_IMAGE_SCALE, BOMB_IMAGE_SCALE);
 	window.draw(bombCountSprite);
 
 	Text textBombs;
 	textBombs.setFont(mySprites.font);
-	textBombs.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + 80, view.getCenter().y - WINDOW_HEIGHT / 2 + 45);
-	textBombs.setCharacterSize(20);
+	textBombs.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + TEXT_SHIFT.x, view.getCenter().y - WINDOW_HEIGHT / 2 + TEXT_SHIFT.y);
+	textBombs.setCharacterSize(FONT_INTERFACE_SIZE);
 
 	ostringstream toString;
 	toString << player.bombCount;
@@ -331,32 +342,32 @@ void Game::DrawPlayersHealth(RenderWindow& window)
 {
 	Sprite fullHP;
 	fullHP.setTexture(mySprites.heartTexture);
-	fullHP.setTextureRect(IntRect(0, 0, 16, 16));
-	fullHP.setScale(2, 2);
+	fullHP.setTextureRect(IntRect(0, 0, HEALTH_TEXTURE_SIZE, HEALTH_TEXTURE_SIZE));
+	fullHP.setScale(HP_SCALE, HP_SCALE);
 	Sprite halfHP;
 	halfHP.setTexture(mySprites.heartTexture);
-	halfHP.setTextureRect(IntRect(16, 0, 16, 16));
-	halfHP.setScale(2, 2);
+	halfHP.setTextureRect(IntRect(HEALTH_TEXTURE_SIZE, 0, HEALTH_TEXTURE_SIZE, HEALTH_TEXTURE_SIZE));
+	halfHP.setScale(HP_SCALE, HP_SCALE);
 	Sprite emptySprite;
 	emptySprite.setTexture(mySprites.heartTexture);
-	emptySprite.setTextureRect(IntRect(32, 0, 16, 16));
-	emptySprite.setScale(2, 2);
+	emptySprite.setTextureRect(IntRect(HEALTH_TEXTURE_SIZE * 2, 0, HEALTH_TEXTURE_SIZE, HEALTH_TEXTURE_SIZE));
+	emptySprite.setScale(HP_SCALE, HP_SCALE);
 
 	for (int i = 1; i <= MAX_PLAYER_HEALTH; i++)
 	{
-		emptySprite.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + i * 35, view.getCenter().y - WINDOW_HEIGHT / 2 + 10);
+		emptySprite.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + i * HP_SHIFT.x, view.getCenter().y - WINDOW_HEIGHT / 2 + HP_SHIFT.y);
 		window.draw(emptySprite);
 	}
 	if (player.health > 0)
 	{
 		for (int i = 1; i <= player.health; i++)
 		{
-			fullHP.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + i * 35, view.getCenter().y - WINDOW_HEIGHT / 2 + 10);
+			fullHP.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + i * HP_SHIFT.x, view.getCenter().y - WINDOW_HEIGHT / 2 + HP_SHIFT.y);
 			window.draw(fullHP);
 		}
 		if (player.health - int(player.health) != 0)
 		{
-			halfHP.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + int(player.health + 1) * 35, view.getCenter().y - WINDOW_HEIGHT / 2 + 10);
+			halfHP.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + int(player.health + 1) * HP_SHIFT.x, view.getCenter().y - WINDOW_HEIGHT / 2 + HP_SHIFT.y);
 			window.draw(halfHP);
 		}
 	}
@@ -366,18 +377,13 @@ void Game::DrawEnemies(RenderWindow& window)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.alive == true)
+		if (enemy.alive == true && enemy.enemyRoom == room)
 		{
-			if (enemy.enemyRoom == room)
-			{
-				window.draw(enemy.sprite);
-			}
+			window.draw(enemy.sprite);
 		}
 		else
 		{
-			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture);
-			enemy.position.x = 0;
-			enemy.position.y = 0;
+			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture, time);
 		}
 	}
 }
@@ -456,7 +462,7 @@ void Game::AddChest(View& view)
 
 void Game::DrawMap(RenderWindow& window)
 {
-	myTileMap.drawMap(myMap, window, IsRoomCleared());
+	myTileMap.drawTiles(myMap, window, IsRoomCleared());
 }
 
 void Game::DrawChest(RenderWindow& window)
@@ -469,7 +475,7 @@ void Game::DrawChest(RenderWindow& window)
 
 void Game::SetCorrectDrawOrder(RenderWindow& window)
 {
-	if (player.position.y + player.h < boomb.position.y + 64)
+	if (player.position.y + player.h < boomb.position.y + TILE_SIDE)
 	{
 	    DrawPlayer(window);
 		DrawBombs(window);
@@ -498,7 +504,11 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
+		if (gameState == PAUSE)
+		{
+			SetPause();
+			window.draw(pauseRect);
+		}
 	}
-	window.draw(boomb.damageZone);
 }
 
