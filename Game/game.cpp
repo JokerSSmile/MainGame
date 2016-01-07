@@ -18,7 +18,6 @@ void Game::InitEnemies()
 
 void Game::InitGame()
 {
-
 	lastShootPlayer = 0;
 	hitTimer = 0;
 	room = 1;
@@ -201,8 +200,18 @@ void Game::UpdateBullets(RenderWindow& window)
 
 void Game::UpdateBombs()
 {
+	
 	boomb.Update(gameTime);
 	boomb.PlaySound(mySounds.bombExplosion, gameTime);
+	for (auto& map : myMap)
+	{
+		if (map.sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
+		{
+			cout << map.alive << endl;
+			map.alive = false;
+			cout << map.alive << endl;
+		}
+	}
 }
 
 void Game::UpdateTime()
@@ -257,7 +266,6 @@ void Game::UpdatePause()
 
 void Game::UpdateGame(RenderWindow& window)
 {
-	cout << gameTime << endl;
 	UpdatePause();
 	UpdateTimePerFrame();
 	if (gameState == MAIN_MENU)
@@ -275,7 +283,6 @@ void Game::UpdateGame(RenderWindow& window)
 			UpdateTime();
 			UpdateEnemies(window);
 			UpdateChests(window);
-			//UpdateBullets(window);
 			UpdateBombs();
 			UpdateSounds();
 		}
@@ -492,5 +499,6 @@ void Game::DrawWindow(RenderWindow& window)
 		UpdateBullets(window);
 		DrawEnemies(window);
 	}
+	window.draw(boomb.damageZone);
 }
 

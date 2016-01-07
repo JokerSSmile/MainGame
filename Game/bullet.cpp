@@ -27,15 +27,11 @@ void Bullet::DeleteBullet(float& gameTime, Sound& destroyBullet)
 {
 	if (alive == true)
 	{
-// 		if (gameTime > timeShot + BULLET_LIFE_TIME)
-// 		{
-// 			deathTime = gameTime;
-// 			alive = false;
-// 			destroyBullet.play();
-// 		}
-		if ()
+		if (abs(startPos.x - x) > BULLET_MAX_DISTANCE || abs(startPos.y - y) > BULLET_MAX_DISTANCE)
 		{
-
+			deathTime = gameTime;
+			alive = false;
+			destroyBullet.play();
 		}
 	}
 }

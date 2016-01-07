@@ -13,8 +13,8 @@ enum DoorPosition
 
 struct Map
 {
-	int x;
-	int y;
+	bool alive = true;
+	Vector2f position;
 	Sprite sprite;
 	Sprite collisionSprite;
 	DoorPosition pos;

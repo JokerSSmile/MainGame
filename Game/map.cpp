@@ -50,62 +50,55 @@ void tileMap::drawMap(vector<Map>& myMap, RenderWindow& window, bool isRoomClear
 		isMapSpritesLoaded = true;
 	}
 
-	int counter = 0;
 
 	myMap.clear();
 
 	Map map;
-
 	for (int i = 0; i < HEIGHT_MAP; i++)
 	{
 		for (int j = 0; j < WIDTH_MAP; j++)
 		{
 			if (mapString[i][j] == 's')
 			{
-				map.y = i * TILE_SIDE;
-				map.x = j * TILE_SIDE;
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE;
 				map.sprite = rockSprite;
 				map.collisionSprite = rockBulSprite;
 				map.pos = NOTDOOR;
 				myMap.push_back(map);
-				counter++;
 			}
 
 			else if (mapString[i][j] == 'u')
 			{
 				setDoorType(map, isRoomClear);
-				map.y = i * TILE_SIDE - TILE_SIDE;
-				map.x = j * TILE_SIDE - TILE_SIDE / 2;
+				map.position.y = i * TILE_SIDE - TILE_SIDE;
+				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = UP;
 				myMap.push_back(map);
-				counter++;
 			}
 			else if (mapString[i][j] == 'd')
 			{
 				setDoorType(map, isRoomClear);
-				map.y = i * TILE_SIDE;
-				map.x = j * TILE_SIDE - TILE_SIDE / 2;
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
 				map.pos = DOWN;
 				myMap.push_back(map);
-				counter++;
 			}
 			else if (mapString[i][j] == 'r')
 			{
 				setDoorType(map, isRoomClear);
-				map.y = i * TILE_SIDE;
-				map.x = j * TILE_SIDE;
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE;
 				map.pos = RIGHT;
 				myMap.push_back(map);
-				counter++;
 			}
 			else if (mapString[i][j] == 'l')
 			{
 				setDoorType(map, isRoomClear);
-				map.y = i * TILE_SIDE;
-				map.x = j * TILE_SIDE - TILE_SIDE;
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE - TILE_SIDE;
 				map.pos = LEFT;
 				myMap.push_back(map);
-				counter++;
 			}
 		}
 	}
@@ -116,32 +109,29 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window)
 {
 	for (auto& map: myMap)
 	{
-		if (map.pos == 0)
+		if (map.pos == NOTDOOR)
 		{
-			map.sprite.setPosition(float(map.x), float(map.y));
-			map.collisionSprite.setPosition(float(map.x), float(map.y));
+			map.sprite.setPosition(float(map.position.x), float(map.position.y));
+			map.collisionSprite.setPosition(float(map.position.x), float(map.position.y));
 		}
 		else
 		{
+			map.sprite.setPosition(float(map.position.x), float(map.position.y));
 			if (map.pos == UP)
 			{
 				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
-				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == DOWN)
 			{
 				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
-				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == LEFT)
 			{
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
-				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 			else if (map.pos == RIGHT)
 			{
 				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
-				map.sprite.setPosition(float(map.x), float(map.y));
 			}
 		}
 		window.draw(map.sprite);

@@ -58,9 +58,10 @@ const int TILE_SIDE = 64;
 
 //bullets
 const int BULLET_SIDE = 32;
-const float PLAYERS_BULLET_SPEED = 0.10f;//0.1
-const float ENEMY_BULLET_SPEED = 0.12f;//0.12
-const float BULLET_LIFE_TIME = 0.7f;//1
+const float PLAYERS_BULLET_SPEED = 0.2f;//0.1
+const float ENEMY_BULLET_SPEED = 0.24f;//0.12
+//const float BULLET_LIFE_TIME = 0.7f;//1
+const float BULLET_MAX_DISTANCE = 300.f;
 const float BULLET_ANIMATION_STEP_TIME = 0.05f;//0.05
 const float BULLET_SHIFT_IF_SHOOT_UP = 20.f;
 

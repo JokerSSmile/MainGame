@@ -177,6 +177,7 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.direction = dir;
 		bullet.speed = PLAYERS_BULLET_SPEED;
 		bullet.damage = damage;
+		bullet.startPos = position;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
 	}
@@ -269,7 +270,7 @@ void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
 {
 	if (moving.x > 0 && moving.y > 0)
 	{
-		if (sprite.getPosition().x >= map.x - h)
+		if (sprite.getPosition().x >= map.position.x - h)
 		{
 			position.x = position.x + speed;
 			moving.x = 0;
@@ -283,7 +284,7 @@ void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
 	}
 	else if (moving.x > 0 && moving.y < 0)
 	{
-		if (sprite.getPosition().x >= map.x - h)
+		if (sprite.getPosition().x >= map.position.x - h)
 		{
 			position.x = position.x + speed;
 			moving.x = 0;
@@ -297,7 +298,7 @@ void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
 	}
 	else if (moving.x < 0 && moving.y < 0)
 	{
-		if (sprite.getPosition().y + h >= map.y + TILE_SIDE + h / 2 && position.x < map.x + TILE_SIDE - h / 2
+		if (sprite.getPosition().y + h >= map.position.y + TILE_SIDE + h / 2 && position.x < map.position.x + TILE_SIDE - h / 2
 			|| map.sprite.getGlobalBounds().contains(position.x - 10, position.y - 5) && IsRockDown(myMap,  position.y,  position.x) == true)
 		{
 			position.x = position.x - speed;
@@ -312,7 +313,7 @@ void Player::DiagonalCollision(Map& map, vector<Map>& myMap)
 	}
 	else if (moving.x < 0 && moving.y > 0)
 	{
-		if (sprite.getPosition().y + h <= map.y + h / 2)
+		if (sprite.getPosition().y + h <= map.position.y + h / 2)
 		{
 			position.x = position.x - speed;
 			moving.x = 0;
