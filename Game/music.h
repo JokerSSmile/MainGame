@@ -18,8 +18,6 @@ static enum
 
 struct Sounds
 {
-	//int currentMusic;
-
 	Music backgroundMusic1;
 	Music backgroundMusic2;
 	Music backgroundMusic3;
@@ -43,6 +41,15 @@ struct Sounds
 
 	SoundBuffer chestDropBuffer;
 	Sound chestDrop;
+
+	SoundBuffer tearFireBuffer;
+	Sound tearFire;
+
+	SoundBuffer flyHurtBuffer;
+	Sound flyHurt;
+
+	SoundBuffer enemyHurtBuffer;
+	Sound enemyHurt;
 	
 	void LoadMusic();
 	void SetVolume(int& volume);

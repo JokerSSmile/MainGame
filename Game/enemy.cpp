@@ -2,19 +2,35 @@
 
 #include "map.h"
 
-void Enemy::CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite)
+void Enemy::CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time)
 {
+	Vector2f oldPos = position;
+	position.x += moving.x * time;
+	position.y += moving.y * time;
+	if (Collision::PixelPerfectTest(sprite, wallSprite))
+	{
+		if (moving.x > 0)
+		{
+			position.x = oldPos.x - 1;
+		}
+		else if (moving.x < 0)
+		{
+			position.x = oldPos.x + 1;
+		}
+		moving.x = -moving.x;
+		moving.y = -moving.y;
+	}
 	for (auto& map : myMap)
 	{
-		if (Collision::PixelPerfectTest(sprite, map.sprite) || Collision::PixelPerfectTest(sprite, wallSprite))
+		if (Collision::PixelPerfectTest(sprite, map.sprite))
 		{
 			if (moving.x > 0)
 			{
-				position.x -= 1;
+				position.x = oldPos.x - 1;
 			}
 			else if (moving.x < 0)
 			{
-				position.x += 1;
+				position.x = oldPos.x + 1;
 			}
 			moving.x = -moving.x;
 			moving.y = -moving.y;
@@ -92,9 +108,7 @@ void Enemy::UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite)
 		currentFrame += FLY_UPDATE_FRAME_TIME * time;
 		if (currentFrame > 2) currentFrame -= 2;
 		sprite.setTextureRect(IntRect(FLY_SIZE.x * int(currentFrame), 0, FLY_SIZE.x, FLY_SIZE.y));
-		CheckCollosionFly(myMap, wallSprite);
-		position.x += moving.x * time;
-		position.y += moving.y * time;
+		CheckCollosionFly(myMap, wallSprite, time);
 		sprite.setPosition(position.x, position.y);
 	}
 }

@@ -68,6 +68,7 @@ struct Game
 
 	void InitEnemies();
 	void InitGame();
+	void Delete();
 	void Restart();
 	int InitializeRoom();
 
@@ -86,6 +87,7 @@ struct Game
 	bool IsChestInRoom();
 
 	void DeleteEnemyFromVector();
+	void EnemyDeathSound(Enemy& enemy);
 	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer();

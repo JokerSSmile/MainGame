@@ -9,6 +9,9 @@ const String CHEST_OPENING_SOUND = "resources/sound/chest_open.wav";
 const String DOOR_OPENING_SOUND = "resources/sound/door_open.wav";
 const String PLAYER_HURTS_SOUND = "resources/sound/player_hurts.wav";
 const String CHEST_DROP_SOUND = "resources/sound/chest_drop.wav";
+const String TEAR_FIRE_SOUND = "resources/sound/tear_fire.wav";
+const String FLY_HURT_SOUND = "resources/sound/fly_hurt.wav";
+const String ENEMY_HURT_SOUND = "resources/sound/enemy_hurt.wav";
 const String MAIN_MENU_MUSIC = "resources/music/main_menu.ogg";
 
 void Sounds::LoadMusic()
@@ -35,6 +38,15 @@ void Sounds::LoadMusic()
 	playerHurtsBuffer.loadFromFile(PLAYER_HURTS_SOUND);
 	playerHurts.setBuffer(playerHurtsBuffer);
 
+	tearFireBuffer.loadFromFile(TEAR_FIRE_SOUND);
+	tearFire.setBuffer(tearFireBuffer);
+
+	flyHurtBuffer.loadFromFile(FLY_HURT_SOUND);
+	flyHurt.setBuffer(flyHurtBuffer);
+
+	enemyHurtBuffer.loadFromFile(ENEMY_HURT_SOUND);
+	enemyHurt.setBuffer(enemyHurtBuffer);
+
 	menuMusic.openFromFile(MAIN_MENU_MUSIC);
 	menuMusic.setLoop(true);
 }
@@ -50,6 +62,9 @@ void Sounds::SetVolume(int& volume)
 	chestOpening.setVolume(float(volume));
 	doorOpening.setVolume(float(volume));
 	playerHurts.setVolume(float(volume));
+	flyHurt.setVolume(float(volume));
+	enemyHurt.setVolume(float(volume));
+	tearFire.setVolume(float(volume));
 	menuMusic.setVolume(float(volume));
 }
 

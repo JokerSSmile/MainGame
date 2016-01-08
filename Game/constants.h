@@ -8,14 +8,15 @@ enum GameState
 	MAIN_MENU,
 	GAME,
 	PAUSE,
-	END_GAME
+	END_GAME,
+	FINISHED
 };
 
 //global
 const float GAME_TIME_DIFFERENCE = 500;
 
 //colors
-const Color COLOR_AFTER_HIT = { 255, 150, 150 };//255,150,150
+const Color COLOR_AFTER_HIT = { 200, 15, 15 };//255,150,150
 const Color COLOR_WHILE_MOUSE_ON_TEXT = { 125, 125, 135 };
 
 //main menu
@@ -27,7 +28,7 @@ const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
 const int PLAYER_WIDTH = 36;
 const int PLAYER_HEIGHT = 26;
-const float MAX_PLAYER_HEALTH = 1;// == start health
+const float MAX_PLAYER_HEALTH = 3;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
@@ -40,7 +41,7 @@ const float FLY2_POSITION_Y = 300;
 const Vector2i FLY_SIZE = { 17, 14 };
 const float FLY_UPDATE_FRAME_TIME = 0.005f;
 const float ENEMY_STAND_AND_SHOOT_FRAME_TIME = 0.3f;
-const Vector2f STAND_AND_SHOOT_SIZE = { 38, 43 };
+const Vector2i STAND_AND_SHOOT_SIZE = { 38, 43 };
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED = 0.05f;
@@ -88,7 +89,7 @@ const Vector2f BOMB_IMAGE_SHIFT = { 28, 32 };
 const Vector2f TEXT_SHIFT = { 80, 45 };
 const Vector2f HP_SHIFT = { 35, 10 };
 const int HEALTH_TEXTURE_SIZE = 16;
-const int HP_SCALE = 2;
+const float HP_SCALE = 2;
 
 //
 const float FRAME_CHANGE_TIME = 0.5f;

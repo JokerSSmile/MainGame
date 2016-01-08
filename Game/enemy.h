@@ -45,7 +45,7 @@ struct Enemy :
 
 		if (name == "EnemyFly")
 		{
-			moving.x = -0.1f;
+			moving.x = 0.1f;
 		}
 		else if (name == "EnemyFollow")
 		{
@@ -53,7 +53,7 @@ struct Enemy :
 		}
 	}
 
-	void CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite);
+	void CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time);
 	void ExplosionCollision(Boomb& boomb, float& gameTime);
 	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time);
 	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);

@@ -3,13 +3,13 @@
 void Game::InitEnemies()
 {
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 1));
-	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X, FLY2_POSITION_Y), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 1));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), 38, 43, "EnemyStandAndShoot", 3, 2));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), 38, 43, "EnemyStandAndShoot", 3, 2));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), 38, 43, "EnemyStandAndShoot", 3, 3));
 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), 38, 43, "EnemyStandAndShoot", 3, 3));
-	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 760), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 900), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 5));
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 5));
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 6));
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), FLY_SIZE.x, FLY_SIZE.y, "EnemyFly", 1, 5));
@@ -20,12 +20,12 @@ void Game::InitGame()
 {
 	lastShootPlayer = 0;
 	hitTimer = 0;
-	room = 1;
+	//room = 1;
 	volume = 30;
 	gameState = MAIN_MENU;
 	InitEnemies();
 	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
-	view.reset(FloatRect(0, WINDOW_HEIGHT, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
+	view.reset(FloatRect(0, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT));
 	myTileMap.initMap(myMap);
 	mySprites.InitImages();
 	mySprites.LoadFont();
@@ -35,23 +35,34 @@ void Game::InitGame()
 	mySounds.menuMusic.play();
 }
 
+void Game::Delete()
+{
+	myMap.clear();
+	enemies.clear();
+	bullets.clear();
+	chests.clear();
+	gameTimer.restart();
+	clock.restart();
+	boomb.createTime = 0;
+}
+
 void Game::Restart()
 {
+	Delete();
 	lastShootPlayer = 0;
 	hitTimer = 0;
 	room = 1;
 	volume = 30;
-	gameState = GAME;
+	gameState = MAIN_MENU;
 	InitEnemies();
 	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), PLAYER_WIDTH, PLAYER_HEIGHT, "Hero", 6, mySprites.headTexture);
-	view.reset(FloatRect(0, WINDOW_HEIGHT, float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
+	view.reset(FloatRect(0, float(WINDOW_HEIGHT), float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	myTileMap.initMap(myMap);
-	//cout << player.health << endl;
-	//mySprites.InitImages();
-	//mySprites.LoadFont();
-	//mySounds.LoadMusic();
-	//menu.InitMenu(mySprites.mainMenuTexture, mySprites.font);
-	//mySounds.menuMusic.play();
+	mySprites.InitImages();
+	mySounds.LoadMusic();
+	menu.InitMenu(mySprites.mainMenuTexture, mySprites.font);
+	isKeyPressed = false;
+	mySounds.menuMusic.play();
 }
 
 int Game::InitializeRoom()
@@ -184,7 +195,14 @@ void Game::SetPause(RenderWindow& window)
 
 void Game::SetEndGameText(RenderWindow& window)
 {
-	continueText.setString("TRY AGAIN");
+	if (gameState == END_GAME)
+	{
+		continueText.setString("TRY AGAIN");
+	}
+	else
+	{
+		continueText.setString("WIN\n\nGO AGAIN");
+	}
 	continueText.setFont(mySprites.font);
 	continueText.setCharacterSize(35);
 	continueText.setRotation(5);
@@ -224,6 +242,7 @@ void Game::CheckIntersectionWithTextEnd(RenderWindow& window)
 		if (Mouse::isButtonPressed(Mouse::Left))
 		{
 			Restart();
+			gameState = GAME;
 		}
 	}
 	else
@@ -244,9 +263,24 @@ void Game::DeleteEnemyFromVector()
 {
 	auto isDead = [](Enemy enemy)
 	{
-		return (enemy.health < 0);
+		return (enemy.alive == false);
 	};
 	enemies.erase(remove_if(enemies.begin(), enemies.end(), isDead), enemies.end());
+}
+
+void Game::EnemyDeathSound(Enemy& enemy)
+{
+	if (enemy.alive == false && enemy.currentFrame == 0)
+	{
+		if (enemy.name == "EnemyFly")
+		{
+			mySounds.flyHurt.play();
+		}
+		else
+		{
+			mySounds.enemyHurt.play();
+		}
+	}
 }
 
 void Game::UpdateEnemies(RenderWindow& window)
@@ -254,6 +288,7 @@ void Game::UpdateEnemies(RenderWindow& window)
 	DeleteEnemyFromVector();
 	for (auto& enemy: enemies)
 	{
+		EnemyDeathSound(enemy);
 		if (enemy.alive == true)
 		{
 			if (room == enemy.enemyRoom)
@@ -400,7 +435,7 @@ void Game::ProcessEvents(RenderWindow& window)
 	}
 	if (gameState == GAME)
 	{
-		player.Control(boomb, bullets, time, gameTime, lastShootPlayer);
+		player.Control(boomb, bullets, time, gameTime, lastShootPlayer, mySounds.tearFire);
 	}
 }
 
@@ -441,11 +476,14 @@ void Game::CheckEndGame()
 	{
 		gameState = END_GAME;
 	}
+	if (enemies.size() == 0)
+	{
+		gameState = FINISHED;
+	}
 }
 
 void Game::UpdateGame(RenderWindow& window)
 {
-	//cout << to_string(gameState) << endl;
 	UpdatePause();
 	UpdateTimePerFrame();
 	if (gameState == MAIN_MENU)
@@ -453,24 +491,23 @@ void Game::UpdateGame(RenderWindow& window)
 		SetMainMenuMusic();
 		menu.Update(volume, view);
 	}
-	else if (gameState != END_GAME)
+	else if (gameState == GAME)
 	{
 		mySounds.menuMusic.stop();
-		if (gameState == GAME)
-		{
-			room = InitializeRoom();
-			AddChest(view);
-			UpdatePlayer();
-			UpdateTime();
-			UpdateEnemies(window);
-			UpdateChests(window);
-			UpdateBombs();
-			UpdateSounds();
-			CheckEndGame();
-		}
+		AddChest(view);
+		UpdatePlayer();
+		UpdateTime();
+		UpdateEnemies(window);
+		UpdateChests(window);
+		UpdateBombs();
+		UpdateSounds();
+		CheckEndGame();
+		room = InitializeRoom();
 	}
 	else
 	{
+		
+		boomb.damageZone.setPosition(-TILE_SIDE * 2, -TILE_SIDE * 2);
 		SetEndGame(window);
 	}
 	if (window.hasFocus())
@@ -700,7 +737,7 @@ void Game::DrawWindow(RenderWindow& window)
 			SetPause(window);
 			DrawPause(window);
 		}
-		else if (gameState == END_GAME)
+		else if (gameState == END_GAME || gameState == FINISHED)
 		{
 			DrawEndGame(window);
 		}

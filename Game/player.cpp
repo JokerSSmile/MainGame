@@ -84,27 +84,27 @@ void Player::StrightMoving(float& time)
 	}
 }
 
-void Player::MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot)
+void Player::MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot, Sound& tearFire)
 {
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 	{
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 4);
+		Shoot(bullets, gameTime, lastShot, 4, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Up))
 	{
 		headSprite.setTextureRect(IntRect(128, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 5);
+		Shoot(bullets, gameTime, lastShot, 5, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Down))
 	{
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 6);
+		Shoot(bullets, gameTime, lastShot, 6, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Right))
 	{
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 7);
+		Shoot(bullets, gameTime, lastShot, 7, tearFire);
 	}
 }
 
@@ -127,13 +127,13 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 	}
 }
 
-void Player::Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot)
+void Player::Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot, Sound& tearFire)
 {
 	if (DiagonalMoving(time) == false)
 	{
 		StrightMoving(time);
 	}
-	MakeShoot(bullets, gameTime, lastShot);
+	MakeShoot(bullets, gameTime, lastShot, tearFire);
 	PlantBomb(bomb, gameTime);
 }
 
@@ -157,7 +157,7 @@ void Player::SetShootAnimation(int& dir)
 	}
 }
 
-void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir)
+void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire)
 {
 	if (gameTime > (lastShootPlayer + TIME_BETWEEN_SHOOTS_PLAYER))
 	{
@@ -180,6 +180,7 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.startPos = position;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
+		tearFire.play();
 	}
 	if (gameTime < lastShootPlayer + TIME_FOR_SHOOT_ANIMATION)
 	{
@@ -223,8 +224,11 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 {
 	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
-		sprite.setColor(Color(COLOR_AFTER_HIT));
-		headSprite.setColor(Color(COLOR_AFTER_HIT));
+		if (gameTime > 1)
+		{
+			sprite.setColor(Color(COLOR_AFTER_HIT));
+			headSprite.setColor(Color(COLOR_AFTER_HIT));
+		}
 	}
 	else
 	{
@@ -287,10 +291,6 @@ void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playe
 			health -= BOMB_DAMAGE;
 			bombHitTime = gameTime;
 			playerHurts.play();
-		}
-		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
-		{
-			boomb.isAlive = false;
 		}
 	}
 }

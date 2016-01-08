@@ -39,7 +39,7 @@ struct Player :
 
 		health = MAX_PLAYER_HEALTH;
 
-		bombCount = 11;
+		bombCount = 2;
 
 		sprite.setTextureRect(IntRect(0, 0, w, h));
 		headSprite.setTexture(headTexture);
@@ -51,13 +51,13 @@ struct Player :
 
 	bool DiagonalMoving(float& time);
 	void StrightMoving(float& time);
-	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot);
+	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot, Sound& tearFire);
 	void PlantBomb(Boomb& bomb, float& time);
-	void Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot);
+	void Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot, Sound& tearFire);
 
 	void SetShootAnimation(int& dir);
 
-	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir);
+	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire);
 
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
 	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
