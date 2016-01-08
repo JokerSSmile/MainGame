@@ -6,6 +6,7 @@
 #include "map.h"
 #include "collision.h"
 #include "sprites.h"
+#include "music.h"
 
 using namespace sf;
 using namespace std;
@@ -17,7 +18,8 @@ struct Bullet
 	int direction;
 	float x = 0;
 	float y = 0;
-	bool life = false;
+	Vector2f startPos;
+	bool alive = false;
 	float timeShot;
 	float deathTime = 0;
 	Sprite bulletSprite;
@@ -26,10 +28,12 @@ struct Bullet
 	bool isPlayers = false;
 	float speed;
 	float damage = 0;
+	bool isInWall;
 
-	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites);
-	void DeleteBullet(float gameTime);
-	void BulletDestroyEffect(float gameTime, RenderWindow& window);
+	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites, Sound& destroyBullet);
+	void DeleteBullet(float& gameTime, Sound& destroyBullet);
+	void BulletDestroyEffect(float& gameTime, RenderWindow& window);
 	void SetSpeed();
 	void UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture);
+	void DrawBullet(RenderWindow & window);
 };

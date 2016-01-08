@@ -1,143 +1,82 @@
 #include "enemy.h"
 
 #include "map.h"
-#include "view.h"
 
-void Enemy::CheckCollosionFly()//ф-ция взаимодействия с картой
+void Enemy::CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time)
 {
-	for (int i = y / TILE_SIDE; i < (y + h) / TILE_SIDE; i++)
-		for (int j = x / TILE_SIDE; j < (x + w) / TILE_SIDE; j++)
+	Vector2f oldPos = position;
+	position.x += moving.x * time;
+	position.y += moving.y * time;
+	if (Collision::PixelPerfectTest(sprite, wallSprite))
+	{
+		if (moving.x > 0)
 		{
-			if (mapString[i][j] == '0' || mapString[i][j] == 's')
-			{
-
-				if (dx > 0)//right
-				{
-					x = j * TILE_SIDE - w;
-				}
-				else if (dx < 0)//left
-				{
-					x = j * TILE_SIDE + TILE_SIDE;
-				}
-				else if (dy > 0)
-				{
-					y = i * TILE_SIDE;
-				}
-				else if (dy < 0)
-				{
-					y = i * TILE_SIDE;
-				}
-				dy = -dy;
-				dx = -dx;
-			}
+			position.x = oldPos.x - 1;
 		}
-}
-
-void Enemy::CheckCollisionZombie()
-{
-	for (int i = (y + h / 1.5) / TILE_SIDE; i < (y + h) / TILE_SIDE; i++)
-		for (int j = (x / TILE_SIDE); j < (x + w) / TILE_SIDE; j++)
+		else if (moving.x < 0)
 		{
-			if (mapString[i][j] == '0' || mapString[i][j] == 's')
-			{
-				if (dy > 0)//вниз
-				{
-					y--;
-				}
-				if (dy < 0)//up
-				{
-					y++;
-				}
-				if (dx > 0)//right
-				{
-					//x = j * TILE_SIDE - w;
-					x--;
-				}
-				if (dx < 0)//left
-				{
-					x++;
-				}
-			}
-			else if (mapString[i][j] == 'd' && dy > 0)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				y = y + TILE_SIDE * 4 + h / 2;
-			}
-			else if (mapString[i][j] == 'u' && dy < 0)
-			{
-				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				y = y - TILE_SIDE * 4 - h / 2;
-			}
-			else if (mapString[i][j] == 'l' && dx < 0)
-			{
-				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				x = x - TILE_SIDE * 4 - w - 5;
-			}
-			else if (mapString[i][j] == 'r' && dx > 0)
-			{
-				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				x = x + TILE_SIDE * 4 + w + 5;
-			}
+			position.x = oldPos.x + 1;
 		}
+		moving.x = -moving.x;
+		moving.y = -moving.y;
+	}
+	for (auto& map : myMap)
+	{
+		if (Collision::PixelPerfectTest(sprite, map.sprite))
+		{
+			if (moving.x > 0)
+			{
+				position.x = oldPos.x - 1;
+			}
+			else if (moving.x < 0)
+			{
+				position.x = oldPos.x + 1;
+			}
+			moving.x = -moving.x;
+			moving.y = -moving.y;
+		}
+	}
 }
 
 void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY)
 {
 	Bullet bullet;
 	bullet.isPlayers = false;
-	bullet.life = true;
+	bullet.alive = true;
 	bullet.x = bulletStartX;
 	bullet.y = bulletStartY;
 	bullet.timeShot = gameTime;
 	bullet.direction = dir;
 	bullet.speed = ENEMY_BULLET_SPEED;
 	bullet.damage = damage;
+	bullet.startPos = position;
 	lastShootEnemyStand = bullet.timeShot;
 	bullets.push_back(bullet);
 }
 
-void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture)
+void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time)
 {
 	poofSprite.setTexture(poofTexture);
 	poofSprite.setScale(1.5, 1.5);
-	poofSprite.setOrigin(48, 48);
-	poofSprite.setPosition(lastPosition.x + sprite.getGlobalBounds().width, lastPosition.y + sprite.getGlobalBounds().height);
+	poofSprite.setOrigin(TILE_SIDE / 2, TILE_SIDE / 2);
+	poofSprite.setPosition(lastPosition.x + sprite.getGlobalBounds().width / 2, lastPosition.y + sprite.getGlobalBounds().height / 2);
 
-	if (gameTime < deathTime + ENEMY_DESTROY_EFFECT)
+	if (gameTime > deathTime && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 4)
 	{
-		poofSprite.setTextureRect(IntRect(64, 0, 64, 64));
+		if (currentFrame < EXPLOSION_FRAMES_COUNT)
+		{
+			currentFrame += FRAME_CHANGE_TIME_EXPLOSION * time;
+		}
+		poofSprite.setTextureRect(IntRect(EXPLOSION_TEXTURE_IMAGE_SIZE * (int(currentFrame) % EXPLOSION_FRAME_COUNT), EXPLOSION_TEXTURE_IMAGE_SIZE * (int(currentFrame) / EXPLOSION_FRAME_COUNT), EXPLOSION_TEXTURE_IMAGE_SIZE, EXPLOSION_TEXTURE_IMAGE_SIZE));
 		window.draw(poofSprite);
 	}
-	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 2)
-	{
-		poofSprite.setTextureRect(IntRect(192, 0, 64, 64));
-		window.draw(poofSprite);
-	}
-	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT * 2 && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 3)
-	{
-		poofSprite.setTextureRect(IntRect(0, 64, 64, 64));
-		window.draw(poofSprite);
-	}
-	else if (gameTime > deathTime + ENEMY_DESTROY_EFFECT * 3 && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 4)
-	{
-		poofSprite.setTextureRect(IntRect(128, 64, 64, 64));
-		window.draw(poofSprite);
-	}
-}
-
-const FloatRect GetSpriteRect(const Sprite & sprite)
-{
-	const Vector2f pos = sprite.getPosition();
-	const Vector2f size = { sprite.getGlobalBounds().width, sprite.getGlobalBounds().height };
-	return FloatRect(pos, size);
 }
 
 void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
 {
-	FloatRect spriteRect = GetSpriteRect(sprite);
-	if (spriteRect.intersects(boomb.damageZone.getGlobalBounds()))
+	if (sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
 	{
-		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + 0.5)
+		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + FRAME_CHANGE_TIME)
 		{
 			health -= BOMB_DAMAGE;
 			bombHitTime = gameTime;
@@ -152,7 +91,7 @@ void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
 
 void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 {
-	if (gameTime < playerHitTime + CHANGE_COLOR_EFFECT || (gameTime > bombHitTime && gameTime < bombHitTime + 0.5))
+	if (gameTime < playerHitTime + CHANGE_COLOR_EFFECT || (gameTime > bombHitTime && gameTime < bombHitTime + FRAME_CHANGE_TIME))
 	{
 		sprite.setColor(COLOR_AFTER_HIT);
 	}
@@ -162,52 +101,163 @@ void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 	}
 }
 
-void Enemy::Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel)
+void Enemy::UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite)
 {
-	if (gameLevel == enemyLevel)
+	if (name == "EnemyFly")
 	{
-		ChangeColorAfterHit(gameTime, boomb);
+		currentFrame += FLY_UPDATE_FRAME_TIME * time;
+		if (currentFrame > 2) currentFrame -= 2;
+		sprite.setTextureRect(IntRect(FLY_SIZE.x * int(currentFrame), 0, FLY_SIZE.x, FLY_SIZE.y));
+		CheckCollosionFly(myMap, wallSprite, time);
+		sprite.setPosition(position.x, position.y);
+	}
+}
 
-		if (name == "EnemyFly")
+void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
+{
+	if (name == "EnemyStandAndShoot")
+	{
+		if (gameTime > (lastShootEnemyStand + TIME_BETWEEN_SHOOT_ENEMY_STAND))
 		{
-			currentFrame += 0.005f * time;
-			if (currentFrame > 2) currentFrame -= 2;
-			sprite.setTextureRect(IntRect(57 * int(currentFrame), 0, 57, 45));
-			CheckCollosionFly();
-		}
-
-		else if (name == "EnemyStandAndShoot")
-		{
-			if (gameTime > (lastShootEnemyStand + TIME_BETWEEN_SHOOT_ENEMY_STAND))
+			for (int i = 4; i <= 7; i++)
 			{
-				for (int i = 4; i <= 7; i++)
-				{
-					Shoot(bullets, gameTime, i, sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - 16, sprite.getPosition().y + 32);
-				}
-			}
-			sprite.setScale(2, 2);
-			if (lastShootEnemyStand + 0.3 <= gameTime)
-			{
-				sprite.setTextureRect(IntRect(0, 0, 38, 43));
-			}
-			else
-			{
-				sprite.setTextureRect(IntRect(38, 0, 38, 43));
+				Shoot(bullets, gameTime, i, sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - 16, sprite.getPosition().y + 32);
 			}
 		}
-
-		if (health > 0)
+		sprite.setScale(2, 2);
+		sprite.setPosition(position);
+		if (lastShootEnemyStand + ENEMY_STAND_AND_SHOOT_FRAME_TIME <= gameTime && lastShootEnemyStand != 0)
 		{
-			life = true;
+			sprite.setTextureRect(IntRect(0, 0, STAND_AND_SHOOT_SIZE.x, STAND_AND_SHOOT_SIZE.y));
 		}
 		else
 		{
-			life = false;
+			sprite.setTextureRect(IntRect(STAND_AND_SHOOT_SIZE.x, 0, STAND_AND_SHOOT_SIZE.x, STAND_AND_SHOOT_SIZE.y));
 		}
-
-		x += dx * time;
-		y += dy * time;
-
-		sprite.setPosition(x, y);
 	}
+}
+
+void Enemy::SetDirection(Vector2f& playerPosition)
+{
+	if (position.x >= playerPosition.x - PLAYER_WIDTH / 2 && position.x <= playerPosition.x + PLAYER_WIDTH + PLAYER_WIDTH / 2)
+	{
+		if (position.y > playerPosition.y)
+		{
+			dir = up;
+		}
+		else
+		{
+			dir = down;
+		}
+	}
+	else if (position.y <= playerPosition.y - PLAYER_HEIGHT / 2 && position.y <= playerPosition.y + PLAYER_HEIGHT + PLAYER_WIDTH / 2)
+	{
+		if (position.x > playerPosition.x)
+		{
+			dir = left;
+		}
+		else
+		{
+			dir = right;
+		}
+	}
+	if (position.x > playerPosition.x && position.y > playerPosition.y)
+	{
+		dir = leftUp;
+	}
+	else if (position.x > playerPosition.x && position.y < playerPosition.y)
+	{
+		dir = leftDown;
+	}
+	else if (position.x < playerPosition.x && position.y > playerPosition.y)
+	{
+		dir = rightUp;
+	}
+	else if (position.x < playerPosition.x && position.y < playerPosition.y)
+	{
+		dir = rightDown;
+	}
+}
+
+void Enemy::SetFrameFollowEnemy(float& time)
+{
+	if (dir == left || dir == leftUp || dir == leftDown)
+	{
+		currentFrame += 0.005f * time;
+		if (currentFrame > 4)
+		{
+			currentFrame -= 4;
+		}
+		sprite.setTextureRect(IntRect(36 * int(currentFrame), 60, 36, 26));
+	}
+	else
+	{
+		currentFrame += 0.005f * time;
+		if (currentFrame > 4)
+		{
+			currentFrame -= 4;
+		}
+		sprite.setTextureRect(IntRect(36 * int(currentFrame), 34, 36, 26));
+	}
+}
+
+bool Enemy::IsIntersectsMap(vector<Map>& myMap)
+{
+	for (auto& map : myMap)
+	{
+		if (Collision::BoundingBoxTest(sprite, map.sprite))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time)
+{
+	if (name == "EnemyFollow")
+	{
+		SetDirection(playerPosition);
+		SetFrameFollowEnemy(time);
+		Vector2f(playerOldPosition) = sprite.getPosition();
+		SetPosition(time, speed);
+		sprite.setPosition(position);
+		if (IsIntersectsMap(myMap) == true)
+		{
+			sprite.setPosition(playerOldPosition);
+			if (position.x != playerOldPosition.x && position.y != playerOldPosition.y)
+			{
+				sprite.setPosition(playerOldPosition.x, position.y);
+				if (IsIntersectsMap(myMap) == true)
+				{
+					sprite.setPosition(position.x, playerOldPosition.y);
+					if (IsIntersectsMap(myMap) == true)
+					{
+						sprite.setPosition(playerOldPosition);
+					}
+				}
+			}
+		}
+		position = sprite.getPosition();
+	}
+}
+
+void Enemy::CheckIsAlive()
+{
+	if (health > 0)
+	{
+		alive = true;
+	}
+	else
+	{
+		currentFrame = 0;
+		alive = false;
+	}
+}
+
+void Enemy::Update(Boomb& boomb, float& gameTime)
+{
+	ChangeColorAfterHit(gameTime, boomb);
+	CheckIsAlive();
+	lastPosition = position;
 }

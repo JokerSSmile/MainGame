@@ -84,27 +84,27 @@ void Player::StrightMoving(float& time)
 	}
 }
 
-void Player::MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot)
+void Player::MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot, Sound& tearFire)
 {
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 	{
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 4);
+		Shoot(bullets, gameTime, lastShot, 4, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Up))
 	{
 		headSprite.setTextureRect(IntRect(128, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 5);
+		Shoot(bullets, gameTime, lastShot, 5, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Down))
 	{
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 6);
+		Shoot(bullets, gameTime, lastShot, 6, tearFire);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Right))
 	{
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
-		Shoot(bullets, gameTime, lastShot, 7);
+		Shoot(bullets, gameTime, lastShot, 7, tearFire);
 	}
 }
 
@@ -117,7 +117,7 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION + TIME_FOR_EXPLOSION || lastBombPlant == 0)
 			{
 				lastBombPlant = time;
-				bomb.position = Vector2f(x - h / 2, y - h / 2);
+				bomb.position = Vector2f(position.x - h / 2, position.y - h / 2);
 				bomb.createTime = time;
 				bomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
 				bomb.isAlive = true;
@@ -127,13 +127,13 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 	}
 }
 
-void Player::Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot)
+void Player::Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot, Sound& tearFire)
 {
 	if (DiagonalMoving(time) == false)
 	{
 		StrightMoving(time);
 	}
-	MakeShoot(bullets, gameTime, lastShot);
+	MakeShoot(bullets, gameTime, lastShot, tearFire);
 	PlantBomb(bomb, gameTime);
 }
 
@@ -157,13 +157,13 @@ void Player::SetShootAnimation(int& dir)
 	}
 }
 
-void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir)
+void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire)
 {
 	if (gameTime > (lastShootPlayer + TIME_BETWEEN_SHOOTS_PLAYER))
 	{
 		Bullet bullet;
 		bullet.isPlayers = true;
-		bullet.life = true;
+		bullet.alive = true;
 		if (dir == 5)
 		{
 			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
@@ -177,8 +177,10 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.direction = dir;
 		bullet.speed = PLAYERS_BULLET_SPEED;
 		bullet.damage = damage;
+		bullet.startPos = position;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
+		tearFire.play();
 	}
 	if (gameTime < lastShootPlayer + TIME_FOR_SHOOT_ANIMATION)
 	{
@@ -186,56 +188,32 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 	}
 }
 
-void Player::SetLastNotCollidedPosition()
-{
-	if (dx > 0)
-	{
-		x = playerOldPosition.x - 1;
-	}
-	else if (dx < 0)
-	{
-		x = playerOldPosition.x + 1;
-	}
-	if (dy > 0)
-	{
-		y = playerOldPosition.y - 1;
-	}
-	else if (dy < 0)
-	{
-		y = playerOldPosition.y + 1;
-	}
-}
-
 bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 {
-	if (Collision::PixelPerfectTest(sprite, enemy.sprite))
-	{
-		return true;
-	}
-	else if (Collision::PixelPerfectTest(headSprite, enemy.sprite))
+	if (Collision::PixelPerfectTest(sprite, enemy.sprite) || Collision::PixelPerfectTest(headSprite, enemy.sprite))
 	{
 		return true;
 	}
 	return false;
 }
 
-void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer)
+void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.life == true)
+		if (enemy.alive == true)
 		{
-			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + 1 || hitTimer == 0))
+			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 			{
 				health -= enemy.damage;
 				hitTimer = gameTime;
+				tearDestroy.play();
 			}
 			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
 			{
 				if (enemy.name == "EnemyStandAndShoot")
 				{
 					canMove = false;
-					SetLastNotCollidedPosition();
 				}
 			}
 		}
@@ -244,10 +222,13 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 
 void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 {
-	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 )
+	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
-		sprite.setColor(Color(COLOR_AFTER_HIT));
-		headSprite.setColor(Color(COLOR_AFTER_HIT));
+		if (gameTime > 1)
+		{
+			sprite.setColor(Color(COLOR_AFTER_HIT));
+			headSprite.setColor(Color(COLOR_AFTER_HIT));
+		}
 	}
 	else
 	{
@@ -256,87 +237,86 @@ void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
 	}
 }
 
-void Player::CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened)
+void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 {
-	for (auto& map: myMap)
+	for (auto&map : myMap)
 	{
-		if (Collision::PixelPerfectTest(sprite, map.sprite))
+		if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
 		{
-			if (map.pos == NOTDOOR)
+			if (map.pos == RIGHT)
 			{
-				canMove = false;
-				SetLastNotCollidedPosition();
-				break;
+				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
+				position.x += TILE_SIDE * 4 + w;
 			}
-			//if collides with door
-			if (areDoorsOpened == true)
+			else if (map.pos == LEFT)
 			{
-				if (map.pos == RIGHT)
-				{
-					view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-					x += TILE_SIDE * 4 + w;
-					break;
-				}
-				else if (map.pos == LEFT)
-				{
-					view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-					x -= TILE_SIDE * 4 + w;
-					break;
-				}
-				else if (map.pos == UP)
-				{
-					view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-					y -= TILE_SIDE * 4 + h;
-					break;
-				}
-				else if (map.pos == DOWN)
-				{
-					view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-					y += TILE_SIDE * 4 + h;
-					break;
-				}
+				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
+				position.x -= TILE_SIDE * 4 + w;
 			}
-		}
-		else if (Collision::PixelPerfectTest(sprite, wallSprite))
-		{
-			canMove = false;
-			SetLastNotCollidedPosition();
-			break;
-		}
-		else
-		{
-			playerOldPosition.x = x;
-			playerOldPosition.y = y;
-			canMove = true;
+			else if (map.pos == UP)
+			{
+				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
+				position.y -= TILE_SIDE * 4 + h;
+			}
+			else if (map.pos == DOWN)
+			{
+				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
+				position.y += TILE_SIDE * 4 + h;
+			}
 		}
 	}
 }
 
-void Player::setSpeed()
+bool Player::IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened)
 {
-	switch (dir)
+	for (auto& map : myMap)
 	{
-	case right: dx = speed; dy = 0; break;
-	case left: dx = -speed; dy = 0; break;
-	case down: dx = 0; dy = speed; break;
-	case up: dx = 0; dy = -speed; break;
-	case leftUp: dx = -speed*0.66f; dy = -speed*0.66f; break;
-	case leftDown: dx = -speed*0.66f; dy = speed*0.66f; break;
-	case rightUp: dx = speed*0.66f; dy = -speed*0.66; break;
-	case rightDown: dx = speed*0.66f; dy = speed*0.66f; break;
-	case stay: dx = 0; dy = 0;
+		if (Collision::BoundingBoxTest(sprite, map.sprite))
+		{
+			if (map.pos == 0)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Player::CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts)
+{
+	if (sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()) || headSprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
+	{
+		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + 0.5)
+		{
+			health -= BOMB_DAMAGE;
+			bombHitTime = gameTime;
+			playerHurts.play();
+		}
 	}
 }
 
-void Player::Moving(float& time)
+void Player::Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOpened, Sprite& wallSprite)
 {
-	if (canMove == true)
+	DoorCollision(myMap, view, areDoorsOpened);
+	Vector2f playerOldPosition = sprite.getPosition();
+	SetPosition(time, speed);
+	sprite.setPosition(position);
+	if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
 	{
-		setSpeed();
-		x += dx * time;
-		y += dy * time;
+		sprite.setPosition(playerOldPosition);
+		if (position.x != playerOldPosition.x && position.y != playerOldPosition.y)
+		{
+			sprite.setPosition(playerOldPosition.x, position.y);
+			if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
+			{
+				sprite.setPosition(position.x, playerOldPosition.y);
+				if (IsIntersectsMap(myMap, view, areDoorsOpened) == true || Collision::PixelPerfectTest(sprite, wallSprite))
+				{
+					sprite.setPosition(playerOldPosition);
+				}
+			}
+		}
 	}
-
-	sprite.setPosition(x, y);
-	headSprite.setPosition(x - 14, y - 43);
+	position = sprite.getPosition();
+	headSprite.setPosition(sprite.getPosition().x - 14, sprite.getPosition().y - 43);
 }

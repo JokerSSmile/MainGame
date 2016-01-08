@@ -18,45 +18,54 @@ struct Enemy :
 	int randNum;
 	int bulletStartX = 0;
 	int bulletStartY = 0;
-	int enemyLevel = 0;
+	int enemyRoom = 0;
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
 	float deathTime = 0;
 	float bombHitTime = 0;
 	float playerHitTime = 0;
+	float speed;
 	Sprite poofSprite;
 	Vector2f lastPosition = {0, 0};
+	Vector2f enemyOldPosition = { position.x, position.y };
+	bool canMove = true;
+	bool isSetSpeed;
+
 
 	Enemy() {};
-	Enemy(Texture & image, float X, float Y, int W, int H, String Name, float Health, int Level) :Character(image, X, Y, w, h, Name, health)
+	Enemy(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, int Room) :Character(image, pos, w, h, Name, health)
 	{
+		speed = ENEMY_FOLLOW_SPEED;
 		w = W;
 		h = H;
-		x = X;
-		y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
 		health = Health;
-		enemyLevel = Level;
+		enemyRoom = Room;
 
 		if (name == "EnemyFly")
 		{
-			dx = -0.1f;
+			moving.x = 0.1f;
 		}
-		else if (name == "EnemyStandAndShoot")
+		else if (name == "EnemyFollow")
 		{
-			
-		}
-		else if (name == "EnemyFollowPlayer")
-		{
-			dx = 0;
-			dy = 0;
+			dir = stay;
 		}
 	}
 
-	void CheckCollosionFly();
-	void CheckCollisionZombie();
+	void CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time);
 	void ExplosionCollision(Boomb& boomb, float& gameTime);
-	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture);
+	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time);
 	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
-	void Update(Boomb& boomb, vector<Bullet>& bullets, float& time, float& gameTime, RenderWindow & window, int& gameLevel);
+	void UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite);
+	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
+
+	void SetFrameFollowEnemy(float& time);
+	bool IsIntersectsMap(vector<Map>& myMap);
+	void SetDirection(Vector2f& playerPosition);
+
+	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time);
+	void CheckIsAlive();
+	void Update(Boomb& boomb, float& gameTime);
 };

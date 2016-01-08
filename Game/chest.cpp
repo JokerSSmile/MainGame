@@ -55,11 +55,12 @@ void Chest::SetFilling()
 	}
 }
 
-void Chest::CheckOpening(Player& p)
+void Chest::CheckOpening(Player& p, Sound& openingSound)
 {
 	if (Collision::PixelPerfectTest(p.sprite, chestSpriteClosed))
 	{
 		isOpened = true;
+		openingSound.play();
 	}
 }
 
@@ -129,7 +130,7 @@ void Chest::CheckCollisionWithPresent(Player& p)
 	}
 }
 
-void Chest::Update(Player& p)
+void Chest::Update(Player& p, Sound& openingSound)
 {
 	chestSpriteOpened.setTexture(chestTexture);
 	chestSpriteClosed.setTexture(chestTexture);
@@ -138,7 +139,7 @@ void Chest::Update(Player& p)
 	{
 		SetFilling();
 		chestSpriteClosed.setPosition(x - w / 2, y - h / 2);
-		CheckOpening(p);
+		CheckOpening(p, openingSound);
 	}
 	else
 	{

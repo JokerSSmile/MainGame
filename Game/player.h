@@ -13,41 +13,37 @@ using namespace std;
 struct Player :
 	public Character
 {
-	Vector2f playerOldPosition = { x, y };
-
-	enum
-	{
-		leftUp, leftDown, rightUp, rightDown, left, up, down, right, stay
-	} dir;
 
 	float damage = 1;
 	float speed = 0.1f;
 	float lastBombPlant = 0;
 	float CurrentFrame = 0;
 	float lastHitTime = 0;
+	float bombHitTime = 0;
 
 	int bombCount;
 	
-	bool canMove = true;
+	bool canMove;
+	bool isSetSpeed;
 
 	Sprite headSprite;
 
 	Player() {};
-	Player(Texture & image, float X, float Y, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, X, Y, w, h, Name, health)
+	Player(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, pos, w, h, Name, health)
 	{
 		dir = stay;
 		w = W;
 		h = H;
-		x = X;
-		y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
+
 		health = MAX_PLAYER_HEALTH;
 
-		bombCount = 11;
+		bombCount = 2;
 
 		sprite.setTextureRect(IntRect(0, 0, w, h));
 		headSprite.setTexture(headTexture);
 		headSprite.setScale(2, 2);
-
 	}
 
 
@@ -55,22 +51,20 @@ struct Player :
 
 	bool DiagonalMoving(float& time);
 	void StrightMoving(float& time);
-	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot);
+	void MakeShoot(vector<Bullet>& bullets, float gameTime, float &lastShot, Sound& tearFire);
 	void PlantBomb(Boomb& bomb, float& time);
-	void Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot);
+	void Control(Boomb& bomb, vector<Bullet>& bullets, float& time, float& gameTime, float &lastShot, Sound& tearFire);
 
 	void SetShootAnimation(int& dir);
 
-	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir);
-
-	void SetLastNotCollidedPosition();
+	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire);
 
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
-	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer);
-	void CheckCollision(vector<Map> myMap, Sprite& wallSprite, View& view, bool areDoorsOpened);
+	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
+	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
+	void DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened);
+	bool IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened);
 	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
 
-	void setSpeed();
-
-	void Moving(float& time);
+	void Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOpened, Sprite& wallSprite);
 };
