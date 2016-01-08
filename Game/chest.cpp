@@ -31,7 +31,7 @@ void Chest::LoadTextures()
 
 int Chest::RandomNumber()
 {
-	return rand() / (RAND_MAX + 1) * 4;
+	return (double)rand() / (RAND_MAX + 1) * 4;
 }
 
 void Chest::SetFilling()

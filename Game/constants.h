@@ -7,7 +7,8 @@ enum GameState
 {
 	MAIN_MENU,
 	GAME,
-	PAUSE
+	PAUSE,
+	END_GAME
 };
 
 //global
@@ -26,7 +27,7 @@ const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
 const int PLAYER_WIDTH = 36;
 const int PLAYER_HEIGHT = 26;
-const float MAX_PLAYER_HEALTH = 10;// == start health
+const float MAX_PLAYER_HEALTH = 1;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;

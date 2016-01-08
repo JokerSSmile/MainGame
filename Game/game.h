@@ -44,7 +44,12 @@ struct Game
 	Event event;
 
 	Sprite mainMenuSprite;
+	Sprite pauseSprite;
 	RectangleShape pauseRect;
+
+	Text continueText;
+	Text exitText;
+	Text menuText;
 
 	vector<Map> myMap;
 	vector<Enemy> enemies;
@@ -62,16 +67,21 @@ struct Game
 	bool isKeyPressed;
 
 	void InitEnemies();
-
 	void InitGame();
-
+	void Restart();
 	int InitializeRoom();
 
-	void SetPause();
+	void SetPauseText();
+	void CheckIntersectionWithTextPause(RenderWindow& window);
+	void InitSheetAndBackground(RenderWindow& window);
+	void SetPause(RenderWindow& window);
+
+	void SetEndGameText(RenderWindow& window);
+	void CheckIntersectionWithTextEnd(RenderWindow & window);
+	void SetEndGame(RenderWindow & window);
 
 	bool IsRoomCleared();
 	bool IsRoomEmpty();
-
 	void AddChest(View& view);
 	bool IsChestInRoom();
 
@@ -89,6 +99,8 @@ struct Game
 	void UpdateSounds();
 	void ProcessEvents(RenderWindow& window);
 	void UpdatePause();
+	void SetMainMenuMusic();
+	void CheckEndGame();
 	void UpdateGame(RenderWindow& window);
 
 	void DrawBackground(RenderWindow& window);
@@ -100,6 +112,8 @@ struct Game
 	void SetCorrectDrawOrder(RenderWindow& window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);
+	void DrawPause(RenderWindow& window);
 
+	void DrawEndGame(RenderWindow& window);
 	void DrawWindow(RenderWindow& window);
 };

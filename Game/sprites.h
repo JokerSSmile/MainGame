@@ -6,6 +6,7 @@ using namespace sf;
 using namespace std;
 
 const String MAIN_MENU_TEXTURE_PATH = "resources/images/main_menu.png";
+const String PAUSE_TEXTURE_PATH = "resources/images/pause_menu.png";
 const String FONT_8_BIT_PATH = "resources/fonts/8bitfont.ttf";
 const String WALL_TEXTURE_PATH = "resources/images/walls.png";
 const String WALL_BULLET_TEXTURE_PATH = "resources/images/bullet_wall.png";
@@ -26,9 +27,9 @@ const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
 
 struct Sprites
 {
-	//main menu
-
+	//menu
 	Texture mainMenuTexture;
+	Texture pauseTexture;
 
 	//background wall
 	Image wallBackground;
@@ -121,6 +122,7 @@ struct Sprites
 	void LoadMainMenuTextures()
 	{
 		mainMenuTexture.loadFromFile(MAIN_MENU_TEXTURE_PATH);
+		pauseTexture.loadFromFile(PAUSE_TEXTURE_PATH);
 	}
 
 	void LoadFont()
