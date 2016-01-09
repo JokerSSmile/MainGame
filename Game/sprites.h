@@ -18,12 +18,14 @@ const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
 const String ENEMY_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_destroy_effect.png";
 const String ENEMY_FOLLOW_TEXTURE_PATH = "resources/images/enemy_follow.png";
+const string ENEMY_FOLLOW_HEAD_TEXTURE_PATH = "resources/images/follow_head.png";
 const String BULLET_TEXTURE_PATH = "resources/images/bullets.png";
 const String TEARS_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/tears_effect.png";
 const String ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_tears_effect.png";
 const String BOMB_EXPLOSION_TEXTURE_PATH = "resources/images/explosion.png";
 const String BOMB_BEFORE_EXPLOSION_TEXTURE = "resources/images/bomb_state.png";
 const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
+const String MANHOLE_TEXTURE_PATH = "resources/images/manhole.png";
 
 struct Sprites
 {
@@ -44,6 +46,9 @@ struct Sprites
 	Texture floorBackgroundTexture;
 	Sprite floorBackgroundSprite;
 
+	//manhole
+	Texture manholeTexture;
+
 	//hero
 	Image heroImage;
 	Texture heroTexture;
@@ -56,6 +61,7 @@ struct Sprites
 	Texture enemyTexture;
 	Image poofImage;
 	Texture poofTexture;
+	Texture enemyFollowHead;
 
 	//standAndShoot
 	Image standAndShootImage;
@@ -79,6 +85,17 @@ struct Sprites
 	//font
 	Font font;
 
+	//chest
+	Texture increaseSpeedTexture;
+	Texture IncreaseDamageTexture;
+	Texture HealthTexture;
+	Texture BombTexture;
+	Sprite increaseSpeedSprite;
+	Sprite increaseDamageSprite;
+	Sprite healthSprite;
+	Sprite bombSprite;
+
+
 	void LoadBackgroundSprites()
 	{
 		wallBackground.loadFromFile(WALL_TEXTURE_PATH);
@@ -90,7 +107,32 @@ struct Sprites
 		wallBulletTexture.loadFromFile(WALL_BULLET_TEXTURE_PATH);
 		wallBulletSprite.setTexture(wallBulletTexture);
 
+		manholeTexture.loadFromFile(MANHOLE_TEXTURE_PATH);
+
 		bombCount.loadFromFile(BOMB_TEXTURE_IN_STATUS_BAR);
+	}
+
+	void LoadChestSprites()
+	{
+		increaseSpeedTexture.loadFromFile("resources/images/increaseSpeed.png");
+		IncreaseDamageTexture.loadFromFile("resources/images/IncreaseDamage.png");
+		HealthTexture.loadFromFile("resources/images/addHeart.png");
+		BombTexture.loadFromFile("resources/images/addBomb.png");
+
+		increaseSpeedSprite.setTexture(increaseSpeedTexture);
+		increaseDamageSprite.setTexture(IncreaseDamageTexture);
+		healthSprite.setTexture(HealthTexture);
+		bombSprite.setTexture(BombTexture);
+
+		increaseSpeedSprite.setOrigin(increaseSpeedSprite.getGlobalBounds().width / 2, increaseSpeedSprite.getGlobalBounds().height / 2);
+		increaseDamageSprite.setOrigin(increaseDamageSprite.getGlobalBounds().width / 2, increaseDamageSprite.getGlobalBounds().height / 2);
+		healthSprite.setOrigin(healthSprite.getGlobalBounds().width / 2, healthSprite.getGlobalBounds().height / 2);
+		bombSprite.setOrigin(bombSprite.getGlobalBounds().width / 2, bombSprite.getGlobalBounds().height / 2);
+
+		increaseSpeedSprite.setScale(1.5, 1.5);
+		increaseDamageSprite.setScale(1.5, 1.5);
+		healthSprite.setScale(1.5, 1.5);
+		bombSprite.setScale(1.5, 1.5);
 	}
 
 	void LoadHeroImage()
@@ -110,6 +152,7 @@ struct Sprites
 		poofImage.loadFromFile(ENEMY_DESTROY_EFFECT_TEXTURE_PATH);
 		poofTexture.loadFromImage(poofImage);
 		enemyFollowTexture.loadFromFile(ENEMY_FOLLOW_TEXTURE_PATH);
+		enemyFollowHead.loadFromFile(ENEMY_FOLLOW_HEAD_TEXTURE_PATH);
 	}
 
 	void LoadBulletTexture()
@@ -138,6 +181,7 @@ struct Sprites
 
 	void InitImages()
 	{
+		LoadChestSprites();
 		LoadMainMenuTextures();
 		LoadBackgroundSprites();
 		LoadHeroImage();

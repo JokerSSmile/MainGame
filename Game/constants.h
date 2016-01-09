@@ -12,6 +12,30 @@ enum GameState
 	FINISHED
 };
 
+enum TileState
+{
+	ROCK,
+	SPIKE,
+	UP,//doors pos
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
+enum Level
+{
+	ONE,
+	TWO,
+	THREE,
+	BOSS
+};
+
+enum FollowState
+{
+	FAR,
+	NEAR
+};
+
 //global
 const float GAME_TIME_DIFFERENCE = 500;
 
@@ -26,28 +50,33 @@ const Vector2f EXIT_GAME_TEXT_SHIFT = { -10, -100 };
 //player
 const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
-const int PLAYER_WIDTH = 36;
-const int PLAYER_HEIGHT = 26;
+const Vector2i PLAYER_SIZE = { 36, 26 };
 const float MAX_PLAYER_HEALTH = 3;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
+const Vector2f SHIFT_FOR_HEAD = { 14, 43 };
 
 //enemy
 const float FLY1_POSITION_X = 200;
 const float FLY1_POSITION_Y = 200;
 const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
-const Vector2i FLY_SIZE = { 17, 14 };
 const float FLY_UPDATE_FRAME_TIME = 0.005f;
 const float ENEMY_STAND_AND_SHOOT_FRAME_TIME = 0.3f;
+const Vector2i FLY_SIZE = { 17, 14 };
 const Vector2i STAND_AND_SHOOT_SIZE = { 38, 43 };
+const Vector2i ZOMBIE_SIZE = { 32, 32 };
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
-const float ENEMY_FOLLOW_SPEED = 0.05f;
+const float ENEMY_FOLLOW_SPEED_NORMAL = 0.05f;
+const float ENEMY_FOLLOW_SPEED_FAST = 0.08f;
+const float SPIKE_DAMAGE = 0.5f;
 
 //map
+const int HEIGHT_SMALL_MAP = 10;
 const int HEIGHT_MAP = 20;
+const int HEIGHT_BIG_MAP = 30;
 const int WIDTH_MAP = 45;
 
 //window

@@ -117,7 +117,7 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION + TIME_FOR_EXPLOSION || lastBombPlant == 0)
 			{
 				lastBombPlant = time;
-				bomb.position = Vector2f(position.x - h / 2, position.y - h / 2);
+				bomb.position = Vector2f(position.x - size.y / 2, position.y - size.y / 2);
 				bomb.createTime = time;
 				bomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
 				bomb.isAlive = true;
@@ -197,7 +197,7 @@ bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 	return false;
 }
 
-void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy)
+void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, Sound& playerHurts)
 {
 	for (auto& enemy: enemies)
 	{
@@ -207,7 +207,8 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 			{
 				health -= enemy.damage;
 				hitTimer = gameTime;
-				tearDestroy.play();
+				playerHurts.play();
+
 			}
 			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
 			{
@@ -220,7 +221,7 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, f
 	}
 }
 
-void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
+void Player::ChangeColorAfterHit(float& gameTime)
 {
 	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
@@ -246,22 +247,38 @@ void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 			if (map.pos == RIGHT)
 			{
 				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				position.x += TILE_SIDE * 4 + w;
+				position.x += TILE_SIDE * 4 + size.x;
 			}
 			else if (map.pos == LEFT)
 			{
 				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				position.x -= TILE_SIDE * 4 + w;
+				position.x -= TILE_SIDE * 4 + size.x;
 			}
 			else if (map.pos == UP)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				position.y -= TILE_SIDE * 4 + h;
+				position.y -= TILE_SIDE * 4 + size.y;
 			}
 			else if (map.pos == DOWN)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				position.y += TILE_SIDE * 4 + h;
+				position.y += TILE_SIDE * 4 + size.y;
+			}
+		}
+	}
+}
+
+void Player::SpikeCollision(vector<Map>& myMap, float& gameTime, Sound& playerHurts)
+{
+	for (auto& map : myMap)
+	{
+		if (Collision::PixelPerfectTest(sprite, map.sprite) && gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD)
+		{
+			if (map.pos == SPIKE)
+			{
+				health -= SPIKE_DAMAGE;
+				hitTimer = gameTime;
+				playerHurts.play();
 			}
 		}
 	}
@@ -318,5 +335,5 @@ void Player::Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOp
 		}
 	}
 	position = sprite.getPosition();
-	headSprite.setPosition(sprite.getPosition().x - 14, sprite.getPosition().y - 43);
+	headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y);
 }

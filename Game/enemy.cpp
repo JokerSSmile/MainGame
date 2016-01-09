@@ -88,16 +88,17 @@ void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
 	}
 }
 
-
 void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 {
 	if (gameTime < playerHitTime + CHANGE_COLOR_EFFECT || (gameTime > bombHitTime && gameTime < bombHitTime + FRAME_CHANGE_TIME))
 	{
 		sprite.setColor(COLOR_AFTER_HIT);
+		headSprite.setColor(COLOR_AFTER_HIT);
 	}
 	else
 	{
 		sprite.setColor(Color::White);
+		headSprite.setColor(Color::White);
 	}
 }
 
@@ -139,9 +140,10 @@ void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
 
 void Enemy::SetDirection(Vector2f& playerPosition)
 {
-	if (position.x >= playerPosition.x - PLAYER_WIDTH / 2 && position.x <= playerPosition.x + PLAYER_WIDTH + PLAYER_WIDTH / 2)
+	float shift = 10;
+	if (spriteCenterPos.x >= playerPosition.x - shift && spriteCenterPos.x <= playerPosition.x + PLAYER_SIZE.x  + shift)
 	{
-		if (position.y > playerPosition.y)
+		if (spriteCenterPos.y >= playerPosition.y)
 		{
 			dir = up;
 		}
@@ -150,9 +152,9 @@ void Enemy::SetDirection(Vector2f& playerPosition)
 			dir = down;
 		}
 	}
-	else if (position.y <= playerPosition.y - PLAYER_HEIGHT / 2 && position.y <= playerPosition.y + PLAYER_HEIGHT + PLAYER_WIDTH / 2)
+	else if (spriteCenterPos.y >= playerPosition.y - shift && spriteCenterPos.y <= playerPosition.y + PLAYER_SIZE.y + shift)
 	{
-		if (position.x > playerPosition.x)
+		if (spriteCenterPos.x >= playerPosition.x)
 		{
 			dir = left;
 		}
@@ -161,27 +163,49 @@ void Enemy::SetDirection(Vector2f& playerPosition)
 			dir = right;
 		}
 	}
-	if (position.x > playerPosition.x && position.y > playerPosition.y)
-	{
-		dir = leftUp;
-	}
-	else if (position.x > playerPosition.x && position.y < playerPosition.y)
+	else if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y < playerPosition.y)
 	{
 		dir = leftDown;
 	}
-	else if (position.x < playerPosition.x && position.y > playerPosition.y)
+	else if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
 	{
-		dir = rightUp;
+		dir = leftUp;
 	}
-	else if (position.x < playerPosition.x && position.y < playerPosition.y)
+	else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y < playerPosition.y)
 	{
 		dir = rightDown;
 	}
+	else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
+	{
+		dir = rightUp;
+	}
 }
 
-void Enemy::SetFrameFollowEnemy(float& time)
+void Enemy::SetHeadFrame(Texture& followHeadTexture, float& gameTime)
 {
-	if (dir == left || dir == leftUp || dir == leftDown)
+	headSprite.setTexture(followHeadTexture);
+	switch (followState)
+	{
+	case FAR:
+	{
+		headSprite.setTextureRect(IntRect(64, 0, 64, 64));
+		headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y);
+		break;
+	}
+	case NEAR:
+	{
+		headSprite.setTextureRect(IntRect(64, 64, 64, 64));
+		headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y - 10);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void Enemy::SetFrameFollowEnemy(float& time, Vector2f& playerPosition)
+{
+	if (position.x >= playerPosition.x)
 	{
 		currentFrame += 0.005f * time;
 		if (currentFrame > 4)
@@ -189,6 +213,7 @@ void Enemy::SetFrameFollowEnemy(float& time)
 			currentFrame -= 4;
 		}
 		sprite.setTextureRect(IntRect(36 * int(currentFrame), 60, 36, 26));
+
 	}
 	else
 	{
@@ -213,12 +238,32 @@ bool Enemy::IsIntersectsMap(vector<Map>& myMap)
 	return false;
 }
 
-void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time)
+void Enemy::UpdateState(Vector2f& playerPosition)
+{
+	float x1 = position.x;
+	float x2 = playerPosition.x;
+	float y1 = position.y;
+	float y2 = playerPosition.y;
+	if (sqrt(pow((x2 - x1), 2) + (pow((y2 - y1), 2))) > 200)
+	{
+		followState = FAR;
+		speed = ENEMY_FOLLOW_SPEED_NORMAL;
+	}
+	else
+	{
+		followState = NEAR;
+		speed = ENEMY_FOLLOW_SPEED_FAST;
+	}
+}
+
+void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, Texture& followHeadTexture)
 {
 	if (name == "EnemyFollow")
 	{
+		UpdateState(playerPosition);
 		SetDirection(playerPosition);
-		SetFrameFollowEnemy(time);
+		SetFrameFollowEnemy(time, playerPosition);
+		SetHeadFrame(followHeadTexture, gameTime);
 		Vector2f(playerOldPosition) = sprite.getPosition();
 		SetPosition(time, speed);
 		sprite.setPosition(position);
@@ -239,6 +284,8 @@ void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Ma
 			}
 		}
 		position = sprite.getPosition();
+		spriteCenterPos.x = position.x + size.x / 2;
+		spriteCenterPos.y = position.y + size.y / 2;
 	}
 }
 

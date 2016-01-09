@@ -42,6 +42,7 @@ struct Game
 	GameState gameState;
 	View view;
 	Event event;
+	Level level;
 
 	Sprite mainMenuSprite;
 	Sprite pauseSprite;
@@ -57,7 +58,6 @@ struct Game
 	vector<Chest> chests;
 
 	float lastShootPlayer;
-	float hitTimer;
 	float gameTime;
 	float time;
 
@@ -66,27 +66,31 @@ struct Game
 
 	bool isKeyPressed;
 
+	void InitLevelOneEnemies();
+
+	void InitLevelTwoEnemies();
+
 	void InitEnemies();
 	void InitGame();
-	void Delete();
+	void ResetData();
 	void Restart();
 	int InitializeRoom();
 
 	void SetPauseText();
-	void CheckIntersectionWithTextPause(RenderWindow& window);
+	void CheckMouseIntersectionWithTextPause(RenderWindow& window);
 	void InitSheetAndBackground(RenderWindow& window);
 	void SetPause(RenderWindow& window);
 
 	void SetEndGameText(RenderWindow& window);
-	void CheckIntersectionWithTextEnd(RenderWindow & window);
-	void SetEndGame(RenderWindow & window);
+	void CheckMouseIntersectionWithTextEnd(RenderWindow & window);
+	void EndGame(RenderWindow & window);
 
 	bool IsRoomCleared();
 	bool IsRoomEmpty();
 	void AddChest(View& view);
 	bool IsChestInRoom();
 
-	void DeleteEnemyFromVector();
+	void RemoveEnemyFromVector();
 	void EnemyDeathSound(Enemy& enemy);
 	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
@@ -112,6 +116,7 @@ struct Game
 	void DrawPlayer(RenderWindow& window);
 	void DrawBombs(RenderWindow& window);
 	void SetCorrectDrawOrder(RenderWindow& window);
+	void JumpNextLevel(RenderWindow & window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);
 	void DrawPause(RenderWindow& window);

@@ -3,6 +3,7 @@
 
 const String ROCK_TEXTURE_PATH = "resources/images/Rock.png";
 const String ROCK_BUL_TEXTURE_PATH = "resources/images/Rock_bullet.png";
+const String SPIKE_TEXTURE_PATH = "resources/images/spike.png";
 const String DOOR_CLOSED_TEXTURE_PATH = "resources/images/Door.png";
 const String DOOR_OPENED_TEXTURE_PATH = "resources/images/openedDoor.png";
 
@@ -16,6 +17,10 @@ void tileMap::LoadMapSprites()
 	rockBulTexture.loadFromFile(ROCK_BUL_TEXTURE_PATH);
 	rockBulSprite.setTexture(rockBulTexture);
 	rockBulSprite.setScale(2, 2);
+
+	//spike
+	spikeTexture.loadFromFile(SPIKE_TEXTURE_PATH);
+	spikeSprite.setTexture(spikeTexture);
 
 	//closed door
 	closedDoorTexture.loadFromFile(DOOR_CLOSED_TEXTURE_PATH);
@@ -42,8 +47,25 @@ void tileMap::setDoorType(Map& myMap, bool isRoomClear)
 	}
 }
 
-void tileMap::initMap(vector<Map>& myMap)
+void tileMap::initMap(vector<Map>& myMap, Level& level)
 {
+	int heightMap = HEIGHT_MAP;
+	if (level == 0)
+	{
+		for (unsigned i = 0; i < 45; i++)
+		{
+			heightMap = HEIGHT_MAP;
+			mapString[i] = levelOneMap[i];
+		}
+	}
+	else if (level == 1)
+	{
+		for (unsigned i = 0; i < 45; i++)
+		{
+			heightMap = HEIGHT_BIG_MAP;
+			mapString[i] = levelTwoMap[i];
+		}
+	}
 	if (isMapSpritesLoaded == false)
 	{
 		LoadMapSprites();
@@ -51,7 +73,7 @@ void tileMap::initMap(vector<Map>& myMap)
 	}
 	Map map;
 	map.alive = true;
-	for (int i = 0; i < HEIGHT_MAP; i++)
+	for (int i = 0; i < heightMap; i++)
 	{
 		for (int j = 0; j < WIDTH_MAP; j++)
 		{
@@ -61,10 +83,17 @@ void tileMap::initMap(vector<Map>& myMap)
 				map.position.x = j * TILE_SIDE;
 				map.sprite = rockSprite;
 				map.collisionSprite = rockBulSprite;
-				map.pos = NOTDOOR;
+				map.pos = ROCK;
 				myMap.push_back(map);
 			}
-
+			else if (mapString[i][j] == 'n')
+			{
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE;
+				map.sprite = spikeSprite;
+				map.pos = SPIKE;
+				myMap.push_back(map);
+			}
 			else if (mapString[i][j] == 'u')
 			{
 				map.position.y = i * TILE_SIDE - TILE_SIDE;
@@ -101,10 +130,14 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomCle
 {
 	for (auto& map: myMap)
 	{
-		if (map.pos == NOTDOOR)
+		if (map.pos == ROCK)
 		{
 			map.sprite.setPosition(float(map.position.x), float(map.position.y));
 			map.collisionSprite.setPosition(float(map.position.x), float(map.position.y));
+		}
+		else if (map.pos == SPIKE)
+		{
+			map.sprite.setPosition(float(map.position.x), float(map.position.y));
 		}
 		else
 		{

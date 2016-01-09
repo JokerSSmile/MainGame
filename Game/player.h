@@ -20,6 +20,7 @@ struct Player :
 	float CurrentFrame = 0;
 	float lastHitTime = 0;
 	float bombHitTime = 0;
+	float hitTimer = 0;
 
 	int bombCount;
 	
@@ -29,11 +30,11 @@ struct Player :
 	Sprite headSprite;
 
 	Player() {};
-	Player(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, Texture& headTexture) :Character(image, pos, w, h, Name, health)
+	Player(Texture & image, Vector2f& pos, Vector2i& Size, String Name, float Health, Texture& headTexture) :Character(image, pos, Size, Name, health)
 	{
 		dir = stay;
-		w = W;
-		h = H;
+		size.x = Size.x;
+		size.y = Size.y;
 		position.x = pos.x;
 		position.y = pos.y;
 
@@ -41,7 +42,7 @@ struct Player :
 
 		bombCount = 2;
 
-		sprite.setTextureRect(IntRect(0, 0, w, h));
+		sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
 		headSprite.setTexture(headTexture);
 		headSprite.setScale(2, 2);
 	}
@@ -60,11 +61,12 @@ struct Player :
 	void Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire);
 
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
-	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
-	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy);
-	void DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened);
 	bool IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened);
-	void ChangeColorAfterHit(float& gameTime, float& hitTimer);
+	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
+	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, Sound& playerHurts);
+	void DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened);
+	void SpikeCollision(vector<Map>& myMap, float& gameTime, Sound& playerHurts);
+	void ChangeColorAfterHit(float& gameTime);
 
 	void Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOpened, Sprite& wallSprite);
 };

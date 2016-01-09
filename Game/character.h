@@ -19,19 +19,18 @@ public:
 	Vector2f position;
 	float speed;
 	float health;
-	int w;
-	int h;
+	Vector2i size;
 	bool alive;
 	Texture texture;
 	Sprite sprite;
 	String name;
 	Character() {};
-	Character(Texture & texture, Vector2f& pos, int W, int H, String Name, float Health)
+	Character(Texture & texture, Vector2f& pos, Vector2i& Size, String Name, float Health)
 	{
 		position.x = pos.x;
 		position.y = pos.y;
-		w = W;
-		h = H;
+		size.x = Size.x;
+		size.y = Size.y;
 		name = Name;
 		speed;
 		health = Health;

@@ -1,34 +1,5 @@
 #include "chest.h"
 
-
-void Chest::LoadTextures()
-{
-	if (areTexturesLoaded == false)
-	{
-		increaseSpeedTexture.loadFromFile("resources/images/increaseSpeed.png");
-		IncreaseDamageTexture.loadFromFile("resources/images/IncreaseDamage.png");
-		HealthTexture.loadFromFile("resources/images/addHeart.png");
-		BombTexture.loadFromFile("resources/images/addBomb.png");
-
-		increaseSpeedSprite.setTexture(increaseSpeedTexture);
-		increaseDamageSprite.setTexture(IncreaseDamageTexture);
-		healthSprite.setTexture(HealthTexture);
-		bombSprite.setTexture(BombTexture);
-
-		increaseSpeedSprite.setOrigin(increaseSpeedSprite.getGlobalBounds().width / 2, increaseSpeedSprite.getGlobalBounds().height / 2);
-		increaseDamageSprite.setOrigin(increaseDamageSprite.getGlobalBounds().width / 2, increaseDamageSprite.getGlobalBounds().height / 2);
-		healthSprite.setOrigin(healthSprite.getGlobalBounds().width / 2, healthSprite.getGlobalBounds().height / 2);
-		bombSprite.setOrigin(bombSprite.getGlobalBounds().width / 2, bombSprite.getGlobalBounds().height / 2);
-
-		increaseSpeedSprite.setScale(1.5, 1.5);
-		increaseDamageSprite.setScale(1.5, 1.5);
-		healthSprite.setScale(1.5, 1.5);
-		bombSprite.setScale(1.5, 1.5);
-
-		areTexturesLoaded = true;
-	}
-}
-
 int Chest::RandomNumber()
 {
 	return (double)rand() / (RAND_MAX + 1) * 4;
@@ -64,42 +35,42 @@ void Chest::CheckOpening(Player& p, Sound& openingSound)
 	}
 }
 
-void Chest::GiveFirstPresent(RenderWindow& window)
+void Chest::GiveFirstPresent(RenderWindow& window, Sprite& increaseSpeedSprite)
 {
-	increaseSpeedSprite.setPosition(x, y + TILE_SIDE / 2);
+	increaseSpeedSprite.setPosition(position.x, position.y + TILE_SIDE / 2);
 	window.draw(increaseSpeedSprite);
 }
 
-void Chest::GiveSecondPresent(RenderWindow& window)
+void Chest::GiveSecondPresent(RenderWindow& window, Sprite& increaseDamageSprite)
 {
-	increaseDamageSprite.setPosition(x, y + TILE_SIDE / 2);
+	increaseDamageSprite.setPosition(position.x, position.y + TILE_SIDE / 2);
 	window.draw(increaseDamageSprite);
 }
 
-void Chest::GiveThirdPresent(RenderWindow& window)
+void Chest::GiveThirdPresent(RenderWindow& window, Sprite& healthSprite)
 {
-	healthSprite.setPosition(x, y + TILE_SIDE / 2);
+	healthSprite.setPosition(position.x, position.y + TILE_SIDE / 2);
 	window.draw(healthSprite);
 }
 
-void Chest::GiveForthPresent(RenderWindow& window)
+void Chest::GiveForthPresent(RenderWindow& window, Sprite& bombSprite)
 {
-	bombSprite.setPosition(x, y + TILE_SIDE / 2);
+	bombSprite.setPosition(position.x, position.y + TILE_SIDE / 2);
 	window.draw(bombSprite);
 }
 
-void Chest::SetPresent(RenderWindow& window)
+void Chest::SetPresent(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
 {
 	switch (filling)
 	{
-	case IncreaseSpeed: GiveFirstPresent(window); break;
-	case IncreaseDamage: GiveSecondPresent(window); break;
-	case Health: GiveThirdPresent(window); break;
-	case Bomb: GiveForthPresent(window); break;
+	case IncreaseSpeed: GiveFirstPresent(window, increaseSpeedSprite); break;
+	case IncreaseDamage: GiveSecondPresent(window, increaseDamageSprite); break;
+	case Health: GiveThirdPresent(window, healthSprite); break;
+	case Bomb: GiveForthPresent(window, bombSprite); break;
 	}
 }
 
-void Chest::CheckCollisionWithPresent(Player& p)
+void Chest::CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
 {
 	if (Collision::PixelPerfectTest(p.sprite, increaseSpeedSprite))
 	{
@@ -130,28 +101,27 @@ void Chest::CheckCollisionWithPresent(Player& p)
 	}
 }
 
-void Chest::Update(Player& p, Sound& openingSound)
+void Chest::Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
 {
 	chestSpriteOpened.setTexture(chestTexture);
 	chestSpriteClosed.setTexture(chestTexture);
-	LoadTextures();
 	if (isOpened == false)
 	{
 		SetFilling();
-		chestSpriteClosed.setPosition(x - w / 2, y - h / 2);
+		chestSpriteClosed.setPosition(position.x - size.x / 2, position.y - size.y / 2);
 		CheckOpening(p, openingSound);
 	}
 	else
 	{
-		chestSpriteOpened.setPosition(x - w / 2, y - h / 2);
+		chestSpriteOpened.setPosition(position.x - size.x / 2, position.y - size.y / 2);
 		if (isPresentTaken == false)
 		{
-			CheckCollisionWithPresent(p);
+			CheckCollisionWithPresent(p, increaseSpeedSprite, increaseDamageSprite, healthSprite, bombSprite);
 		}
 	}
 }
 
-void Chest::DrawChest(RenderWindow& window)
+void Chest::DrawChest(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
 {
 	if (isOpened == false)
 	{
@@ -165,7 +135,7 @@ void Chest::DrawChest(RenderWindow& window)
 		}
 		if (isPresentTaken == false)
 		{
-			SetPresent(window);
+			SetPresent(window, increaseSpeedSprite, increaseDamageSprite, healthSprite, bombSprite);
 		}
 	}
 }

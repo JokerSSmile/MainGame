@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 #include "character.h"
 #include "bullet.h"
@@ -26,18 +27,21 @@ struct Enemy :
 	float playerHitTime = 0;
 	float speed;
 	Sprite poofSprite;
+	Sprite headSprite;
+	FollowState followState;
 	Vector2f lastPosition = {0, 0};
+	Vector2f spriteCenterPos;
 	Vector2f enemyOldPosition = { position.x, position.y };
 	bool canMove = true;
 	bool isSetSpeed;
 
 
 	Enemy() {};
-	Enemy(Texture & image, Vector2f& pos, int W, int H, String Name, float Health, int Room) :Character(image, pos, w, h, Name, health)
+	Enemy(Texture & image, Vector2f& pos, Vector2i& Size, String Name, float Health, int Room) :Character(image, pos, Size, Name, health)
 	{
-		speed = ENEMY_FOLLOW_SPEED;
-		w = W;
-		h = H;
+		speed = ENEMY_FOLLOW_SPEED_NORMAL;
+		size.x = Size.x;
+		size.y = Size.y;
 		position.x = pos.x;
 		position.y = pos.y;
 		health = Health;
@@ -61,11 +65,14 @@ struct Enemy :
 	void UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
 
-	void SetFrameFollowEnemy(float& time);
+	void SetFrameFollowEnemy(float& time, Vector2f& playerPosition);
 	bool IsIntersectsMap(vector<Map>& myMap);
+	void UpdateState(Vector2f & playerPosition);
 	void SetDirection(Vector2f& playerPosition);
 
-	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time);
+	void SetHeadFrame(Texture & followHeadTexture, float& gameTime);
+
+	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, Texture& followHeadTexture);
 	void CheckIsAlive();
 	void Update(Boomb& boomb, float& gameTime);
 };

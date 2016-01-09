@@ -11,62 +11,49 @@
 
 using namespace sf;
 
-static enum
-{
-	IncreaseSpeed, IncreaseDamage, Health, Bomb
-} filling;
-
 struct Chest
 {
-public:
+	enum
+	{
+		IncreaseSpeed, IncreaseDamage, Health, Bomb
+	} filling;
+
 	int room;
-	float x;
-	float y;
-	int h;
-	int w;
+	Vector2f position;
+	Vector2i size;
 	Texture chestTexture;
-	Texture increaseSpeedTexture;
-	Texture IncreaseDamageTexture;
-	Texture HealthTexture;
-	Texture BombTexture;
 	Sprite chestSpriteOpened;
 	Sprite chestSpriteClosed;
-	Sprite increaseSpeedSprite;
-	Sprite increaseDamageSprite;
-	Sprite healthSprite;
-	Sprite bombSprite;
 
 	bool isOpened = false;
 	int present;
-	bool areTexturesLoaded = false;
 	bool isPresentTaken = false;
 	Chest() {};
 	Chest(float X, float Y, int Room)
 	{
-		x = X;
-		y = Y;
+		position.x = X;
+		position.y = Y;
 		chestTexture.loadFromFile("resources/images/chest.png");
 		chestSpriteOpened.setTextureRect(IntRect(64, 0, 64, 64));
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
-		h = int(chestSpriteClosed.getGlobalBounds().height);
-		w = int(chestSpriteClosed.getGlobalBounds().width);
+		size.x = int(chestSpriteClosed.getGlobalBounds().height);
+		size.y = int(chestSpriteClosed.getGlobalBounds().width);
 		room = Room;
 	}
 
-	void LoadTextures();
 	int RandomNumber();
 	void SetFilling();
 	void CheckOpening(Player& p, Sound& openingSound);
 
-	void GiveFirstPresent(RenderWindow& window);
-	void GiveSecondPresent(RenderWindow& window);
-	void GiveThirdPresent(RenderWindow& window);
-	void GiveForthPresent(RenderWindow& window);
+	void GiveFirstPresent(RenderWindow& window, Sprite& increaseSpeedSprite);
+	void GiveSecondPresent(RenderWindow & window, Sprite & increaseDamageSprite);
+	void GiveThirdPresent(RenderWindow & window, Sprite & healthSprite);
+	void GiveForthPresent(RenderWindow & window, Sprite & bombSprite);
 
-	void SetPresent(RenderWindow& window);
-	void CheckCollisionWithPresent(Player& p);
+	void SetPresent(RenderWindow & window, Sprite & increaseSpeedSprite, Sprite & increaseDamageSprite, Sprite & healthSprite, Sprite & bombSprite);
+	void CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
 
-	void Update(Player& p, Sound& openingSound);
+	void Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
 
-	void DrawChest(RenderWindow& window);
+	void DrawChest(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
 };
