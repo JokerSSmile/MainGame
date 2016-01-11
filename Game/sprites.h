@@ -18,7 +18,7 @@ const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
 const String ENEMY_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_destroy_effect.png";
 const String ENEMY_FOLLOW_TEXTURE_PATH = "resources/images/enemy_follow.png";
-const string ENEMY_FOLLOW_HEAD_TEXTURE_PATH = "resources/images/follow_head.png";
+const String ENEMY_FOLLOW_HEAD_TEXTURE_PATH = "resources/images/follow_head.png";
 const String BULLET_TEXTURE_PATH = "resources/images/bullets.png";
 const String TEARS_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/tears_effect.png";
 const String ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_tears_effect.png";
@@ -26,6 +26,8 @@ const String BOMB_EXPLOSION_TEXTURE_PATH = "resources/images/explosion.png";
 const String BOMB_BEFORE_EXPLOSION_TEXTURE = "resources/images/bomb_state.png";
 const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
 const String MANHOLE_TEXTURE_PATH = "resources/images/manhole.png";
+const String BOSS_TEXTURE_PATH = "resources/images/boss.png";
+const String CONTROLS_TEXTURE_PATH = "resources/images/controls.png";
 
 struct Sprites
 {
@@ -45,6 +47,9 @@ struct Sprites
 	Image floorBackground;
 	Texture floorBackgroundTexture;
 	Sprite floorBackgroundSprite;
+
+	//controls
+	Texture controlsTexture;
 
 	//manhole
 	Texture manholeTexture;
@@ -95,6 +100,8 @@ struct Sprites
 	Sprite healthSprite;
 	Sprite bombSprite;
 
+	//boss
+	Texture bossTexture;
 
 	void LoadBackgroundSprites()
 	{
@@ -106,6 +113,7 @@ struct Sprites
 		floorBackgroundSprite.setTexture(floorBackgroundTexture);
 		wallBulletTexture.loadFromFile(WALL_BULLET_TEXTURE_PATH);
 		wallBulletSprite.setTexture(wallBulletTexture);
+		controlsTexture.loadFromFile(CONTROLS_TEXTURE_PATH);
 
 		manholeTexture.loadFromFile(MANHOLE_TEXTURE_PATH);
 
@@ -179,8 +187,14 @@ struct Sprites
 		bombState.loadFromFile(BOMB_BEFORE_EXPLOSION_TEXTURE);
 	}
 
+	void LoadBossSprite()
+	{
+		bossTexture.loadFromFile(BOSS_TEXTURE_PATH);
+	}
+
 	void InitImages()
 	{
+		LoadBossSprite();
 		LoadChestSprites();
 		LoadMainMenuTextures();
 		LoadBackgroundSprites();

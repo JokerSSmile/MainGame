@@ -54,13 +54,23 @@ void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bull
 	bullets.push_back(bullet);
 }
 
-void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time)
+void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time, Sound& flyHurt, Sound& enemyHurt)
 {
 	poofSprite.setTexture(poofTexture);
 	poofSprite.setScale(1.5, 1.5);
 	poofSprite.setOrigin(TILE_SIDE / 2, TILE_SIDE / 2);
 	poofSprite.setPosition(lastPosition.x + sprite.getGlobalBounds().width / 2, lastPosition.y + sprite.getGlobalBounds().height / 2);
-
+	if (currentFrame == 0)
+	{
+		if (name == "EnemyFly")
+		{
+			flyHurt.play();
+		}
+		else
+		{
+			enemyHurt.play();
+		}
+	}
 	if (gameTime > deathTime && gameTime < deathTime + ENEMY_DESTROY_EFFECT * 4)
 	{
 		if (currentFrame < EXPLOSION_FRAMES_COUNT)
@@ -181,7 +191,7 @@ void Enemy::SetDirection(Vector2f& playerPosition)
 	}
 }
 
-void Enemy::SetHeadFrame(Texture& followHeadTexture, float& gameTime)
+void Enemy::UpdateHeadFrame(Texture& followHeadTexture, float& gameTime)
 {
 	headSprite.setTexture(followHeadTexture);
 	switch (followState)
@@ -189,7 +199,7 @@ void Enemy::SetHeadFrame(Texture& followHeadTexture, float& gameTime)
 	case FAR:
 	{
 		headSprite.setTextureRect(IntRect(64, 0, 64, 64));
-		headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y);
+		headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y - 5);
 		break;
 	}
 	case NEAR:
@@ -256,27 +266,41 @@ void Enemy::UpdateState(Vector2f& playerPosition)
 	}
 }
 
-void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, Texture& followHeadTexture)
+bool Enemy::isIntersectEnemy(vector<Enemy>& enemies)
+{
+	for (auto& enemy : enemies)
+	{
+		if (enemy.position != position)
+		{
+			if (Collision::BoundingBoxTest(sprite, enemy.sprite))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, vector<Enemy>& enemies)
 {
 	if (name == "EnemyFollow")
 	{
 		UpdateState(playerPosition);
 		SetDirection(playerPosition);
 		SetFrameFollowEnemy(time, playerPosition);
-		SetHeadFrame(followHeadTexture, gameTime);
 		Vector2f(playerOldPosition) = sprite.getPosition();
 		SetPosition(time, speed);
 		sprite.setPosition(position);
-		if (IsIntersectsMap(myMap) == true)
+		if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 		{
 			sprite.setPosition(playerOldPosition);
 			if (position.x != playerOldPosition.x && position.y != playerOldPosition.y)
 			{
 				sprite.setPosition(playerOldPosition.x, position.y);
-				if (IsIntersectsMap(myMap) == true)
+				if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 				{
 					sprite.setPosition(position.x, playerOldPosition.y);
-					if (IsIntersectsMap(myMap) == true)
+					if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 					{
 						sprite.setPosition(playerOldPosition);
 					}
@@ -289,7 +313,16 @@ void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Ma
 	}
 }
 
-void Enemy::CheckIsAlive()
+bool Enemy::isNeedRemove(float& gameTime)
+{
+	if (gameTime > deathTime + 2)
+	{
+		isRemove = true;
+	}
+	isRemove = false;
+}
+
+void Enemy::CheckIsAlive(float& gameTime)
 {
 	if (health > 0)
 	{
@@ -305,6 +338,6 @@ void Enemy::CheckIsAlive()
 void Enemy::Update(Boomb& boomb, float& gameTime)
 {
 	ChangeColorAfterHit(gameTime, boomb);
-	CheckIsAlive();
+	CheckIsAlive(gameTime);
 	lastPosition = position;
 }

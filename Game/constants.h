@@ -14,6 +14,7 @@ enum GameState
 
 enum TileState
 {
+	WALL,
 	ROCK,
 	SPIKE,
 	UP,//doors pos
@@ -36,6 +37,20 @@ enum FollowState
 	NEAR
 };
 
+enum BossState
+{
+	STAY,
+	JUMP_UP,
+	JUMP_DOWN,
+	SHOOT
+};
+
+enum PlayerState
+{
+	NORMAL,
+	TAKE_GIFT
+};
+
 //global
 const float GAME_TIME_DIFFERENCE = 500;
 
@@ -51,7 +66,7 @@ const Vector2f EXIT_GAME_TEXT_SHIFT = { -10, -100 };
 const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
 const Vector2i PLAYER_SIZE = { 36, 26 };
-const float MAX_PLAYER_HEALTH = 3;// == start health
+const float MAX_PLAYER_HEALTH = 10;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
@@ -64,6 +79,7 @@ const float FLY2_POSITION_X = 250;
 const float FLY2_POSITION_Y = 300;
 const float FLY_UPDATE_FRAME_TIME = 0.005f;
 const float ENEMY_STAND_AND_SHOOT_FRAME_TIME = 0.3f;
+const int TIME_BETWEEN_SHOOT_ENEMY_STAND = 1;
 const Vector2i FLY_SIZE = { 17, 14 };
 const Vector2i STAND_AND_SHOOT_SIZE = { 38, 43 };
 const Vector2i ZOMBIE_SIZE = { 32, 32 };
@@ -72,6 +88,7 @@ const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED_NORMAL = 0.05f;
 const float ENEMY_FOLLOW_SPEED_FAST = 0.08f;
 const float SPIKE_DAMAGE = 0.5f;
+const float BOSS_JUMP_SPEED = 5;
 
 //map
 const int HEIGHT_SMALL_MAP = 10;
@@ -119,6 +136,5 @@ const Vector2f TEXT_SHIFT = { 80, 45 };
 const Vector2f HP_SHIFT = { 35, 10 };
 const int HEALTH_TEXTURE_SIZE = 16;
 const float HP_SCALE = 2;
-
-//
 const float FRAME_CHANGE_TIME = 0.5f;
+const float TIME_FOR_SHOW_BONUS_TYPE_TEXT = 3.f;

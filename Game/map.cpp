@@ -94,6 +94,14 @@ void tileMap::initMap(vector<Map>& myMap, Level& level)
 				map.pos = SPIKE;
 				myMap.push_back(map);
 			}
+			else if (mapString[i][j] == '0')
+			{
+				map.position.y = i * TILE_SIDE;
+				map.position.x = j * TILE_SIDE;
+				map.sprite = rockSprite;
+				map.pos = WALL;
+				myMap.push_back(map);
+			}
 			else if (mapString[i][j] == 'u')
 			{
 				map.position.y = i * TILE_SIDE - TILE_SIDE;
@@ -139,33 +147,40 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomCle
 		{
 			map.sprite.setPosition(float(map.position.x), float(map.position.y));
 		}
+		else if (map.pos == WALL)
+		{
+			map.sprite.setPosition(float(map.position.x), float(map.position.y));
+		}
 		else
 		{
 			if (map.pos == UP)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x), float(map.position.y + 5));
 				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
 			}
 			else if (map.pos == DOWN)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x), float(map.position.y - 5));
 				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
 			}
 			else if (map.pos == LEFT)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x - 5), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
 			}
 			else if (map.pos == RIGHT)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x + 5), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
 			}
 		}
-		window.draw(map.sprite);
+		if (map.pos != WALL)
+		{
+			window.draw(map.sprite);
+		}
 	}
 }

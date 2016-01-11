@@ -10,6 +10,7 @@
 #include "bomb.h"
 #include "music.h"
 #include "menu.h"
+#include "boss.h"
 
 #include <sstream>
 
@@ -33,6 +34,7 @@ struct Game
 
 	MainMenu menu;
 	Player player;
+	Boss boss;
 	tileMap myTileMap;
 	Sprites mySprites;
 	Clock clock;
@@ -43,6 +45,7 @@ struct Game
 	View view;
 	Event event;
 	Level level;
+	PlayerState playerState;
 
 	Sprite mainMenuSprite;
 	Sprite pauseSprite;
@@ -57,6 +60,7 @@ struct Game
 	vector<Bullet> bullets;
 	vector<Chest> chests;
 
+	float currentFrame;
 	float lastShootPlayer;
 	float gameTime;
 	float time;
@@ -91,7 +95,6 @@ struct Game
 	bool IsChestInRoom();
 
 	void RemoveEnemyFromVector();
-	void EnemyDeathSound(Enemy& enemy);
 	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer();
@@ -107,10 +110,12 @@ struct Game
 	void UpdatePause();
 	void SetMainMenuMusic();
 	void CheckEndGame();
+	void UpdateBoss();
 	void UpdateGame(RenderWindow& window);
 
 	void DrawBackground(RenderWindow& window);
 	void DrawPlayersHealth(RenderWindow& window);
+	void DestroyEnemyEffect(Vector2f & position, RenderWindow & window);
 	void DrawBombCount(RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);
@@ -122,5 +127,6 @@ struct Game
 	void DrawPause(RenderWindow& window);
 
 	void DrawEndGame(RenderWindow& window);
+	void DrawBoss(RenderWindow& window);
 	void DrawWindow(RenderWindow& window);
 };

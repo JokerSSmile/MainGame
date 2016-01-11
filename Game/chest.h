@@ -18,16 +18,20 @@ struct Chest
 		IncreaseSpeed, IncreaseDamage, Health, Bomb
 	} filling;
 
-	int room;
 	Vector2f position;
 	Vector2i size;
 	Texture chestTexture;
 	Sprite chestSpriteOpened;
 	Sprite chestSpriteClosed;
+	Text bonusText;
 
-	bool isOpened = false;
+	float verticalPosition;
+	float takePresentTime;
 	int present;
+	int room;
 	bool isPresentTaken = false;
+	bool isOpened = false;
+
 	Chest() {};
 	Chest(float X, float Y, int Room)
 	{
@@ -52,6 +56,10 @@ struct Chest
 
 	void SetPresent(RenderWindow & window, Sprite & increaseSpeedSprite, Sprite & increaseDamageSprite, Sprite & healthSprite, Sprite & bombSprite);
 	void CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
+
+	void UpdateDrawText(Font& font, RenderWindow& window, View& view);
+
+	void DrawText(RenderWindow & window, float & gameTime, float& playerY, View& view);
 
 	void Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
 

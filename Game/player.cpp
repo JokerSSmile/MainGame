@@ -214,7 +214,7 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, S
 			{
 				if (enemy.name == "EnemyStandAndShoot")
 				{
-					canMove = false;
+					//canMove = false;
 				}
 			}
 		}
@@ -247,22 +247,22 @@ void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 			if (map.pos == RIGHT)
 			{
 				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				position.x += TILE_SIDE * 4 + size.x;
+				position.x += TILE_SIDE * 4 + size.x + 5;
 			}
 			else if (map.pos == LEFT)
 			{
 				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				position.x -= TILE_SIDE * 4 + size.x;
+				position.x -= TILE_SIDE * 4 + size.x + 5;
 			}
 			else if (map.pos == UP)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				position.y -= TILE_SIDE * 4 + size.y;
+				position.y -= TILE_SIDE * 4 + size.y + 5;
 			}
 			else if (map.pos == DOWN)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				position.y += TILE_SIDE * 4 + size.y;
+				position.y += TILE_SIDE * 4 + size.y + 5;
 			}
 		}
 	}
@@ -290,7 +290,7 @@ bool Player::IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened
 	{
 		if (Collision::BoundingBoxTest(sprite, map.sprite))
 		{
-			if (map.pos == 0)
+			if (map.pos == WALL || map.pos == ROCK)
 			{
 				return true;
 			}

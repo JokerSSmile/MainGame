@@ -1,10 +1,17 @@
 #include "game.h"
 
+//TODO:
+//clock restart hero red
+//poof sprite
+// 2) оптимизируешь игру
+// 3) добавь побольше противников, ловушек и объекты
+
 void Game::InitLevelOneEnemies()
 {
-//	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
+/*	boss = Boss(mySprites.bossTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(80, 112), "Boss", 10, 1);*/
+ 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-// 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
+ 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
@@ -13,7 +20,7 @@ void Game::InitLevelOneEnemies()
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), Vector2i(FLY_SIZE), "EnemyFly", 1, 6));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
- 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+//  	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
 }
 
 void Game::InitLevelTwoEnemies()
@@ -65,7 +72,10 @@ void Game::ResetData()
 	chests.clear();
 	gameTimer.restart();
 	clock.restart();
-	boomb.createTime = 0;
+	boomb.currentFrame = 0;
+	player.lastBombPlant = 0;
+	player.lastHitTime = 0;
+	player.hitTimer = 0;
 }
 
 void Game::Restart()
@@ -76,7 +86,8 @@ void Game::Restart()
 	volume = 30;
 	gameState = MAIN_MENU;
 	InitEnemies();
-	player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(PLAYER_SIZE), "Hero", 6, mySprites.headTexture);
+	//player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(PLAYER_SIZE), "Hero", 6, mySprites.headTexture);
+	player.position = { PLAYER_POSITION_X, PLAYER_POSITION_Y + 700 };
 	view.reset(FloatRect(0, float(WINDOW_HEIGHT), float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
 	myTileMap.initMap(myMap, level);
 	mySprites.InitImages();
@@ -284,35 +295,22 @@ void Game::RemoveEnemyFromVector()
 {
 	auto isDead = [](Enemy enemy)
 	{
-		return (enemy.alive == false);
+		return (enemy.isRemove == true);
 	};
 	enemies.erase(remove_if(enemies.begin(), enemies.end(), isDead), enemies.end());
 }
 
-void Game::EnemyDeathSound(Enemy& enemy)
-{
-	if (enemy.alive == false )
-	{
-		if (enemy.name == "EnemyFly")
-		{
-			mySounds.flyHurt.play();
-		}
-		else
-		{
-			mySounds.enemyHurt.play();
-		}
-	}
-}
-
 void Game::UpdateEnemies(RenderWindow& window)
 {
+	RemoveEnemyFromVector();
 	for (auto& enemy: enemies)
 	{
 		if (enemy.alive == true)
 		{
 			if (room == enemy.enemyRoom)
 			{
-				enemy.MoveFollowEnemy(gameTime, player.position, myMap, time, mySprites.enemyFollowHead);
+				enemy.MoveFollowEnemy(gameTime, player.position, myMap, time, enemies);
+				enemy.UpdateHeadFrame(mySprites.enemyFollowHead, gameTime);
 				enemy.UpdateFly(time, myMap, mySprites.wallBackgroundSprite);
 				enemy.UpdateStandAndShoot(bullets, gameTime);
 				enemy.Update(boomb, gameTime);
@@ -320,9 +318,7 @@ void Game::UpdateEnemies(RenderWindow& window)
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
 		}
-		EnemyDeathSound(enemy);
 	}
-	RemoveEnemyFromVector();
 }
 
 void Game::UpdatePlayer()
@@ -338,13 +334,13 @@ void Game::UpdateChests(RenderWindow& window)
 {
 	for (auto& chest: chests)
 	{
+		chest.UpdateDrawText(mySprites.font, window, view);
 		if (chest.room == room)
 		{
 			chest.Update(player, mySounds.chestOpening, mySprites.increaseSpeedSprite, mySprites.increaseDamageSprite, mySprites.healthSprite, mySprites.bombSprite);
 		}
 	}
 }
-
 
 void Game::DeleteBulletFromVector()
 {
@@ -414,12 +410,11 @@ void Game::UpdateBullets(RenderWindow& window)
 
 void Game::UpdateBombs()
 {
-	
 	boomb.Update(gameTime);
 	boomb.PlaySound(mySounds.bombExplosion, gameTime);
 	for (auto& map : myMap)
 	{
-		if (map.sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()) && map.pos == 0)
+		if (map.sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()) && map.pos == ROCK)
 		{
 			map.alive = false;
 		}
@@ -511,6 +506,11 @@ void Game::CheckEndGame()
 	}
 }
 
+void Game::UpdateBoss()
+{
+	boss.Update(gameTime, player.position, time);
+}
+
 void Game::UpdateGame(RenderWindow& window)
 {
 	UpdatePause();
@@ -531,6 +531,7 @@ void Game::UpdateGame(RenderWindow& window)
 		UpdateBombs();
 		UpdateSounds();
 		CheckEndGame();
+		UpdateBoss();
 		room = InitializeRoom();
 	}
 	else if (gameState != PAUSE)
@@ -553,9 +554,21 @@ void Game::DrawBackground(RenderWindow& window)
 	mySprites.wallBulletSprite.setOrigin(mySprites.wallBulletSprite.getGlobalBounds().width / 2, mySprites.wallBulletSprite.getGlobalBounds().height / 2);
 	mySprites.wallBulletSprite.setPosition(view.getCenter().x, view.getCenter().y);
 
+	Sprite controlsSprite;
+	if (room == 4 && level == ONE)
+	{
+		controlsSprite.setTexture(mySprites.controlsTexture);
+		int x = controlsSprite.getGlobalBounds().width / 2;
+		int y = controlsSprite.getGlobalBounds().height / 2;
+
+		controlsSprite.setOrigin(x, y);
+		controlsSprite.setPosition(view.getCenter().x, view.getCenter().y - 80);
+	}
+
 	window.draw(mySprites.wallBackgroundSprite);
 	window.draw(mySprites.floorBackgroundSprite);
 	window.draw(mySprites.wallBulletSprite);
+	window.draw(controlsSprite);
 }
 
 void Game::DrawBombCount(RenderWindow& window)
@@ -611,21 +624,43 @@ void Game::DrawPlayersHealth(RenderWindow& window)
 	}
 }
 
+void Game::DestroyEnemyEffect(Vector2f& position, RenderWindow& window)
+{
+	Sprite poofSprite;
+ 	poofSprite.setTexture(mySprites.poofTexture);
+ 	poofSprite.setScale(1.5, 1.5);
+ 	poofSprite.setOrigin(TILE_SIDE / 2, TILE_SIDE / 2);
+ 	poofSprite.setPosition(position);
+	if (currentFrame == 0)
+	{
+		mySounds.enemyHurt.play();
+	}
+ 	if (currentFrame < EXPLOSION_FRAMES_COUNT)
+ 	{
+ 		currentFrame += FRAME_CHANGE_TIME_EXPLOSION * time;
+		poofSprite.setTextureRect(IntRect(EXPLOSION_TEXTURE_IMAGE_SIZE * (int(currentFrame) % EXPLOSION_FRAME_COUNT), EXPLOSION_TEXTURE_IMAGE_SIZE * (int(currentFrame) / EXPLOSION_FRAME_COUNT), EXPLOSION_TEXTURE_IMAGE_SIZE, EXPLOSION_TEXTURE_IMAGE_SIZE));
+		window.draw(poofSprite);
+ 	}
+}
+
 void Game::DrawEnemies(RenderWindow& window)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.alive == true && enemy.enemyRoom == room)
+		if (enemy.alive == true)
 		{
-			window.draw(enemy.sprite);
-			if (enemy.name == "EnemyFollow")
+			if (enemy.enemyRoom == room)
 			{
-				window.draw(enemy.headSprite);
+				window.draw(enemy.sprite);
+				if (enemy.name == "EnemyFollow")
+				{
+					window.draw(enemy.headSprite);
+				}
 			}
 		}
 		else
 		{
-			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture, time);
+			enemy.DestroyEffect(gameTime, window, mySprites.poofTexture, time, mySounds.flyHurt, mySounds.enemyHurt);
 		}
 	}
 }
@@ -713,8 +748,10 @@ void Game::DrawChest(RenderWindow& window)
 	{
 		if (chest.room == room)
 		{
+			chest.DrawText(window, gameTime, player.position.y, view);
 			chest.DrawChest(window, mySprites.increaseSpeedSprite, mySprites.increaseDamageSprite, mySprites.healthSprite, mySprites.bombSprite);
 		}
+		
 	}
 }
 
@@ -772,8 +809,14 @@ void Game::DrawEndGame(RenderWindow& window)
 	window.draw(exitText);
 }
 
+void Game::DrawBoss(RenderWindow& window)
+{
+	boss.Draw(window);
+}
+
 void Game::DrawWindow(RenderWindow& window)
 {
+
 	window.setView(view);
 	if (gameState == MAIN_MENU)
 	{
@@ -790,6 +833,7 @@ void Game::DrawWindow(RenderWindow& window)
 		SetCorrectDrawOrder(window);
 		UpdateBullets(window);
 		DrawEnemies(window);
+		DrawBoss(window);
 		if (gameState == PAUSE)
 		{
 			SetPause(window);
