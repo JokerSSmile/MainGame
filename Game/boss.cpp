@@ -1,6 +1,23 @@
 #include "boss.h"
 
-void Boss::Update(float& gameTime, Vector2f& playerPosition, float& time)
+void Boss::Shoot(vector<Bullet>& bullets, float& gameTime, int dir)
+{
+	Bullet bullet;
+	bullet.isPlayers = false;
+	bullet.alive = true;
+	bullet.y = sprite.getPosition().y + sprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
+	bullet.x = sprite.getPosition().x ;
+	bullet.timeShot = gameTime;
+	bullet.direction = dir;
+	bullet.speed = BOSS_BULLET_SPEED;
+	bullet.damage = damage;
+	bullet.startPos = position;
+	bullet.isDel = false;
+	lastShootBoss = bullet.timeShot;
+	bullets.push_back(bullet);
+}
+
+void Boss::UpdateReflect(Vector2f& playerPosition)
 {
 	if (playerPosition.x > position.x)
 	{
@@ -10,19 +27,22 @@ void Boss::Update(float& gameTime, Vector2f& playerPosition, float& time)
 	{
 		sprite.setScale(2, 2);
 	}
-	bossTime = clock.getElapsedTime().asSeconds();
+}
+
+void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time)
+{
 	switch (state)
 	{
-	case STAY: 
+	case STAY:
 	{
 		sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
-		if (bossTime > 1)
+		if (bossTime > 0.5)
 		{
 			clock.restart();
 			state = JUMP_UP;
 		}
 	}
-		break;
+	break;
 	case JUMP_UP:
 	{
 		sprite.setTextureRect(IntRect(80, 112, size.x, size.y));
@@ -35,7 +55,7 @@ void Boss::Update(float& gameTime, Vector2f& playerPosition, float& time)
 			state = JUMP_DOWN;
 		}
 	}
-		break;
+	break;
 	case JUMP_DOWN:
 	{
 		sprite.setTextureRect(IntRect(0, 112, size.x, size.y));
@@ -49,13 +69,19 @@ void Boss::Update(float& gameTime, Vector2f& playerPosition, float& time)
 			position.y += speed * time;
 		}
 	}
-		break;
+	break;
 	case SHOOT:
 	{
 		if (bossTime > 1 && bossTime < 1.5)
 		{
+			if (gameTime > lastShootBoss + 1)
+			{
+				for (unsigned i = 0; i < 8; i++)
+				{
+					Shoot(bullets, gameTime, i);
+				}
+			}
 			sprite.setTextureRect(IntRect(240, 0, size.x, size.y));
-			//lastPlayerPosition = playerPosition;
 		}
 		else if (bossTime > 2)
 		{
@@ -68,10 +94,30 @@ void Boss::Update(float& gameTime, Vector2f& playerPosition, float& time)
 			sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
 		}
 	}
-		break;
+	break;
 	default:
 		break;
 	}
+}
+
+void Boss::UpdateAlive()
+{
+	if (health <= 0)
+	{
+		alive = false;
+	}
+	else
+	{
+		alive = true;
+	}
+}
+
+void Boss::Update(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time)
+{
+	UpdateAlive();
+	UpdateReflect(playerPosition);
+	bossTime = clock.getElapsedTime().asSeconds();
+	UpdateState(bullets, gameTime, playerPosition, time);
 }
 
 void Boss::Draw(RenderWindow& window)

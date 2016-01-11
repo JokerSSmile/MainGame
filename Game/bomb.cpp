@@ -77,5 +77,6 @@ void Boomb::Draw(RenderWindow& window, Texture& playersBombTexture, Texture& bom
 		ExplosionAnimation(bombExplosionTexture, gameTime, time);
 		window.draw(explosionSprite);
 		currentFrame = 0;
+		window.draw(damageZone);
 	}
 }

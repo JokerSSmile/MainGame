@@ -88,7 +88,11 @@ const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED_NORMAL = 0.05f;
 const float ENEMY_FOLLOW_SPEED_FAST = 0.08f;
 const float SPIKE_DAMAGE = 0.5f;
+
+//boss
 const float BOSS_JUMP_SPEED = 5;
+const float BOSS_FALL_DAMAGE = 2;
+const float BOSS_BULLET_SPEED = 0.3;
 
 //map
 const int HEIGHT_SMALL_MAP = 10;

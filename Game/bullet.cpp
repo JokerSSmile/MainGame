@@ -52,6 +52,10 @@ void Bullet::BulletDestroyEffect(float& gameTime, RenderWindow& window)
 			bulletEffectSprite.setPosition(x - 16, y - 16);
 			window.draw(bulletEffectSprite);
 		}
+		else if (gameTime > deathTime + BULLET_ANIMATION_STEP_TIME * 2)
+		{
+			isDel = true;
+		}
 	}
 	else
 	{
@@ -66,6 +70,10 @@ void Bullet::BulletDestroyEffect(float& gameTime, RenderWindow& window)
 			bulletEnemyEffectSprite.setTextureRect(IntRect(64, 64, 64, 64));
 			bulletEnemyEffectSprite.setPosition(x - 16, y - 16);
 			window.draw(bulletEnemyEffectSprite);
+		}
+		else if (gameTime > deathTime + BULLET_ANIMATION_STEP_TIME * 2)
+		{
+			isDel = true;
 		}
 	}
 }
@@ -108,8 +116,6 @@ void Bullet::UpdateBullet(float& time, RenderWindow & window, float gameTime, Te
 		y += dy * time;
 
 		bulletSprite.setPosition(x, y);
-
-		//window.draw(bulletSprite);
 	}
 }
 

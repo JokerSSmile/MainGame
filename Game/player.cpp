@@ -178,6 +178,7 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.speed = PLAYERS_BULLET_SPEED;
 		bullet.damage = damage;
 		bullet.startPos = position;
+		bullet.isDel = false;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
 		tearFire.play();
@@ -197,7 +198,7 @@ bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 	return false;
 }
 
-void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, Sound& playerHurts)
+void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float& gameTime, Sound& playerHurts)
 {
 	for (auto& enemy: enemies)
 	{
@@ -210,14 +211,20 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, S
 				playerHurts.play();
 
 			}
-			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
-			{
-				if (enemy.name == "EnemyStandAndShoot")
-				{
-					//canMove = false;
-				}
-			}
+// 			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
+// 			{
+// 				if (enemy.name == "EnemyStandAndShoot")
+// 				{
+// 					canMove = false;
+// 				}
+// 			}
 		}
+	}
+	if (Collision::PixelPerfectTest(sprite, boss.sprite) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
+	{
+		health -= BOSS_FALL_DAMAGE;
+		hitTimer = gameTime;
+		playerHurts.play();
 	}
 }
 
@@ -247,23 +254,24 @@ void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 			if (map.pos == RIGHT)
 			{
 				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				position.x += TILE_SIDE * 4 + size.x + 5;
+				position.x += TILE_SIDE * 4 + size.x + 10;
 			}
 			else if (map.pos == LEFT)
 			{
 				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				position.x -= TILE_SIDE * 4 + size.x + 5;
+				position.x -= TILE_SIDE * 4 + size.x + 10;
 			}
 			else if (map.pos == UP)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				position.y -= TILE_SIDE * 4 + size.y + 5;
+				position.y -= TILE_SIDE * 4 + size.y + 10;
 			}
 			else if (map.pos == DOWN)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				position.y += TILE_SIDE * 4 + size.y + 5;
+				position.y += TILE_SIDE * 4 + size.y + 10;
 			}
+			break;
 		}
 	}
 }
@@ -280,6 +288,7 @@ void Player::SpikeCollision(vector<Map>& myMap, float& gameTime, Sound& playerHu
 				hitTimer = gameTime;
 				playerHurts.play();
 			}
+			break;
 		}
 	}
 }

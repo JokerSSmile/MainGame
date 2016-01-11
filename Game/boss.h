@@ -13,13 +13,10 @@ struct Boss :
 	public Character
 {
 	Clock clock;
+	int room;
 	float bossTime;
-	float currentFrame = 0;
-	int bulletStartX = 0;
-	int bulletStartY = 0;
-	int bossRoom = 0;
 	float lastShootBoss = 0;
-	float damage = 2;
+	float damage = 1;
 	float deathTime = 0;
 	float bombHitTime = 0;
 	float playerHitTime = 0;
@@ -30,7 +27,7 @@ struct Boss :
 	BossState state;
 
 	Boss() {};
-	Boss(Texture & image, Vector2f& pos, Vector2i& Size, String Name, float Health, int Room) :Character(image, pos, Size, Name, health)
+	Boss(Texture & image, Vector2f& pos, Vector2i& Size, String& Name, float& Health, int& Room) :Character(image, pos, Size, Name, health)
 	{
 		speed = BOSS_JUMP_SPEED / 2;
 		size.x = Size.x;
@@ -38,12 +35,17 @@ struct Boss :
 		position.x = pos.x;
 		position.y = pos.y;
 		health = Health;
-		bossRoom = Room;
 		sprite.setOrigin(size.x / 2, size.y / 2);
 		state = SHOOT;
+		room = Room;
 	}
 	
-	void Update(float& gameTime, Vector2f& playerPosition, float& time);
+	void Shoot(vector<Bullet>& bullets, float& gameTime, int dir);
+
+	void UpdateReflect(Vector2f & playerPosition);
+	void UpdateState(vector<Bullet>& bullets, float & gameTime, Vector2f & playerPosition, float & time);
+	void UpdateAlive();
+	void Update(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time);
 
 	void Draw(RenderWindow & window);
 

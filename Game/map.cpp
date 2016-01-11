@@ -47,10 +47,9 @@ void tileMap::setDoorType(Map& myMap, bool isRoomClear)
 	}
 }
 
-void tileMap::initMap(vector<Map>& myMap, Level& level)
+void tileMap::InitLevel(Level& level, int& heightMap)
 {
-	int heightMap = HEIGHT_MAP;
-	if (level == 0)
+	if (level == ONE)
 	{
 		for (unsigned i = 0; i < 45; i++)
 		{
@@ -58,7 +57,7 @@ void tileMap::initMap(vector<Map>& myMap, Level& level)
 			mapString[i] = levelOneMap[i];
 		}
 	}
-	else if (level == 1)
+	else if (level == TWO)
 	{
 		for (unsigned i = 0; i < 45; i++)
 		{
@@ -66,6 +65,28 @@ void tileMap::initMap(vector<Map>& myMap, Level& level)
 			mapString[i] = levelTwoMap[i];
 		}
 	}
+	else if (level == THREE)
+	{
+		for (unsigned i = 0; i < 45; i++)
+		{
+			heightMap = HEIGHT_BIG_MAP;
+			mapString[i] = levelThreeMap[i];
+		}
+	}
+	else if (level == BOSS)
+	{
+		for (unsigned i = 0; i < 15; i++)
+		{
+			heightMap = HEIGHT_BIG_MAP;
+			mapString[i] = levelThreeMap[i];
+		}
+	}
+}
+
+void tileMap::InitMap(vector<Map>& myMap, Level& level)
+{
+	int heightMap = HEIGHT_MAP;
+	InitLevel(level, heightMap);
 	if (isMapSpritesLoaded == false)
 	{
 		LoadMapSprites();
@@ -134,7 +155,7 @@ void tileMap::initMap(vector<Map>& myMap, Level& level)
 	}
 }
 
-void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomClear)
+void tileMap::DrawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomClear)
 {
 	for (auto& map: myMap)
 	{
@@ -168,13 +189,13 @@ void tileMap::drawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomCle
 			else if (map.pos == LEFT)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x - 5), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x + 5), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
 			}
 			else if (map.pos == RIGHT)
 			{
 				setDoorType(map, isRoomClear);
-				map.sprite.setPosition(float(map.position.x + 5), float(map.position.y));
+				map.sprite.setPosition(float(map.position.x - 8), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(128, 0, 64, 64));
 			}
 		}

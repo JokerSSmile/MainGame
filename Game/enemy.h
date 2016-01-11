@@ -15,9 +15,6 @@ struct Enemy :
 	float moveTimer = 0;
 	float currentFrame = 0;
 	int randNum;
-// 	int bulletStartX = 0;
-// 	int bulletStartY = 0;
-	Vector2f bulletStartPos;
 	int enemyRoom = 0;
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
@@ -54,12 +51,12 @@ struct Enemy :
 		}
 	}
 
-	void CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time);
+	void CheckCollosionFly(vector<Map>& myMap, float& time);
 	void ExplosionCollision(Boomb& boomb, float& gameTime);
 	void DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTexture, float& time, Sound& flyHurt, Sound& enemyHurt);
 	void Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bulletStartX, float bulletStartY);
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
-	void UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite);
+	void UpdateFly(float& time, vector<Map>& myMap);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
 
 	void SetFrameFollowEnemy(float& time, Vector2f& playerPosition);
@@ -71,7 +68,7 @@ struct Enemy :
 	void UpdateHeadFrame(Texture & followHeadTexture, float& gameTime);
 
 	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, vector<Enemy>& enemies);
-	bool isNeedRemove(float& gameTime);
+	void isNeedRemove(float& gameTime);
 	void CheckIsAlive(float& gameTime);
 	void Update(Boomb& boomb, float& gameTime);
 };

@@ -9,6 +9,7 @@ using namespace std;
 #include "bullet.h"
 #include "bomb.h"
 #include "enemy.h"
+#include "boss.h"
 
 struct Player :
 	public Character
@@ -63,7 +64,7 @@ struct Player :
 	bool IsIntersectsPlayerEnemy(Enemy& enemy);
 	bool IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened);
 	void CheckExplosionCollision(Boomb& boomb, float& gameTime, Sound& playerHurts);
-	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, Sound& playerHurts);
+	void CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float& gameTime, Sound& playerHurts);
 	void DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened);
 	void SpikeCollision(vector<Map>& myMap, float& gameTime, Sound& playerHurts);
 	void ChangeColorAfterHit(float& gameTime);

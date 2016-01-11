@@ -2,38 +2,26 @@
 
 #include "map.h"
 
-void Enemy::CheckCollosionFly(vector<Map>& myMap, Sprite& wallSprite, float& time)
+void Enemy::CheckCollosionFly(vector<Map>& myMap, float& time)
 {
 	Vector2f oldPos = position;
 	position.x += moving.x * time;
 	position.y += moving.y * time;
-	if (Collision::PixelPerfectTest(sprite, wallSprite))
-	{
-		if (moving.x > 0)
-		{
-			position.x = oldPos.x - 1;
-		}
-		else if (moving.x < 0)
-		{
-			position.x = oldPos.x + 1;
-		}
-		moving.x = -moving.x;
-		moving.y = -moving.y;
-	}
 	for (auto& map : myMap)
 	{
-		if (Collision::PixelPerfectTest(sprite, map.sprite))
+		if (Collision::BoundingBoxTest(sprite, map.sprite) && map.pos != SPIKE)
 		{
 			if (moving.x > 0)
 			{
-				position.x = oldPos.x - 1;
+				position.x = oldPos.x - 2;
 			}
 			else if (moving.x < 0)
 			{
-				position.x = oldPos.x + 1;
+				position.x = oldPos.x + 2;
 			}
 			moving.x = -moving.x;
 			moving.y = -moving.y;
+			break;
 		}
 	}
 }
@@ -50,6 +38,8 @@ void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bull
 	bullet.speed = ENEMY_BULLET_SPEED;
 	bullet.damage = damage;
 	bullet.startPos = position;
+	bullet.isDel = false;
+	bullet.bulletSprite.setScale(1.5, 1.5);
 	lastShootEnemyStand = bullet.timeShot;
 	bullets.push_back(bullet);
 }
@@ -112,14 +102,14 @@ void Enemy::ChangeColorAfterHit(float& gameTime, Boomb& boomb)
 	}
 }
 
-void Enemy::UpdateFly(float& time, vector<Map>& myMap, Sprite& wallSprite)
+void Enemy::UpdateFly(float& time, vector<Map>& myMap)
 {
 	if (name == "EnemyFly")
 	{
 		currentFrame += FLY_UPDATE_FRAME_TIME * time;
 		if (currentFrame > 2) currentFrame -= 2;
 		sprite.setTextureRect(IntRect(FLY_SIZE.x * int(currentFrame), 0, FLY_SIZE.x, FLY_SIZE.y));
-		CheckCollosionFly(myMap, wallSprite, time);
+		CheckCollosionFly(myMap, time);
 		sprite.setPosition(position.x, position.y);
 	}
 }
@@ -313,7 +303,7 @@ void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Ma
 	}
 }
 
-bool Enemy::isNeedRemove(float& gameTime)
+void Enemy::isNeedRemove(float& gameTime)
 {
 	if (gameTime > deathTime + 2)
 	{
@@ -332,11 +322,13 @@ void Enemy::CheckIsAlive(float& gameTime)
 	{
 		currentFrame = 0;
 		alive = false;
+		sprite.setPosition(0, 0);
 	}
 }
 
 void Enemy::Update(Boomb& boomb, float& gameTime)
 {
+	isNeedRemove(gameTime);
 	ChangeColorAfterHit(gameTime, boomb);
 	CheckIsAlive(gameTime);
 	lastPosition = position;

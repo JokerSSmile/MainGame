@@ -74,6 +74,8 @@ struct Game
 
 	void InitLevelTwoEnemies();
 
+	void InitLevelThreeEnemies();
+
 	void InitEnemies();
 	void InitGame();
 	void ResetData();
@@ -94,7 +96,7 @@ struct Game
 	void AddChest(View& view);
 	bool IsChestInRoom();
 
-	void RemoveEnemyFromVector();
+	bool RemoveEnemyFromVector();
 	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer();
