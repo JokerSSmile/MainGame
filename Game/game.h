@@ -106,7 +106,6 @@ struct Game
 
 	void DrawBackground(RenderWindow& window);
 	void DrawPlayersHealth(RenderWindow& window);
-	void DestroyEnemyEffect(Vector2f & position, RenderWindow & window);
 	void DrawBombCount(RenderWindow& window);
 	void DrawEnemies(RenderWindow& window);
 	void DrawPlayer(RenderWindow& window);

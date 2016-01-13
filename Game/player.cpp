@@ -211,18 +211,11 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float&
 				playerHurts.play();
 
 			}
-// 			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
-// 			{
-// 				if (enemy.name == "EnemyStandAndShoot")
-// 				{
-// 					canMove = false;
-// 				}
-// 			}
 		}
 	}
 	if (Collision::PixelPerfectTest(sprite, boss.sprite) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 	{
-		if (boss.state == SHOOT || boss.state == STAY)
+		if (boss.state == SHOOT || boss.state == STAY && boss.alive == true)
 		{
 			health -= BOSS_FALL_DAMAGE;
 			hitTimer = gameTime;

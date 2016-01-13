@@ -464,6 +464,7 @@ void Enemy::CheckIsAlive(float& gameTime)
 	}
 	else
 	{
+		cout << "1" << endl;
 		currentFrame = 0;
 		alive = false;
 		sprite.setPosition(0, 0);

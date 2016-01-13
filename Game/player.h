@@ -15,7 +15,7 @@ struct Player :
 	public Character
 {
 
-	float damage = 1;
+	float damage = 100;
 	float speed = 0.1f;
 	float lastBombPlant = 0;
 	float CurrentFrame = 0;

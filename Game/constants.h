@@ -8,7 +8,7 @@ static double RandomNumber(int minNum, int maxNum)
 	return minNum + (double)rand() / (RAND_MAX + 1) * maxNum;
 }
 
-static enum Direction
+enum Direction
 {
 	LEFT_UP,
 	LEFT_DOWN,
@@ -21,7 +21,7 @@ static enum Direction
 	STAND
 };
 
-static enum GameState
+enum GameState
 {
 	MAIN_MENU,
 	GAME,
@@ -30,7 +30,7 @@ static enum GameState
 	FINISHED
 };
 
-static enum TileState
+enum TileState
 {
 	WALL,
 	ROCK,
@@ -41,7 +41,7 @@ static enum TileState
 	D_RIGHT
 };
 
-static enum Level
+enum Level
 {
 	ONE,
 	TWO,
@@ -49,7 +49,7 @@ static enum Level
 	BOSS
 };
 
-static enum RoomNum
+enum RoomNum
 {
 	NOT_STATED,
 	FIRST,
@@ -63,13 +63,13 @@ static enum RoomNum
 	NINTH
 };
 
-static enum FollowState
+enum FollowState
 {
 	FAR,
 	NEAR
 };
 
-static enum BossState
+enum BossState
 {
 	STAY,
 	JUMP_UP,
@@ -77,7 +77,7 @@ static enum BossState
 	SHOOT
 };
 
-static enum PlayerState
+enum PlayerState
 {
 	NORMAL,
 	TAKE_GIFT

@@ -134,6 +134,7 @@ void Boss::UpdateAlive()
 		if (health <= 0)
 		{
 			isNeedDeathSound = true;
+			sprite.setPosition(-TILE_SIDE, -TILE_SIDE);
 			alive = false;
 		}
 		else
@@ -181,7 +182,6 @@ void Boss::ExplosionCollision(Boomb& boomb, float& gameTime)
 void Boss::Update(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time)
 {
 	ChangeColor(gameTime);
-	UpdateAlive();
 	UpdateReflect(playerPosition);
 	UpdateState(bullets, gameTime, playerPosition, time);
 }

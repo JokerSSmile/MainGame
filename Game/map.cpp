@@ -51,6 +51,7 @@ void tileMap::InitLevel(Level& level, Vector2i& mapSize)
 {
 	if (level == ONE)
 	{
+		cout << "loaded map lvl 1" << endl;
 		mapSize.y = HEIGHT_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
@@ -59,6 +60,7 @@ void tileMap::InitLevel(Level& level, Vector2i& mapSize)
 	}
 	else if (level == TWO)
 	{
+		cout << "loaded map lvl 2" << endl;
 		mapSize.y = HEIGHT_BIG_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
@@ -67,6 +69,7 @@ void tileMap::InitLevel(Level& level, Vector2i& mapSize)
 	}
 	else if (level == THREE)
 	{
+		cout << "loaded map lvl 3" << endl;
 		mapSize.y = HEIGHT_BIG_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
@@ -75,6 +78,7 @@ void tileMap::InitLevel(Level& level, Vector2i& mapSize)
 	}
 	else if (level == BOSS)
 	{
+		cout << "loaded map lvl boss" << endl;
 		mapSize.y = HEIGHT_MAP;
 		mapSize.x = WIDTH_MAP / 3;
 		for (unsigned i = 0; i < 45; i++)
