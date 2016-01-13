@@ -50,6 +50,15 @@ struct Sounds
 
 	SoundBuffer enemyHurtBuffer;
 	Sound enemyHurt;
+
+	SoundBuffer bossLandsBuffer;
+	Sound bossLands;
+
+	SoundBuffer bossShootsBoofer;
+	Sound bossShoots;
+
+	SoundBuffer bossDiesBuffer;
+	Sound bossDies;
 	
 	void LoadMusic();
 	void SetVolume(int& volume);

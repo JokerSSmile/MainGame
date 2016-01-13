@@ -1,36 +1,38 @@
 #include "game.h"
 
 //TODO:
-//clock restart hero red
-// 3) добавь побольше противников, ловушек и объекты
+//hero red when enemy damage
+//restart after boss
+
 
 void Game::InitLevelOneEnemies()
 {
-	//boss = Boss(mySprites.bossTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(80, 112), "Boss", 10);
-	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-//  enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-//  enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
+//	boss = Boss(mySprites.bossTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(80, 112), "Boss", 10, 4);
+//	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
+ enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
-// 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
-// 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 900), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 900), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), Vector2i(FLY_SIZE), "EnemyFly", 1, 6));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
-// 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+ 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
 }
 
 void Game::InitLevelTwoEnemies()
 {
-	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
-	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+ 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+ 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
 }
 
 void Game::InitLevelThreeEnemies()
 {
-	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
-	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
+// 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
+// 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
 }
 
 void Game::InitEnemies()
@@ -43,7 +45,7 @@ void Game::InitEnemies()
 		break;
 	case THREE: InitLevelThreeEnemies();
 		break;
-	case BOSS: boss = Boss(mySprites.bossTexture, Vector2f(480, 320), Vector2i(80, 112), "Boss", 10, 1);
+	case BOSS: boss = Boss(mySprites.bossTexture, Vector2f(200, 320), Vector2i(80, 112), "Boss", BOSS_HEALTH, 1);
 		break;
 	default:
 		break;
@@ -86,7 +88,7 @@ void Game::Restart()
 {
 	ResetData();
 	lastShootPlayer = 0;
-	room = 1;
+	room = FIRST;
 	volume = 30;
 	gameState = MAIN_MENU;
 	InitEnemies();
@@ -100,54 +102,53 @@ void Game::Restart()
 	mySounds.menuMusic.play();
 }
 
-int Game::InitializeRoom()
+void Game::InitializeRoom()
 {
 	if (player.position.x > 0 && player.position.x < WINDOW_WIDTH)
 	{
 		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
-			return FIRST;
+			room = FIRST;
 		}
 		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
-			return FORTH;
+			room = FORTH;
 		}
 		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
-			return SEVENTH;
+			room = SEVENTH;
 		}
 	}
 	else if (player.position.x > WINDOW_WIDTH && player.position.x < WINDOW_WIDTH * 2)
 	{
 		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
-			return SECOND;
+			room = SECOND;
 		}
 		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
-			return FIFTH;
+			room = FIFTH;
 		}
 		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
-			return EIGHTH;
+			room = EIGHTH;
 		}
 	}
 	else if (player.position.x > WINDOW_WIDTH * 2 && player.position.x < WINDOW_WIDTH * 3)
 	{
 		if (player.position.y > 0 && player.position.y < WINDOW_HEIGHT)
 		{
-			return THIRD;
+			room = THIRD;
 		}
 		else if (player.position.y > WINDOW_HEIGHT && player.position.y < WINDOW_HEIGHT * 2)
 		{
-			return SIXTH;
+			room = SIXTH;
 		}
 		else if (player.position.y > WINDOW_HEIGHT * 2 && player.position.y < WINDOW_HEIGHT * 3)
 		{
-			return NINTH;
+			room = NINTH;
 		}
 	}
-	return 0;
 }
 
 void Game::SetPauseText()
@@ -319,11 +320,12 @@ void Game::UpdateEnemies(RenderWindow& window)
 		{
 			if (room == enemy.enemyRoom)
 			{
+				enemy.Update(boomb, gameTime, player.position);
 				enemy.MoveFollowEnemy(gameTime, player.position, myMap, time, enemies);
 				enemy.UpdateHeadFrame(mySprites.enemyFollowHead, gameTime);
 				enemy.UpdateFly(time, myMap);
 				enemy.UpdateStandAndShoot(bullets, gameTime);
-				enemy.Update(boomb, gameTime);
+				enemy.UpdateWorm(myMap, enemies, gameTime, time);
 			}
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
@@ -364,16 +366,30 @@ void Game::DeleteBulletFromVector()
 
 void Game::UpdatePlayersBullets(Bullet& bullet)
 {
-	for (auto& enemy: enemies)
+	if (bullet.isPlayers == true)
 	{
-		if (enemy.health > 0 && bullet.isPlayers == true)
+		for (auto& enemy : enemies)
 		{
-			if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite) || Collision::PixelPerfectTest(enemy.headSprite, bullet.bulletSprite))
+			if (enemy.health > 0)
+			{
+				if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite) || Collision::PixelPerfectTest(enemy.headSprite, bullet.bulletSprite))
+				{
+					bullet.deathTime = gameTime;
+					bullet.alive = false;
+					enemy.health -= bullet.damage;
+					enemy.playerHitTime = gameTime;
+					mySounds.tearDestroy.play();
+				}
+			}
+		}
+		if (Collision::PixelPerfectTest(boss.sprite, bullet.bulletSprite))
+		{
+			if (boss.state == STAY || boss.state == SHOOT)
 			{
 				bullet.deathTime = gameTime;
 				bullet.alive = false;
-				enemy.health -= bullet.damage;
-				enemy.playerHitTime = gameTime;
+				boss.health -= bullet.damage;
+				boss.playerHitTime = gameTime;
 				mySounds.tearDestroy.play();
 			}
 		}
@@ -392,15 +408,6 @@ void Game::UpdateEnemiesBullets(Bullet& bullet)
 			mySounds.playerHurts.play();
 			mySounds.tearDestroy.play();		
 		}
-		else if (Collision::PixelPerfectTest(player.sprite, bullet.bulletSprite))
-		{
-			bullet.deathTime = gameTime;
-			bullet.alive = false;
-			boss.health -= bullet.damage;
-			boss.playerHitTime = gameTime;
-			mySounds.tearDestroy.play();
-		}
-
 	}
 }
 
@@ -528,7 +535,12 @@ void Game::CheckEndGame()
 
 void Game::UpdateBoss()
 {
-	boss.Update(bullets, gameTime, player.position, time);
+	if (boss.bossRoom == room && level == BOSS)
+	{
+		boss.Update(bullets, gameTime, player.position, time);
+		boss.PlaySound(mySounds.bossLands, mySounds.bossShoots, mySounds.bossDies);
+		boss.ExplosionCollision(boomb, gameTime);
+	}
 }
 
 void Game::UpdateGame(RenderWindow& window)
@@ -552,7 +564,7 @@ void Game::UpdateGame(RenderWindow& window)
 		UpdateSounds();
 		CheckEndGame();
 		UpdateBoss();
-		room = InitializeRoom();
+		InitializeRoom();
 	}
 	else if (gameState != PAUSE)
 	{
@@ -575,8 +587,8 @@ void Game::DrawBackground(RenderWindow& window)
 	if (room == 4 && level == ONE)
 	{
 		controlsSprite.setTexture(mySprites.controlsTexture);
-		int x = controlsSprite.getGlobalBounds().width / 2;
-		int y = controlsSprite.getGlobalBounds().height / 2;
+		float x = controlsSprite.getGlobalBounds().width / 2;
+		float y = controlsSprite.getGlobalBounds().height / 2;
 
 		controlsSprite.setOrigin(x, y);
 		controlsSprite.setPosition(view.getCenter().x, view.getCenter().y - 80);
@@ -666,7 +678,7 @@ void Game::DrawEnemies(RenderWindow& window)
 	{
 		if (enemy.alive == true)
 		{
-			//if (enemy.enemyRoom == room)
+			if (enemy.enemyRoom == room)
 			{
 				window.draw(enemy.sprite);
 				if (enemy.name == "EnemyFollow")
@@ -828,12 +840,15 @@ void Game::DrawEndGame(RenderWindow& window)
 
 void Game::DrawBoss(RenderWindow& window)
 {
-	boss.Draw(window);
+	if (boss.bossRoom == room)
+	{
+		boss.Draw(window);
+		boss.DrawHealth(mySprites.healthBar, window);
+	}
 }
 
 void Game::DrawWindow(RenderWindow& window)
 {
-	cout << level << endl;
 	window.setView(view);
 	if (gameState == MAIN_MENU)
 	{

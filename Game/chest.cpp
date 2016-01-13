@@ -1,13 +1,13 @@
 #include "chest.h"
 
-int Chest::RandomNumber()
-{
-	return (double)rand() / (RAND_MAX + 1) * 4;
-}
+// int Chest::RandomNumber()
+// {
+// 	return (double)rand() / (RAND_MAX + 1) * 4;
+// }
 
 void Chest::SetFilling()
 {
-	int rand = RandomNumber();
+	int rand = int(RandomNumber(0, 4));
 	if (rand == 0)
 	{
 		filling = IncreaseSpeed;

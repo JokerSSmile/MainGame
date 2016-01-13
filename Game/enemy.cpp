@@ -31,8 +31,8 @@ void Enemy::Shoot(vector<Bullet>& bullets, float& gameTime, int& dir, float bull
 	Bullet bullet;
 	bullet.isPlayers = false;
 	bullet.alive = true;
-	bullet.x = bulletStartX;
-	bullet.y = bulletStartY;
+	bullet.position.x = bulletStartX;
+	bullet.position.y = bulletStartY;
 	bullet.timeShot = gameTime;
 	bullet.direction = dir;
 	bullet.speed = ENEMY_BULLET_SPEED;
@@ -107,7 +107,10 @@ void Enemy::UpdateFly(float& time, vector<Map>& myMap)
 	if (name == "EnemyFly")
 	{
 		currentFrame += FLY_UPDATE_FRAME_TIME * time;
-		if (currentFrame > 2) currentFrame -= 2;
+		if (currentFrame > 2)
+		{
+			currentFrame -= 2;
+		}
 		sprite.setTextureRect(IntRect(FLY_SIZE.x * int(currentFrame), 0, FLY_SIZE.x, FLY_SIZE.y));
 		CheckCollosionFly(myMap, time);
 		sprite.setPosition(position.x, position.y);
@@ -138,46 +141,188 @@ void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
 	}
 }
 
-void Enemy::SetDirection(Vector2f& playerPosition)
+void Enemy::SetWarmDir()
 {
-	float shift = 10;
-	if (spriteCenterPos.x >= playerPosition.x - shift && spriteCenterPos.x <= playerPosition.x + PLAYER_SIZE.x  + shift)
+	int randNum = int(RandomNumber(4, 4));
+	switch (randNum)
 	{
-		if (spriteCenterPos.y >= playerPosition.y)
+	case 4: dir = LEFT;
+		break;
+	case 5: dir = UP;
+		break;
+	case 6: dir = DOWN;
+		break;
+	case 7: dir = RIGHT;
+		break;
+	default:
+		break;
+	}
+	clock.restart();
+}
+
+void Enemy::UpdateFrameWorm(float& time)
+{
+	currentFrame += 0.006f * time;
+	if (currentFrame > 4) currentFrame -= 4;
+	switch (dir)
+	{
+	case 4: sprite.setTextureRect(IntRect(64 * int (currentFrame), 256, 64, 64));
+		break;
+	case 7: sprite.setTextureRect(IntRect(64 * int(currentFrame), 0, 64, 64));
+		break;
+	case 5: sprite.setTextureRect(IntRect(64 * int(currentFrame), 64, 64, 64));
+		break;
+	case 6: sprite.setTextureRect(IntRect(64 * int(currentFrame), 128, 64, 64));
+		break;
+	default: sprite.setTextureRect(IntRect(0, 0, 64, 64));
+		break;
+	}
+}
+
+void Enemy::SetWormSpeed()
+{
+	switch (followState)
+	{
+	case FAR: speed = ENEMY_FOLLOW_SPEED_NORMAL;
+		break;
+	case NEAR: speed = WORM_FOLLOW_SPEED;
+		break;
+	default:
+		break;
+	}
+}
+
+void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTime, float& time)
+{
+	if (name == "Worm")
+	{
+		UpdateFrameWorm(time);
+		if (enemyTime > 2 && followState == FAR)
 		{
-			dir = up;
+			SetWarmDir();
+		}
+		Vector2f(oldPosition) = sprite.getPosition();
+		SetWormSpeed();
+		SetPosition(time, speed);
+		sprite.setPosition(position);
+		if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
+		{
+			sprite.setPosition(oldPosition);
+			if (position.x != oldPosition.x && position.y != oldPosition.y)
+			{
+				sprite.setPosition(oldPosition.x, position.y);
+				if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
+				{
+					sprite.setPosition(position.x, oldPosition.y);
+					if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
+					{
+						sprite.setPosition(oldPosition);
+					}
+				}
+			}
+			followState = FAR;
+			enemyTime = 3;
 		}
 		else
 		{
-			dir = down;
+			enemyTime = clock.getElapsedTime().asSeconds();
 		}
+		position = sprite.getPosition();
+		spriteCenterPos.x = position.x + size.x / 2;
+		spriteCenterPos.y = position.y + size.y / 2;
+	}
+}
+
+void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
+{
+	float shift = 10;
+	if (spriteCenterPos.x >= playerPosition.x - shift && spriteCenterPos.x <= playerPosition.x + PLAYER_SIZE.x + shift)
+	{
+		if (spriteCenterPos.y >= playerPosition.y)
+		{			
+			if (name == "EnemyFollow")
+			{
+				dir = UP;
+			}
+			else
+			{
+				followState = NEAR;
+			}
+		}
+		else
+		{			
+			if (name == "EnemyFollow")
+			{
+				dir = DOWN;
+			}
+			else
+			{
+				followState = NEAR;
+			}
+		}
+		isStrightDir = true;
 	}
 	else if (spriteCenterPos.y >= playerPosition.y - shift && spriteCenterPos.y <= playerPosition.y + PLAYER_SIZE.y + shift)
 	{
 		if (spriteCenterPos.x >= playerPosition.x)
-		{
-			dir = left;
+		{			
+			if (name == "EnemyFollow")
+			{
+				dir = LEFT;
+			}
+			else
+			{
+				followState = NEAR;
+			}
 		}
 		else
 		{
-			dir = right;
+			if (name == "EnemyFollow")
+			{
+				dir = RIGHT;
+			}
+			else
+			{
+				followState = NEAR;
+			}
+		}
+		isStrightDir = true;
+	}
+	else
+	{
+		if (name == "Worm")
+		{
+			followState = FAR;
 		}
 	}
-	else if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y < playerPosition.y)
+}
+
+void Enemy::SetDirection(Vector2f& playerPosition)
+{
+	if (name == "Worm" || name == "EnemyFollow")
 	{
-		dir = leftDown;
-	}
-	else if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
-	{
-		dir = leftUp;
-	}
-	else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y < playerPosition.y)
-	{
-		dir = rightDown;
-	}
-	else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
-	{
-		dir = rightUp;
+		float shift = 10;
+		bool isStrightDir = false;
+		UpdateStrightDir(playerPosition, isStrightDir);
+		if (isStrightDir == false && name == "EnemyFollow")
+		{
+			if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y < playerPosition.y)
+			{
+				dir = LEFT_DOWN;
+			}
+			else if (spriteCenterPos.x > playerPosition.x + PLAYER_SIZE.x + shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
+			{
+				dir = LEFT_UP;
+			}
+			else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y < playerPosition.y)
+			{
+				dir = RIGHT_DOWN;
+			}
+			else if (spriteCenterPos.x < playerPosition.x - shift && spriteCenterPos.y > playerPosition.y + PLAYER_SIZE.y + shift)
+			{
+				dir = RIGHT_UP;
+			}
+		}
 	}
 }
 
@@ -230,7 +375,7 @@ bool Enemy::IsIntersectsMap(vector<Map>& myMap)
 {
 	for (auto& map : myMap)
 	{
-		if (Collision::BoundingBoxTest(sprite, map.sprite))
+		if (Collision::BoundingBoxTest(sprite, map.sprite) && (map.pos == ROCK || map.pos == WALL))
 		{
 			return true;
 		}
@@ -260,7 +405,7 @@ bool Enemy::isIntersectEnemy(vector<Enemy>& enemies)
 {
 	for (auto& enemy : enemies)
 	{
-		if (enemy.position != position)
+		if (enemy.position != position && enemy.name == "EnemyFollow" && enemy.health > 0)
 		{
 			if (Collision::BoundingBoxTest(sprite, enemy.sprite))
 			{
@@ -276,23 +421,22 @@ void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Ma
 	if (name == "EnemyFollow")
 	{
 		UpdateState(playerPosition);
-		SetDirection(playerPosition);
 		SetFrameFollowEnemy(time, playerPosition);
-		Vector2f(playerOldPosition) = sprite.getPosition();
+		Vector2f(oldPosition) = sprite.getPosition();
 		SetPosition(time, speed);
 		sprite.setPosition(position);
 		if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 		{
-			sprite.setPosition(playerOldPosition);
-			if (position.x != playerOldPosition.x && position.y != playerOldPosition.y)
+			sprite.setPosition(oldPosition);
+			if (position.x != oldPosition.x && position.y != oldPosition.y)
 			{
-				sprite.setPosition(playerOldPosition.x, position.y);
+				sprite.setPosition(oldPosition.x, position.y);
 				if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 				{
-					sprite.setPosition(position.x, playerOldPosition.y);
+					sprite.setPosition(position.x, oldPosition.y);
 					if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 					{
-						sprite.setPosition(playerOldPosition);
+						sprite.setPosition(oldPosition);
 					}
 				}
 			}
@@ -326,8 +470,9 @@ void Enemy::CheckIsAlive(float& gameTime)
 	}
 }
 
-void Enemy::Update(Boomb& boomb, float& gameTime)
+void Enemy::Update(Boomb& boomb, float& gameTime, Vector2f& playerPosition)
 {
+	SetDirection(playerPosition);
 	isNeedRemove(gameTime);
 	ChangeColorAfterHit(gameTime, boomb);
 	CheckIsAlive(gameTime);

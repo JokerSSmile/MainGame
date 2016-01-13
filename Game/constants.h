@@ -3,7 +3,25 @@
 
 using namespace sf;
 
-enum GameState
+static double RandomNumber(int minNum, int maxNum)
+{
+	return minNum + (double)rand() / (RAND_MAX + 1) * maxNum;
+}
+
+static enum Direction
+{
+	LEFT_UP,
+	LEFT_DOWN,
+	RIGHT_UP,
+	RIGHT_DOWN,
+	LEFT,
+	UP,
+	DOWN,
+	RIGHT,
+	STAND
+};
+
+static enum GameState
 {
 	MAIN_MENU,
 	GAME,
@@ -12,18 +30,18 @@ enum GameState
 	FINISHED
 };
 
-enum TileState
+static enum TileState
 {
 	WALL,
 	ROCK,
 	SPIKE,
-	UP,//doors pos
-	DOWN,
-	LEFT,
-	RIGHT
+	D_UP,
+	D_DOWN,
+	D_LEFT,
+	D_RIGHT
 };
 
-enum Level
+static enum Level
 {
 	ONE,
 	TWO,
@@ -31,13 +49,27 @@ enum Level
 	BOSS
 };
 
-enum FollowState
+static enum RoomNum
+{
+	NOT_STATED,
+	FIRST,
+	SECOND,
+	THIRD,
+	FORTH,
+	FIFTH,
+	SIXTH,
+	SEVENTH,
+	EIGHTH,
+	NINTH
+};
+
+static enum FollowState
 {
 	FAR,
 	NEAR
 };
 
-enum BossState
+static enum BossState
 {
 	STAY,
 	JUMP_UP,
@@ -45,7 +77,7 @@ enum BossState
 	SHOOT
 };
 
-enum PlayerState
+static enum PlayerState
 {
 	NORMAL,
 	TAKE_GIFT
@@ -87,12 +119,14 @@ const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED_NORMAL = 0.05f;
 const float ENEMY_FOLLOW_SPEED_FAST = 0.08f;
+const float WORM_FOLLOW_SPEED = 0.15f;
 const float SPIKE_DAMAGE = 0.5f;
 
 //boss
 const float BOSS_JUMP_SPEED = 5;
 const float BOSS_FALL_DAMAGE = 2;
-const float BOSS_BULLET_SPEED = 0.3;
+const float BOSS_BULLET_SPEED = 0.3f;
+const float BOSS_HEALTH = 20;
 
 //map
 const int HEIGHT_SMALL_MAP = 10;
@@ -142,3 +176,4 @@ const int HEALTH_TEXTURE_SIZE = 16;
 const float HP_SCALE = 2;
 const float FRAME_CHANGE_TIME = 0.5f;
 const float TIME_FOR_SHOW_BONUS_TYPE_TEXT = 3.f;
+const Vector2f BAR_SIZE = { 400, 64 };

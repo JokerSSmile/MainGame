@@ -127,14 +127,14 @@ static String levelBossMap[45] =
 	"00           00",
 	"00           00",
 	"00           00",
-	"00           00",
-	"00           00",
-	"00           00",
-	"000000000000000",
-	"bbbbbbbbbbbbbbb"
+ 	"00           00",
+ 	"00           00",
+ 	"00           00",
+ 	"000000000000000",
+ 	"bbbbbbbbbbbbbbb"
 };
 
-static String mapString[45];
+static String mapString[30];
 
 struct tileMap
 {
@@ -156,7 +156,7 @@ struct tileMap
 
 	void setDoorType(Map& myMap, bool isRoomClear);
 
-	void InitLevel(Level& level, int& heightMap);
+	void InitLevel(Level& level, Vector2i& mapSize);
 
 	void InitMap(vector<Map>& myMap, Level& level);
 

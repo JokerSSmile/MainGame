@@ -13,11 +13,13 @@ using namespace std;
 
 struct Bullet
 {
-	float dy;
-	float dx;
+	//float dy;
+	//float dx;
+	Vector2f moving;
 	int direction;
-	float x = 0;
-	float y = 0;
+// 	float x = 0;
+// 	float y = 0;
+	Vector2f position;
 	Vector2f startPos;
 	bool alive = false;
 	float timeShot;

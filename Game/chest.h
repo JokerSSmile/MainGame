@@ -45,7 +45,7 @@ struct Chest
 		room = Room;
 	}
 
-	int RandomNumber();
+	//int RandomNumber();
 	void SetFilling();
 	void CheckOpening(Player& p, Sound& openingSound);
 

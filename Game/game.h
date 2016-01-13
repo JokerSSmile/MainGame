@@ -14,19 +14,7 @@
 
 #include <sstream>
 
-static enum 
-{
-	NOT_STATED,
-	FIRST,
-	SECOND,
-	THIRD,
-	FORTH,
-	FIFTH,
-	SIXTH,
-	SEVENTH,
-	EIGHTH,
-	NINTH
-} currentRoom;
+
 
 struct Game
 {
@@ -46,6 +34,7 @@ struct Game
 	Event event;
 	Level level;
 	PlayerState playerState;
+	RoomNum room;
 
 	Sprite mainMenuSprite;
 	Sprite pauseSprite;
@@ -65,7 +54,7 @@ struct Game
 	float gameTime;
 	float time;
 
-	int room;
+	//int room;
 	int volume;
 
 	bool isKeyPressed;
@@ -80,7 +69,7 @@ struct Game
 	void InitGame();
 	void ResetData();
 	void Restart();
-	int InitializeRoom();
+	void InitializeRoom();
 
 	void SetPauseText();
 	void CheckMouseIntersectionWithTextPause(RenderWindow& window);

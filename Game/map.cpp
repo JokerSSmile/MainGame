@@ -47,46 +47,47 @@ void tileMap::setDoorType(Map& myMap, bool isRoomClear)
 	}
 }
 
-void tileMap::InitLevel(Level& level, int& heightMap)
+void tileMap::InitLevel(Level& level, Vector2i& mapSize)
 {
 	if (level == ONE)
 	{
+		mapSize.y = HEIGHT_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
-			heightMap = HEIGHT_MAP;
 			mapString[i] = levelOneMap[i];
 		}
 	}
 	else if (level == TWO)
 	{
+		mapSize.y = HEIGHT_BIG_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
-			heightMap = HEIGHT_BIG_MAP;
 			mapString[i] = levelTwoMap[i];
 		}
 	}
 	else if (level == THREE)
 	{
+		mapSize.y = HEIGHT_BIG_MAP;
 		for (unsigned i = 0; i < 45; i++)
 		{
-			heightMap = HEIGHT_BIG_MAP;
 			mapString[i] = levelThreeMap[i];
 		}
 	}
 	else if (level == BOSS)
 	{
-		for (unsigned i = 0; i < 15; i++)
+		mapSize.y = HEIGHT_MAP;
+		mapSize.x = WIDTH_MAP / 3;
+		for (unsigned i = 0; i < 45; i++)
 		{
-			heightMap = HEIGHT_BIG_MAP;
-			mapString[i] = levelThreeMap[i];
+			mapString[i] = levelBossMap[i];
 		}
 	}
 }
 
 void tileMap::InitMap(vector<Map>& myMap, Level& level)
 {
-	int heightMap = HEIGHT_MAP;
-	InitLevel(level, heightMap);
+	Vector2i mapSize = { WIDTH_MAP , HEIGHT_MAP};
+	InitLevel(level, mapSize);
 	if (isMapSpritesLoaded == false)
 	{
 		LoadMapSprites();
@@ -94,9 +95,9 @@ void tileMap::InitMap(vector<Map>& myMap, Level& level)
 	}
 	Map map;
 	map.alive = true;
-	for (int i = 0; i < heightMap; i++)
+	for (int i = 0; i < mapSize.y; i++)
 	{
-		for (int j = 0; j < WIDTH_MAP; j++)
+		for (int j = 0; j < mapSize.x; j++)
 		{
 			if (mapString[i][j] == 's')
 			{
@@ -127,28 +128,28 @@ void tileMap::InitMap(vector<Map>& myMap, Level& level)
 			{
 				map.position.y = i * TILE_SIDE - TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
-				map.pos = UP;
+				map.pos = D_UP;
 				myMap.push_back(map);
 			}
 			else if (mapString[i][j] == 'd')
 			{
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE / 2;
-				map.pos = DOWN;
+				map.pos = D_DOWN;
 				myMap.push_back(map);
 			}
 			else if (mapString[i][j] == 'r')
 			{
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE;
-				map.pos = RIGHT;
+				map.pos = D_RIGHT;
 				myMap.push_back(map);
 			}
 			else if (mapString[i][j] == 'l')
 			{
 				map.position.y = i * TILE_SIDE;
 				map.position.x = j * TILE_SIDE - TILE_SIDE;
-				map.pos = LEFT;
+				map.pos = D_LEFT;
 				myMap.push_back(map);
 			}
 		}
@@ -174,25 +175,25 @@ void tileMap::DrawTiles(vector<Map>& myMap, RenderWindow& window, bool isRoomCle
 		}
 		else
 		{
-			if (map.pos == UP)
+			if (map.pos == D_UP)
 			{
 				setDoorType(map, isRoomClear);
 				map.sprite.setPosition(float(map.position.x), float(map.position.y + 5));
 				map.sprite.setTextureRect(IntRect(0, 0, 64, 64));
 			}
-			else if (map.pos == DOWN)
+			else if (map.pos == D_DOWN)
 			{
 				setDoorType(map, isRoomClear);
 				map.sprite.setPosition(float(map.position.x), float(map.position.y - 5));
 				map.sprite.setTextureRect(IntRect(64, 0, 64, 64));
 			}
-			else if (map.pos == LEFT)
+			else if (map.pos == D_LEFT)
 			{
 				setDoorType(map, isRoomClear);
 				map.sprite.setPosition(float(map.position.x + 5), float(map.position.y));
 				map.sprite.setTextureRect(IntRect(192, 0, 64, 64));
 			}
-			else if (map.pos == RIGHT)
+			else if (map.pos == D_RIGHT)
 			{
 				setDoorType(map, isRoomClear);
 				map.sprite.setPosition(float(map.position.x - 8), float(map.position.y));

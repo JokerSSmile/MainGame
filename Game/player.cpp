@@ -13,7 +13,7 @@ bool Player::DiagonalMoving(float& time)
 {
 	if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = leftUp;
+		dir = LEFT_UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
@@ -21,7 +21,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = leftDown;
+		dir = LEFT_DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
@@ -29,7 +29,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = rightUp;
+		dir = RIGHT_UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
@@ -37,7 +37,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = rightDown;
+		dir = RIGHT_DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
@@ -50,35 +50,35 @@ void Player::StrightMoving(float& time)
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
-		dir = left;
+		dir = LEFT;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
-		dir = right;
+		dir = RIGHT;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = up;
+		dir = UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 0, 36, 26));
 		headSprite.setTextureRect(IntRect(128, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = down;
+		dir = DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 0, 36, 26));
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 	}
 	else
 	{
-		dir = stay;
+		dir = STAND;
 		sprite.setTextureRect(IntRect(0, 0, 36, 26));
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 	}
@@ -166,13 +166,13 @@ void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlay
 		bullet.alive = true;
 		if (dir == 5)
 		{
-			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
+			bullet.position.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
 		}
 		else
 		{		
-			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
+			bullet.position.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
 		}
-		bullet.x = headSprite.getPosition().x + headSprite.getLocalBounds().width / 2;
+		bullet.position.x = headSprite.getPosition().x + headSprite.getLocalBounds().width / 2;
 		bullet.timeShot = gameTime;
 		bullet.direction = dir;
 		bullet.speed = PLAYERS_BULLET_SPEED;
@@ -222,9 +222,12 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float&
 	}
 	if (Collision::PixelPerfectTest(sprite, boss.sprite) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 	{
-		health -= BOSS_FALL_DAMAGE;
-		hitTimer = gameTime;
-		playerHurts.play();
+		if (boss.state == SHOOT || boss.state == STAY)
+		{
+			health -= BOSS_FALL_DAMAGE;
+			hitTimer = gameTime;
+			playerHurts.play();
+		}
 	}
 }
 
@@ -251,22 +254,22 @@ void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 	{
 		if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
 		{
-			if (map.pos == RIGHT)
+			if (map.pos == D_RIGHT)
 			{
 				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
 				position.x += TILE_SIDE * 4 + size.x + 10;
 			}
-			else if (map.pos == LEFT)
+			else if (map.pos == D_LEFT)
 			{
 				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
 				position.x -= TILE_SIDE * 4 + size.x + 10;
 			}
-			else if (map.pos == UP)
+			else if (map.pos == D_UP)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
 				position.y -= TILE_SIDE * 4 + size.y + 10;
 			}
-			else if (map.pos == DOWN)
+			else if (map.pos == D_DOWN)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
 				position.y += TILE_SIDE * 4 + size.y + 10;

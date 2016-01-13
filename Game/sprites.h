@@ -15,6 +15,7 @@ const String BOMB_TEXTURE_IN_STATUS_BAR = "resources/images/addBomb.png";
 const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
 const String PLAYERS_HEAD_TEXTURE_PATH = "resources/images/head.png";
 const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
+const String ENEMY_WORM_TEXTURE_PATH = "resources/images/worm.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
 const String ENEMY_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_destroy_effect.png";
 const String ENEMY_FOLLOW_TEXTURE_PATH = "resources/images/enemy_follow.png";
@@ -28,6 +29,7 @@ const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
 const String MANHOLE_TEXTURE_PATH = "resources/images/manhole.png";
 const String BOSS_TEXTURE_PATH = "resources/images/boss.png";
 const String CONTROLS_TEXTURE_PATH = "resources/images/controls.png";
+const String HEALTHBAR_TEXTURE_PATH = "resources/images/health_bar.png";
 
 struct Sprites
 {
@@ -60,20 +62,19 @@ struct Sprites
 
 	//images in health bar
 	Texture heartTexture;
+	Texture healthBarTexture;
+	Sprite healthBar;
 
-	//enemy image
+	//enemies
 	Image enemyImage;
 	Texture enemyTexture;
 	Image poofImage;
 	Texture poofTexture;
 	Texture enemyFollowHead;
-
-	//standAndShoot
 	Image standAndShootImage;
 	Texture  standAndShootTexture;
-
-	//enemy follow
 	Texture enemyFollowTexture;
+	Texture wormTexture;
 
 	//bullets
 	Texture bulletTexture;
@@ -141,6 +142,8 @@ struct Sprites
 		increaseDamageSprite.setScale(1.5, 1.5);
 		healthSprite.setScale(1.5, 1.5);
 		bombSprite.setScale(1.5, 1.5);
+		healthBarTexture.loadFromFile(HEALTHBAR_TEXTURE_PATH);
+		healthBar.setTexture(healthBarTexture);
 	}
 
 	void LoadHeroImage()
@@ -161,6 +164,7 @@ struct Sprites
 		poofTexture.loadFromImage(poofImage);
 		enemyFollowTexture.loadFromFile(ENEMY_FOLLOW_TEXTURE_PATH);
 		enemyFollowHead.loadFromFile(ENEMY_FOLLOW_HEAD_TEXTURE_PATH);
+		wormTexture.loadFromFile(ENEMY_WORM_TEXTURE_PATH);
 	}
 
 	void LoadBulletTexture()

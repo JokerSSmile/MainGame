@@ -12,6 +12,9 @@ const String CHEST_DROP_SOUND = "resources/sound/chest_drop.wav";
 const String TEAR_FIRE_SOUND = "resources/sound/tear_fire.wav";
 const String FLY_HURT_SOUND = "resources/sound/fly_hurt.wav";
 const String ENEMY_HURT_SOUND = "resources/sound/enemy_hurt.wav";
+const String BOSS_LANDS_SOUND = "resources/sound/boss_lands.wav";
+const String BOSS_SHOOTS_SOUND = "resources/sound/boss_shoots.wav";
+const String BOSS_DIES_SOUND = "resources/sound/boss_dies.wav";
 const String MAIN_MENU_MUSIC = "resources/music/main_menu.ogg";
 
 void Sounds::LoadMusic()
@@ -46,6 +49,15 @@ void Sounds::LoadMusic()
 
 	enemyHurtBuffer.loadFromFile(ENEMY_HURT_SOUND);
 	enemyHurt.setBuffer(enemyHurtBuffer);
+
+	bossLandsBuffer.loadFromFile(BOSS_LANDS_SOUND);
+	bossLands.setBuffer(bossLandsBuffer);
+
+	bossShootsBoofer.loadFromFile(BOSS_SHOOTS_SOUND);
+	bossShoots.setBuffer(bossShootsBoofer);
+
+	bossDiesBuffer.loadFromFile(BOSS_DIES_SOUND);
+	bossDies.setBuffer(bossDiesBuffer);
 
 	menuMusic.openFromFile(MAIN_MENU_MUSIC);
 	menuMusic.setLoop(true);

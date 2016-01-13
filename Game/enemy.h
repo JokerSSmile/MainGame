@@ -12,9 +12,7 @@ using namespace std;
 struct Enemy :
 	public Character
 {
-	float moveTimer = 0;
 	float currentFrame = 0;
-	int randNum;
 	int enemyRoom = 0;
 	float lastShootEnemyStand = 0;
 	float damage = 0.5;
@@ -23,6 +21,8 @@ struct Enemy :
 	float playerHitTime = 0;
 	float speed;
 	bool isRemove;
+	float enemyTime;
+	Clock clock;
 	Sprite poofSprite;
 	Sprite headSprite;
 	FollowState followState;
@@ -47,7 +47,7 @@ struct Enemy :
 		}
 		else if (name == "EnemyFollow")
 		{
-			dir = stay;
+			dir = STAND;
 		}
 	}
 
@@ -58,6 +58,16 @@ struct Enemy :
 	void ChangeColorAfterHit(float& gameTime, Boomb& boomb);
 	void UpdateFly(float& time, vector<Map>& myMap);
 	void UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime);
+
+	void SetWarmDir();
+
+	void UpdateFrameWorm(float& time);
+
+	void SetWormSpeed();
+
+	void UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTime, float& time);
+
+	void UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir);
 
 	void SetFrameFollowEnemy(float& time, Vector2f& playerPosition);
 	bool IsIntersectsMap(vector<Map>& myMap);
@@ -70,5 +80,5 @@ struct Enemy :
 	void MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, vector<Enemy>& enemies);
 	void isNeedRemove(float& gameTime);
 	void CheckIsAlive(float& gameTime);
-	void Update(Boomb& boomb, float& gameTime);
+	void Update(Boomb& boomb, float& gameTime, Vector2f& playerPosition);
 };

@@ -33,7 +33,7 @@ struct Player :
 	Player() {};
 	Player(Texture & image, Vector2f& pos, Vector2i& Size, String Name, float Health, Texture& headTexture) :Character(image, pos, Size, Name, health)
 	{
-		dir = stay;
+		dir = STAND;
 		size.x = Size.x;
 		size.y = Size.y;
 		position.x = pos.x;

@@ -5,8 +5,8 @@ void Boss::Shoot(vector<Bullet>& bullets, float& gameTime, int dir)
 	Bullet bullet;
 	bullet.isPlayers = false;
 	bullet.alive = true;
-	bullet.y = sprite.getPosition().y + sprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
-	bullet.x = sprite.getPosition().x ;
+	bullet.position.y = sprite.getPosition().y + sprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
+	bullet.position.x = sprite.getPosition().x ;
 	bullet.timeShot = gameTime;
 	bullet.direction = dir;
 	bullet.speed = BOSS_BULLET_SPEED;
@@ -31,18 +31,20 @@ void Boss::UpdateReflect(Vector2f& playerPosition)
 
 void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time)
 {
+	bossTime = clock.getElapsedTime().asSeconds();
 	switch (state)
 	{
 	case STAY:
 	{
 		sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
-		if (bossTime > 0.5)
+		if (bossTime > 1)
 		{
+			bossTime = 0;
 			clock.restart();
 			state = JUMP_UP;
 		}
 	}
-	break;
+		break;
 	case JUMP_UP:
 	{
 		sprite.setTextureRect(IntRect(80, 112, size.x, size.y));
@@ -50,17 +52,19 @@ void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playe
 		lastPlayerPosition = playerPosition;
 		if (bossTime > 1)
 		{
+			bossTime = 0;
 			clock.restart();
 			position.x = lastPlayerPosition.x;
 			state = JUMP_DOWN;
 		}
 	}
-	break;
+		break;
 	case JUMP_DOWN:
 	{
 		sprite.setTextureRect(IntRect(0, 112, size.x, size.y));
 		if (position.y >= lastPlayerPosition.y - 200 + size.y)
 		{
+			bossTime = 0;
 			clock.restart();
 			state = SHOOT;
 		}
@@ -69,9 +73,10 @@ void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playe
 			position.y += speed * time;
 		}
 	}
-	break;
+		break;
 	case SHOOT:
 	{
+		isShoot = false;
 		if (bossTime > 1 && bossTime < 1.5)
 		{
 			if (gameTime > lastShootBoss + 1)
@@ -79,12 +84,17 @@ void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playe
 				for (unsigned i = 0; i < 8; i++)
 				{
 					Shoot(bullets, gameTime, i);
+					if (i == 0)
+					{
+						isShoot = true;
+					}
 				}
 			}
 			sprite.setTextureRect(IntRect(240, 0, size.x, size.y));
 		}
 		else if (bossTime > 2)
 		{
+			bossTime = 0;
 			sprite.setTextureRect(IntRect(80, 0, size.x, size.y));
 			clock.restart();
 			state = STAY;
@@ -94,29 +104,85 @@ void Boss::UpdateState(vector<Bullet>& bullets, float& gameTime, Vector2f& playe
 			sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
 		}
 	}
-	break;
+		break;
 	default:
 		break;
 	}
 }
 
+void Boss::PlaySound(Sound& lands, Sound& shoots, Sound& dies)
+{
+	if (state == SHOOT && bossTime == 0)
+	{
+		lands.play();
+	}
+	else if (isShoot == true)
+	{
+		shoots.play();
+	}
+	else if (isNeedDeathSound == true)
+	{
+		dies.play();
+	}
+}
+
 void Boss::UpdateAlive()
 {
-	if (health <= 0)
+	isNeedDeathSound = false;
+	if (alive == true)
 	{
-		alive = false;
+		if (health <= 0)
+		{
+			isNeedDeathSound = true;
+			alive = false;
+		}
+		else
+		{
+			alive = true;
+		}
+	}
+}
+
+void Boss::ChangeColor(float& gameTime)
+{
+	if (gameTime > playerHitTime && gameTime < playerHitTime + CHANGE_COLOR_EFFECT || gameTime > bombHitTime && gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
+	{
+		sprite.setColor(Color(COLOR_AFTER_HIT));
 	}
 	else
 	{
-		alive = true;
+		sprite.setColor(Color::White);
+	}
+}
+
+void Boss::DrawHealth(Sprite& healthBar, RenderWindow& window)
+{
+	healthBar.setPosition(WINDOW_WIDTH / 2 - BAR_SIZE.x / 2, TILE_SIDE / 2);
+	healthBar.setTextureRect(IntRect(0, 0, int(health / BOSS_HEALTH * BAR_SIZE.x), int(BAR_SIZE.y)));
+	window.draw(healthBar);
+}
+
+void Boss::ExplosionCollision(Boomb& boomb, float& gameTime)
+{
+	if (sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
+	{
+		if (gameTime > bombHitTime + TIME_BEFORE_EXPLOSION && gameTime < boomb.explosionTime + FRAME_CHANGE_TIME)
+		{
+			health -= BOMB_DAMAGE;
+			bombHitTime = gameTime;
+		}
+		if (gameTime > boomb.explosionTime + TIME_FOR_EXPLOSION / 2.f)
+		{
+			boomb.isAlive = false;
+		}
 	}
 }
 
 void Boss::Update(vector<Bullet>& bullets, float& gameTime, Vector2f& playerPosition, float& time)
 {
+	ChangeColor(gameTime);
 	UpdateAlive();
 	UpdateReflect(playerPosition);
-	bossTime = clock.getElapsedTime().asSeconds();
 	UpdateState(bullets, gameTime, playerPosition, time);
 }
 
