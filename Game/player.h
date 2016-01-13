@@ -14,14 +14,15 @@ using namespace std;
 struct Player :
 	public Character
 {
-
-	float damage = 100;
+	float damage = 0.1;
 	float speed = 0.1f;
 	float lastBombPlant = 0;
 	float CurrentFrame = 0;
 	float lastHitTime = 0;
 	float bombHitTime = 0;
 	float hitTimer = 0;
+	float range = 250;
+	float timeBetweenShoots = 0.1;
 
 	int bombCount;
 	

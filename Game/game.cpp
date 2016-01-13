@@ -7,15 +7,17 @@
 
 void Game::InitLevelOneEnemies()
 {
-	//enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
+	//enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(500, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
+	//enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 900), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
 //	boss = Boss(mySprites.bossTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(80, 112), "Boss", 10, 4);
-//	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
- //enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
+//	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 // 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
 	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
-// 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
+ 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
 	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 900), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
 // 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), Vector2i(FLY_SIZE), "EnemyFly", 1, 6));
@@ -39,11 +41,11 @@ void Game::InitEnemies()
 {
 	switch (level)
 	{
-	case ONE: cout << "1" << endl; InitLevelOneEnemies();
+	case ONE: InitLevelOneEnemies();
 		break;
-	case TWO: cout << "2" << endl;InitLevelTwoEnemies();
+	case TWO: InitLevelTwoEnemies();
 		break;
-	case THREE: cout << "3" << endl;InitLevelThreeEnemies();
+	case THREE: InitLevelThreeEnemies();
 		break;
 	case BOSS: boss = Boss(mySprites.bossTexture, Vector2f(200, 320), Vector2i(80, 112), "Boss", BOSS_HEALTH, 1);
 		break;
@@ -54,8 +56,7 @@ void Game::InitEnemies()
 
 void Game::InitGame()
 {
-	cout << "initialized" << endl;
-	level = BOSS;
+	level = ONE;
 	lastShootPlayer = 0;
 	volume = 30;
 	gameState = MAIN_MENU;
@@ -73,7 +74,6 @@ void Game::InitGame()
 
 void Game::ResetData()
 {
-	cout << "reset data" << endl;
 	myMap.clear();
 	enemies.clear();
 	bullets.clear();
@@ -85,12 +85,10 @@ void Game::ResetData()
 	player.lastHitTime = 0;
 	player.hitTimer = 0;
 	boss.sprite.setPosition(0, 0);
-	cout << boss.sprite.getPosition().x << endl;
 }
 
 void Game::Restart()
 {
-	cout << "restart" << endl;
 	ResetData();
 	lastShootPlayer = 0;
 	room = FIRST;
@@ -273,11 +271,9 @@ void Game::CheckMouseIntersectionWithTextEnd(RenderWindow& window)
 		menuText.setColor(COLOR_WHILE_MOUSE_ON_TEXT);
 		if (Mouse::isButtonPressed(Mouse::Left))
 		{
-			cout << "finish and menu" << endl;
 			level = ONE;
 			Restart();
 			gameState = MAIN_MENU;
-			cout << level << "level" << endl;
 		}
 	}
 	else if (exitText.getGlobalBounds().contains(mousePos))
@@ -285,12 +281,10 @@ void Game::CheckMouseIntersectionWithTextEnd(RenderWindow& window)
 		exitText.setColor(COLOR_WHILE_MOUSE_ON_TEXT);
 		if (Mouse::isButtonPressed(Mouse::Left))
 		{
-			cout << "finish and reset" << endl;
 			level = ONE;
 			Restart();
 			player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(PLAYER_SIZE), "Hero", 6, mySprites.headTexture);
 			gameState = GAME;
-			cout << level << "level" << endl;
 		}
 	}
 	else
@@ -361,7 +355,7 @@ void Game::UpdateChests(RenderWindow& window)
 		chest.UpdateDrawText(mySprites.font, window, view);
 		if (chest.room == room)
 		{
-			chest.Update(player, mySounds.chestOpening, mySprites.increaseSpeedSprite, mySprites.increaseDamageSprite, mySprites.healthSprite, mySprites.bombSprite);
+			chest.Update(player, mySounds.chestOpening, mySprites);
 		}
 	}
 }
@@ -434,7 +428,7 @@ void Game::UpdateBullets(RenderWindow& window)
 				UpdateEnemiesBullets(bullet);
 				bullet.UpdateBullet(time, window, gameTime, mySprites.bulletTexture, mySprites.bulletEffectTexture, mySprites.bulletEffectTextureEnemy);
 				bullet.CheckCollisionBullet(gameTime, myMap, mySprites.wallBulletSprite, mySounds.tearDestroy);
-				bullet.DeleteBullet(gameTime, mySounds.tearDestroy);
+				bullet.DeleteBullet(gameTime, mySounds.tearDestroy, player.range);
 			}
 			bullet.DrawBullet(window);
 		}
@@ -753,7 +747,7 @@ void Game::AddChest(View& view)
 	{
 		if (IsChestInRoom() == false)
 		{
-			chests.push_back(Chest(view.getCenter().x, view.getCenter().y - 32, room));
+			chests.push_back(Chest(Vector2f(view.getCenter().x, view.getCenter().y - TILE_SIDE / 2), room));
 			mySounds.chestDrop.play();
 		}
 	}
@@ -771,7 +765,7 @@ void Game::DrawChest(RenderWindow& window)
 		if (chest.room == room)
 		{
 			chest.DrawText(window, gameTime, player.position.y, view);
-			chest.DrawChest(window, mySprites.increaseSpeedSprite, mySprites.increaseDamageSprite, mySprites.healthSprite, mySprites.bombSprite);
+			chest.DrawChest(window, mySprites);
 		}
 		
 	}
@@ -805,7 +799,7 @@ void Game::JumpNextLevel(RenderWindow& window)
 			{
 			case ONE: level = TWO; break;
 			case TWO: level = THREE; break;
-			case THREE: cout << "boss" << endl; level = BOSS; break;
+			case THREE: level = BOSS; break;
 			}
 			Restart();
 			gameState = GAME;
@@ -842,7 +836,9 @@ void Game::DrawBoss(RenderWindow& window)
 
 void Game::DrawWindow(RenderWindow& window)
 {
-	cout << boss.alive << endl;
+	Image icon;
+	icon.loadFromFile("resources/icon.png");
+	window.setIcon(36, 30, icon.getPixelsPtr());
 	window.setView(view);
 	if (gameState == MAIN_MENU)
 	{

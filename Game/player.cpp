@@ -159,7 +159,7 @@ void Player::SetShootAnimation(int& dir)
 
 void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire)
 {
-	if (gameTime > (lastShootPlayer + TIME_BETWEEN_SHOOTS_PLAYER))
+	if (gameTime > (lastShootPlayer + timeBetweenShoots))
 	{
 		Bullet bullet;
 		bullet.isPlayers = true;

@@ -166,13 +166,45 @@ void Enemy::UpdateFrameWorm(float& time)
 	if (currentFrame > 4) currentFrame -= 4;
 	switch (dir)
 	{
-	case 4: sprite.setTextureRect(IntRect(64 * int (currentFrame), 256, 64, 64));
+	case 4:
+		if (followState == FAR)
+		{
+			sprite.setTextureRect(IntRect(64 * int(currentFrame), 256, 64, 64));
+		}
+		else
+		{
+			sprite.setTextureRect(IntRect(128, 192, 64, 64));
+		}
 		break;
-	case 7: sprite.setTextureRect(IntRect(64 * int(currentFrame), 0, 64, 64));
+	case 7: 
+		if (followState == FAR)
+		{
+			sprite.setTextureRect(IntRect(64 * int(currentFrame), 0, 64, 64));
+		}
+		else
+		{
+			sprite.setTextureRect(IntRect(64, 192, 64, 64));
+		}
 		break;
-	case 5: sprite.setTextureRect(IntRect(64 * int(currentFrame), 64, 64, 64));
+	case 5: 
+		if (followState == FAR)
+		{
+			sprite.setTextureRect(IntRect(64 * int(currentFrame), 64, 64, 64));
+		}
+		else
+		{
+			sprite.setTextureRect(IntRect(192, 192, 64, 64));
+		}
 		break;
-	case 6: sprite.setTextureRect(IntRect(64 * int(currentFrame), 128, 64, 64));
+	case 6: 
+		if (followState == FAR)
+		{
+			sprite.setTextureRect(IntRect(64 * int(currentFrame), 128, 64, 64));
+		}
+		else
+		{
+			sprite.setTextureRect(IntRect(0, 192, 64, 64));
+		}
 		break;
 	default: sprite.setTextureRect(IntRect(0, 0, 64, 64));
 		break;
@@ -235,7 +267,7 @@ void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTi
 
 void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 {
-	float shift = 10;
+	float shift = 30;
 	if (spriteCenterPos.x >= playerPosition.x - shift && spriteCenterPos.x <= playerPosition.x + PLAYER_SIZE.x + shift)
 	{
 		if (spriteCenterPos.y >= playerPosition.y)
@@ -246,7 +278,10 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				followState = NEAR;
+				if (dir == UP)
+				{
+					followState = NEAR;
+				}
 			}
 		}
 		else
@@ -257,7 +292,10 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				followState = NEAR;
+				if (dir == DOWN)
+				{
+					followState = NEAR;
+				}
 			}
 		}
 		isStrightDir = true;
@@ -272,7 +310,10 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				followState = NEAR;
+				if (dir == LEFT)
+				{
+					followState = NEAR;
+				}
 			}
 		}
 		else
@@ -283,7 +324,10 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				followState = NEAR;
+				if (dir == RIGHT)
+				{
+					followState = NEAR;
+				}
 			}
 		}
 		isStrightDir = true;
@@ -405,7 +449,7 @@ bool Enemy::isIntersectEnemy(vector<Enemy>& enemies)
 {
 	for (auto& enemy : enemies)
 	{
-		if (enemy.position != position && enemy.name == "EnemyFollow" && enemy.health > 0)
+		if (enemy.position != position && (enemy.name == "EnemyFollow" && enemy.name == "Worm") && enemy.health > 0)
 		{
 			if (Collision::BoundingBoxTest(sprite, enemy.sprite))
 			{
@@ -464,7 +508,6 @@ void Enemy::CheckIsAlive(float& gameTime)
 	}
 	else
 	{
-		cout << "1" << endl;
 		currentFrame = 0;
 		alive = false;
 		sprite.setPosition(0, 0);

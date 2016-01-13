@@ -30,6 +30,8 @@ const String MANHOLE_TEXTURE_PATH = "resources/images/manhole.png";
 const String BOSS_TEXTURE_PATH = "resources/images/boss.png";
 const String CONTROLS_TEXTURE_PATH = "resources/images/controls.png";
 const String HEALTHBAR_TEXTURE_PATH = "resources/images/health_bar.png";
+const String RANGE_TEXTURE_PATH = "resources/images/range_up.png";
+const String FIRE_RATE_UP_TEXTURE_PATH = "resources/images/fire_rate_up.png";
 
 struct Sprites
 {
@@ -91,15 +93,20 @@ struct Sprites
 	//font
 	Font font;
 
-	//chest
+	//chest bonuses
 	Texture increaseSpeedTexture;
 	Texture IncreaseDamageTexture;
-	Texture HealthTexture;
-	Texture BombTexture;
+	Texture healthTexture;
+	Texture bombTexture;
+	Texture rangeUpTexture;
+	Texture fireRateUpTexture;
 	Sprite increaseSpeedSprite;
 	Sprite increaseDamageSprite;
 	Sprite healthSprite;
 	Sprite bombSprite;
+	Sprite rangeUpSprite;
+	Sprite fireRateUpSprite;
+
 
 	//boss
 	Texture bossTexture;
@@ -125,25 +132,34 @@ struct Sprites
 	{
 		increaseSpeedTexture.loadFromFile("resources/images/increaseSpeed.png");
 		IncreaseDamageTexture.loadFromFile("resources/images/IncreaseDamage.png");
-		HealthTexture.loadFromFile("resources/images/addHeart.png");
-		BombTexture.loadFromFile("resources/images/addBomb.png");
+		healthTexture.loadFromFile("resources/images/addHeart.png");
+		bombTexture.loadFromFile("resources/images/addBomb.png");
+		rangeUpTexture.loadFromFile(RANGE_TEXTURE_PATH);
+		fireRateUpTexture.loadFromFile(FIRE_RATE_UP_TEXTURE_PATH);
 
 		increaseSpeedSprite.setTexture(increaseSpeedTexture);
 		increaseDamageSprite.setTexture(IncreaseDamageTexture);
-		healthSprite.setTexture(HealthTexture);
-		bombSprite.setTexture(BombTexture);
+		healthSprite.setTexture(healthTexture);
+		bombSprite.setTexture(bombTexture);
+		rangeUpSprite.setTexture(rangeUpTexture);
+		fireRateUpSprite.setTexture(fireRateUpTexture);
 
 		increaseSpeedSprite.setOrigin(increaseSpeedSprite.getGlobalBounds().width / 2, increaseSpeedSprite.getGlobalBounds().height / 2);
 		increaseDamageSprite.setOrigin(increaseDamageSprite.getGlobalBounds().width / 2, increaseDamageSprite.getGlobalBounds().height / 2);
 		healthSprite.setOrigin(healthSprite.getGlobalBounds().width / 2, healthSprite.getGlobalBounds().height / 2);
 		bombSprite.setOrigin(bombSprite.getGlobalBounds().width / 2, bombSprite.getGlobalBounds().height / 2);
+		rangeUpSprite.setOrigin(rangeUpSprite.getGlobalBounds().width / 2, rangeUpSprite.getGlobalBounds().height / 2);
+		fireRateUpSprite.setOrigin(fireRateUpSprite.getGlobalBounds().width / 2, fireRateUpSprite.getGlobalBounds().height / 2);
 
 		increaseSpeedSprite.setScale(1.5, 1.5);
 		increaseDamageSprite.setScale(1.5, 1.5);
 		healthSprite.setScale(1.5, 1.5);
 		bombSprite.setScale(1.5, 1.5);
+		rangeUpSprite.setScale(1.5, 1.5);
+		fireRateUpSprite.setScale(1.5, 1.5);
+
 		healthBarTexture.loadFromFile(HEALTHBAR_TEXTURE_PATH);
-		healthBar.setTexture(healthBarTexture);
+		healthBar.setTexture(healthBarTexture);	
 	}
 
 	void LoadHeroImage()

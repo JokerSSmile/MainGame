@@ -8,16 +8,13 @@
 #include "player.h"
 #include "constants.h"
 #include "collision.h"
+#include "sprites.h"
 
 using namespace sf;
 
 struct Chest
 {
-	enum
-	{
-		IncreaseSpeed, IncreaseDamage, Health, Bomb
-	} filling;
-
+	ChestFilling filling;
 	Vector2f position;
 	Vector2i size;
 	Texture chestTexture;
@@ -33,10 +30,10 @@ struct Chest
 	bool isOpened = false;
 
 	Chest() {};
-	Chest(float X, float Y, int Room)
+	Chest(Vector2f pos, int Room)
 	{
-		position.x = X;
-		position.y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
 		chestTexture.loadFromFile("resources/images/chest.png");
 		chestSpriteOpened.setTextureRect(IntRect(64, 0, 64, 64));
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
@@ -45,7 +42,6 @@ struct Chest
 		room = Room;
 	}
 
-	//int RandomNumber();
 	void SetFilling();
 	void CheckOpening(Player& p, Sound& openingSound);
 
@@ -54,14 +50,18 @@ struct Chest
 	void GiveThirdPresent(RenderWindow & window, Sprite & healthSprite);
 	void GiveForthPresent(RenderWindow & window, Sprite & bombSprite);
 
-	void SetPresent(RenderWindow & window, Sprite & increaseSpeedSprite, Sprite & increaseDamageSprite, Sprite & healthSprite, Sprite & bombSprite);
-	void CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
+	void GiveFifthPresent(RenderWindow & window, Sprite & bombSprite);
+
+	void GiveSixthPresent(RenderWindow & window, Sprite & fireRateUp);
+
+	void SetPresent(RenderWindow & window, Sprites& mySprites);
+	void CheckCollisionWithPresent(Player& p, Sprites& mySprites);
 
 	void UpdateDrawText(Font& font, RenderWindow& window, View& view);
 
 	void DrawText(RenderWindow & window, float & gameTime, float& playerY, View& view);
 
-	void Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
+	void Update(Player& p, Sound& openingSound, Sprites& mySprites);
 
-	void DrawChest(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite);
+	void DrawChest(RenderWindow& window, Sprites& mySprites);
 };

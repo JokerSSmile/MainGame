@@ -19,9 +19,10 @@ struct Enemy :
 	float deathTime = 0;
 	float bombHitTime = 0;
 	float playerHitTime = 0;
+	float enemyTime;
 	float speed;
 	bool isRemove;
-	float enemyTime;
+	//bool isDirEqualToPlayers;
 	Clock clock;
 	Sprite poofSprite;
 	Sprite headSprite;

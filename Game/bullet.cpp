@@ -23,15 +23,27 @@ void Bullet::CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& w
 	}
 }
 
-void Bullet::DeleteBullet(float& gameTime, Sound& destroyBullet)
+void Bullet::DeleteBullet(float& gameTime, Sound& destroyBullet, float& playersShootRange)
 {
 	if (alive == true)
 	{
-		if (abs(startPos.x - position.x) > BULLET_MAX_DISTANCE || abs(startPos.y - position.y) > BULLET_MAX_DISTANCE)
+		if (isPlayers == false)
 		{
-			deathTime = gameTime;
-			alive = false;
-			destroyBullet.play();
+			if (abs(startPos.x - position.x) > BULLET_MAX_DISTANCE || abs(startPos.y - position.y) > BULLET_MAX_DISTANCE)
+			{
+				deathTime = gameTime;
+				alive = false;
+				destroyBullet.play();
+			}
+		}
+		else
+		{
+			if (abs(startPos.x - position.x) > playersShootRange || abs(startPos.y - position.y) > playersShootRange)
+			{
+				deathTime = gameTime;
+				alive = false;
+				destroyBullet.play();
+			}
 		}
 	}
 }	

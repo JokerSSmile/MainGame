@@ -1,28 +1,31 @@
 #include "chest.h"
 
-// int Chest::RandomNumber()
-// {
-// 	return (double)rand() / (RAND_MAX + 1) * 4;
-// }
-
 void Chest::SetFilling()
 {
-	int rand = int(RandomNumber(0, 4));
+	int rand = int(RandomNumber(0, 6));
 	if (rand == 0)
 	{
-		filling = IncreaseSpeed;
+		filling = INCREASE_SPEED;
 	}
 	else if (rand == 1)
 	{
-		filling = IncreaseDamage;
+		filling = INCREASE_DAMAGE;
 	}
 	else if (rand == 2)
 	{
-		filling = Health;
+		filling = HEALTH;
 	}
 	else if (rand == 3)
 	{
-		filling = Bomb;
+		filling = BOMB;
+	}
+	else if (rand == 4)
+	{
+		filling = RANGE_UP;
+	}
+	else if (rand == 5)
+	{
+		filling = FIRE_RATE_UP;
 	}
 }
 
@@ -59,30 +62,44 @@ void Chest::GiveForthPresent(RenderWindow& window, Sprite& bombSprite)
 	window.draw(bombSprite);
 }
 
-void Chest::SetPresent(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
+void Chest::GiveFifthPresent(RenderWindow& window, Sprite& rangeSprite)
+{
+	rangeSprite.setPosition(position.x, verticalPosition);
+	window.draw(rangeSprite);
+}
+
+void Chest::GiveSixthPresent(RenderWindow& window, Sprite& fireRateUp)
+{
+	fireRateUp.setPosition(position.x, verticalPosition);
+	window.draw(fireRateUp);
+}
+
+void Chest::SetPresent(RenderWindow& window, Sprites& mySprites)
 {
 	switch (filling)
 	{
-	case IncreaseSpeed: GiveFirstPresent(window, increaseSpeedSprite); break;
-	case IncreaseDamage: GiveSecondPresent(window, increaseDamageSprite); break;
-	case Health: GiveThirdPresent(window, healthSprite); break;
-	case Bomb: GiveForthPresent(window, bombSprite); break;
+	case INCREASE_SPEED: GiveFirstPresent(window, mySprites.increaseSpeedSprite); break;
+	case INCREASE_DAMAGE: GiveSecondPresent(window, mySprites.increaseDamageSprite); break;
+	case HEALTH: GiveThirdPresent(window, mySprites.healthSprite); break;
+	case BOMB: GiveForthPresent(window, mySprites.bombSprite); break;
+	case RANGE_UP: GiveFifthPresent(window, mySprites.rangeUpSprite); break;
+	case FIRE_RATE_UP: GiveSixthPresent(window, mySprites.fireRateUpSprite);
 	}
 }
 
-void Chest::CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
+void Chest::CheckCollisionWithPresent(Player& p, Sprites& mySprites)
 {
-	if (Collision::PixelPerfectTest(p.sprite, increaseSpeedSprite))
+	if (Collision::PixelPerfectTest(p.sprite, mySprites.increaseSpeedSprite))
 	{
 		isPresentTaken = true;
 		p.speed += SPEED_BONUS;
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, increaseDamageSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.increaseDamageSprite))
 	{
 		isPresentTaken = true;
 		p.damage += DAMAGE_BONUS;
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, healthSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.healthSprite))
 	{
 		isPresentTaken = true;
 		if (p.health >= MAX_PLAYER_HEALTH - 1)
@@ -94,10 +111,20 @@ void Chest::CheckCollisionWithPresent(Player& p, Sprite& increaseSpeedSprite, Sp
 			p.health += HEAL_BONUS;
 		}
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, bombSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.bombSprite))
 	{
 		isPresentTaken = true;
 		p.bombCount += BOMB_BONUS;
+	}
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.rangeUpSprite))
+	{
+		isPresentTaken = true;
+		p.range += RANGE_BONUS;
+	}
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.fireRateUpSprite))
+	{
+		isPresentTaken = true;
+		p.timeBetweenShoots -= FIRE_RATE_UP_BONUS;
 	}
 }
 
@@ -105,17 +132,21 @@ void Chest::UpdateDrawText(Font& font, RenderWindow& window, View& view)
 {
 	bonusText.setFont(font);
 	bonusText.setCharacterSize(15);
-	bonusText.setPosition(view.getCenter().x, view.getCenter().y);
+	bonusText.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + BONUS_TEXT_SHIFT.x, view.getCenter().y + WINDOW_HEIGHT / 2 - BONUS_TEXT_SHIFT.y);
 	bonusText.setColor(Color::White);
 	switch (filling)
 	{
-	case IncreaseSpeed:  bonusText.setString("SPEED UP");
+	case INCREASE_SPEED:  bonusText.setString("SPEED UP");
 		break;
-	case IncreaseDamage: bonusText.setString("INCREASE DAMAGE");
+	case INCREASE_DAMAGE: bonusText.setString("INCREASE DAMAGE");
 		break;
-	case Health: bonusText.setString("HEAL");
+	case HEALTH: bonusText.setString("HEAL");
 		break;
-	case Bomb: bonusText.setString("ADD BOMB");
+	case BOMB: bonusText.setString("ADD BOMB");
+		break;
+	case RANGE_UP: bonusText.setString("RANGE UP");
+		break;
+	case FIRE_RATE_UP: bonusText.setString("FIRE RATE UP");
 		break;
 	default:
 		break;
@@ -147,7 +178,7 @@ void Chest::DrawText(RenderWindow& window, float& gameTime, float& playerY, View
 	}
 }
 
-void Chest::Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
+void Chest::Update(Player& p, Sound& openingSound, Sprites& mySprites)
 {
 	chestSpriteOpened.setTexture(chestTexture);
 	chestSpriteClosed.setTexture(chestTexture);
@@ -162,12 +193,12 @@ void Chest::Update(Player& p, Sound& openingSound, Sprite& increaseSpeedSprite, 
 		chestSpriteOpened.setPosition(position.x - size.x / 2, position.y - size.y / 2);
 		if (isPresentTaken == false)
 		{
-			CheckCollisionWithPresent(p, increaseSpeedSprite, increaseDamageSprite, healthSprite, bombSprite);
+			CheckCollisionWithPresent(p, mySprites);
 		}
 	}
 }
 
-void Chest::DrawChest(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite& increaseDamageSprite, Sprite& healthSprite, Sprite& bombSprite)
+void Chest::DrawChest(RenderWindow& window, Sprites& mySprites)
 {
 	if (isOpened == false)
 	{
@@ -181,7 +212,7 @@ void Chest::DrawChest(RenderWindow& window, Sprite& increaseSpeedSprite, Sprite&
 		}
 		if (isPresentTaken == false)
 		{
-			SetPresent(window, increaseSpeedSprite, increaseDamageSprite, healthSprite, bombSprite);
+			SetPresent(window, mySprites);
 		}
 	}
 }

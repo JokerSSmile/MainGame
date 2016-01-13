@@ -53,10 +53,7 @@ struct Game
 	float lastShootPlayer;
 	float gameTime;
 	float time;
-
-	//int room;
 	int volume;
-
 	bool isKeyPressed;
 
 	void InitLevelOneEnemies();

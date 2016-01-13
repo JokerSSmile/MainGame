@@ -77,6 +77,16 @@ enum BossState
 	SHOOT
 };
 
+enum ChestFilling
+{
+	INCREASE_SPEED,
+	INCREASE_DAMAGE,
+	HEALTH,
+	BOMB,
+	RANGE_UP,
+	FIRE_RATE_UP
+};
+
 enum PlayerState
 {
 	NORMAL,
@@ -152,8 +162,10 @@ const float BULLET_SHIFT_IF_SHOOT_UP = 20.f;
 //bonuses
 const float SPEED_BONUS = 0.01f;
 const float DAMAGE_BONUS = 0.5f;
-const float HEAL_BONUS = 1;
+const float HEAL_BONUS = 1.f;
 const int BOMB_BONUS = 1;
+const float RANGE_BONUS = 25.f;
+const float FIRE_RATE_UP_BONUS = 0.05f;
 
 //bomb
 const float TIME_BEFORE_EXPLOSION = 2.f;
@@ -172,6 +184,7 @@ const float BOMB_IMAGE_SCALE = 1.5;
 const Vector2f BOMB_IMAGE_SHIFT = { 28, 32 };
 const Vector2f TEXT_SHIFT = { 80, 45 };
 const Vector2f HP_SHIFT = { 35, 10 };
+const Vector2f BONUS_TEXT_SHIFT = { 10, 30 };
 const int HEALTH_TEXTURE_SIZE = 16;
 const float HP_SCALE = 2;
 const float FRAME_CHANGE_TIME = 0.5f;
