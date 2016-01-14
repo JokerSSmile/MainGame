@@ -40,7 +40,7 @@ struct Player :
 		position.y = pos.y;
 		health = MAX_PLAYER_HEALTH;
 		bombCount = 2;
-		damage = 100;//0.5f;
+		damage = 0.5f;
 		speed = 0.1f;
 		lastBombPlant = 0;
 		CurrentFrame = 0;
@@ -48,7 +48,7 @@ struct Player :
 		bombHitTime = 0;
 		hitTimer = 0;
 		range = 250.f;
-		timeBetweenShoots = 0.8f;
+		timeBetweenShoots = 0.7f;
 
 		sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
 		headSprite.setTexture(headTexture);

@@ -102,6 +102,8 @@ struct Game
 	void UpdateBoss();
 	void UpdateGame(RenderWindow& window);
 
+	void DrawHelp(RenderWindow & window);
+
 	void DrawBackground(RenderWindow& window);
 	void DrawPlayersHealth(RenderWindow& window);
 	void DrawBombCount(RenderWindow& window);

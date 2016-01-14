@@ -20,7 +20,6 @@ void Game::InitLevelTwoEnemies()
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(300, 200), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 1));
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(350, 325), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 1));
 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1400, 1000), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 5));
-	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1400, 850), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 5));
 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1600, 1000), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 5));
 	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1100, 800), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 5));
 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1200, 1700), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 8));
@@ -86,7 +85,7 @@ void Game::InitEnemies()
 void Game::InitGame(RenderWindow& window)
 {
 	Image icon;
-	icon.loadFromFile("resources/icon.png");
+	icon.loadFromFile("resources/images/icon.png");
 	window.setIcon(36, 30, icon.getPixelsPtr());
 	level = ONE;
 	lastShootPlayer = 0;
@@ -633,16 +632,11 @@ void Game::UpdateGame(RenderWindow& window)
 	ProcessEvents(window);
 }
 
-void Game::DrawBackground(RenderWindow& window)
+void Game::DrawHelp(RenderWindow& window)
 {
-	mySprites.wallBackgroundSprite.setOrigin(mySprites.wallBackgroundSprite.getGlobalBounds().width / 2, mySprites.wallBackgroundSprite.getGlobalBounds().height / 2);
-	mySprites.wallBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
-	mySprites.floorBackgroundSprite.setOrigin(mySprites.floorBackgroundSprite.getGlobalBounds().width / 2, mySprites.floorBackgroundSprite.getGlobalBounds().height / 2);
-	mySprites.floorBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
-	mySprites.wallBulletSprite.setOrigin(mySprites.wallBulletSprite.getGlobalBounds().width / 2, mySprites.wallBulletSprite.getGlobalBounds().height / 2);
-	mySprites.wallBulletSprite.setPosition(view.getCenter().x, view.getCenter().y);
-
 	Sprite controlsSprite;
+	Text helpText;
+	Text taskText;
 	if (room == 4 && level == ONE)
 	{
 		controlsSprite.setTexture(mySprites.controlsTexture);
@@ -651,12 +645,41 @@ void Game::DrawBackground(RenderWindow& window)
 
 		controlsSprite.setOrigin(x, y);
 		controlsSprite.setPosition(view.getCenter().x, view.getCenter().y - 80);
+
+		helpText.setColor(Color::Black);
+		taskText.setColor(Color::Black);
+		helpText.setFont(mySprites.font);
+		taskText.setFont(mySprites.font);
+		helpText.setCharacterSize(15);
+		taskText.setCharacterSize(15);
+		helpText.setString("You can destroy rocks with bombs");
+		taskText.setString("To go to next level you need to clear each room\nThe portal is in the right-up room\nAfter clearing all levels kill boss");
+		helpText.setOrigin(helpText.getGlobalBounds().width / 2, helpText.getGlobalBounds().height / 2);
+		taskText.setOrigin(taskText.getGlobalBounds().width / 2, taskText.getGlobalBounds().height / 2);
+		helpText.setPosition(view.getCenter().x, view.getCenter().y + 50);
+		taskText.setPosition(view.getCenter().x, view.getCenter().y + 100);
+
+		window.draw(controlsSprite);
+		window.draw(helpText);
+		window.draw(taskText);
 	}
+}
+
+void Game::DrawBackground(RenderWindow& window)
+{
+	mySprites.wallBackgroundSprite.setOrigin(mySprites.wallBackgroundSprite.getGlobalBounds().width / 2, mySprites.wallBackgroundSprite.getGlobalBounds().height / 2);
+	mySprites.wallBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
+	mySprites.floorBackgroundSprite.setOrigin(mySprites.floorBackgroundSprite.getGlobalBounds().width / 2, mySprites.floorBackgroundSprite.getGlobalBounds().height / 2);
+	mySprites.floorBackgroundSprite.setPosition(view.getCenter().x, view.getCenter().y);
+	mySprites.wallBulletSprite.setOrigin(mySprites.wallBulletSprite.getGlobalBounds().width / 2, mySprites.wallBulletSprite.getGlobalBounds().height / 2);
+	mySprites.wallBulletSprite.setPosition(view.getCenter().x, view.getCenter().y);
+	
 
 	window.draw(mySprites.wallBackgroundSprite);
 	window.draw(mySprites.floorBackgroundSprite);
 	window.draw(mySprites.wallBulletSprite);
-	window.draw(controlsSprite);
+
+	DrawHelp(window);
 }
 
 void Game::DrawBombCount(RenderWindow& window)

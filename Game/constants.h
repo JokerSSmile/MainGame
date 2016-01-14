@@ -103,21 +103,21 @@ enum PlayerState
 const float GAME_TIME_DIFFERENCE = 500;
 
 //start hp
-const float STAND_AND_SHOOT_HP_1 = 2;
-const float STAND_AND_SHOOT_HP_2 = 3;
-const float STAND_AND_SHOOT_HP_3 = 5;
+const float STAND_AND_SHOOT_HP_1 = 1.5;
+const float STAND_AND_SHOOT_HP_2 = 2;
+const float STAND_AND_SHOOT_HP_3 = 4;
 
 const float WORM_HP_1= 2;
-const float WORM_HP_2 = 4;
-const float WORM_HP_3 = 6;
+const float WORM_HP_2 = 3.5;
+const float WORM_HP_3 = 5;
 
 const float FLY_HP_1 = 1;
-const float FLY_HP_2 = 2;
-const float FLY_HP_3 = 3;
+const float FLY_HP_2 = 1.5;
+const float FLY_HP_3 = 2.5;
 
-const float FOLLOW_HP_1 = 3;
-const float FOLLOW_HP_2 = 5;
-const float FOLLOW_HP_3 = 6;
+const float FOLLOW_HP_1 = 2;
+const float FOLLOW_HP_2 = 3;
+const float FOLLOW_HP_3 = 4.5;
 
 //colors
 const Color COLOR_AFTER_HIT = { 200, 15, 15 };
@@ -131,7 +131,7 @@ const Vector2f EXIT_GAME_TEXT_SHIFT = { -10, -100 };
 const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
 const Vector2i PLAYER_SIZE = { 36, 26 };
-const float MAX_PLAYER_HEALTH = 5;// == start health
+const float MAX_PLAYER_HEALTH = 8;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
