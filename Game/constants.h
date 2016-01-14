@@ -69,6 +69,12 @@ enum FollowState
 	NEAR
 };
 
+enum ShootingState
+{
+	SHOOTING,
+	STANDING
+};
+
 enum BossState
 {
 	STAY,
@@ -96,8 +102,25 @@ enum PlayerState
 //global
 const float GAME_TIME_DIFFERENCE = 500;
 
+//start hp
+const float STAND_AND_SHOOT_HP_1 = 2;
+const float STAND_AND_SHOOT_HP_2 = 3;
+const float STAND_AND_SHOOT_HP_3 = 5;
+
+const float WORM_HP_1= 2;
+const float WORM_HP_2 = 4;
+const float WORM_HP_3 = 6;
+
+const float FLY_HP_1 = 1;
+const float FLY_HP_2 = 2;
+const float FLY_HP_3 = 3;
+
+const float FOLLOW_HP_1 = 3;
+const float FOLLOW_HP_2 = 5;
+const float FOLLOW_HP_3 = 6;
+
 //colors
-const Color COLOR_AFTER_HIT = { 200, 15, 15 };//255,150,150
+const Color COLOR_AFTER_HIT = { 200, 15, 15 };
 const Color COLOR_WHILE_MOUSE_ON_TEXT = { 125, 125, 135 };
 
 //main menu
@@ -108,7 +131,7 @@ const Vector2f EXIT_GAME_TEXT_SHIFT = { -10, -100 };
 const float PLAYER_POSITION_X = 250;
 const float PLAYER_POSITION_Y = 200;
 const Vector2i PLAYER_SIZE = { 36, 26 };
-const float MAX_PLAYER_HEALTH = 10;// == start health
+const float MAX_PLAYER_HEALTH = 5;// == start health
 const float TIME_BETWEEN_SHOOTS_PLAYER = 0.5f;//0.5
 const float TIME_FOR_SHOOT_ANIMATION = 0.2f;//0.2
 const float TIME_FOR_PLAYER_HIT_CD = 1;
@@ -125,6 +148,7 @@ const int TIME_BETWEEN_SHOOT_ENEMY_STAND = 1;
 const Vector2i FLY_SIZE = { 17, 14 };
 const Vector2i STAND_AND_SHOOT_SIZE = { 38, 43 };
 const Vector2i ZOMBIE_SIZE = { 32, 32 };
+const Vector2i WORM_SIZE = { 64, 64 };
 const float  ENEMY_DESTROY_EFFECT = 0.07f;
 const float CHANGE_COLOR_EFFECT = 0.3f;
 const float ENEMY_FOLLOW_SPEED_NORMAL = 0.05f;
@@ -136,7 +160,7 @@ const float SPIKE_DAMAGE = 0.5f;
 const float BOSS_JUMP_SPEED = 5;
 const float BOSS_FALL_DAMAGE = 2;
 const float BOSS_BULLET_SPEED = 0.3f;
-const float BOSS_HEALTH = 20;
+const float BOSS_HEALTH = 40;
 
 //map
 const int HEIGHT_SMALL_MAP = 10;

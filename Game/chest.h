@@ -26,8 +26,8 @@ struct Chest
 	float takePresentTime;
 	int present;
 	int room;
-	bool isPresentTaken = false;
-	bool isOpened = false;
+	bool isPresentTaken;
+	bool isOpened;
 
 	Chest() {};
 	Chest(Vector2f pos, int Room)
@@ -40,6 +40,8 @@ struct Chest
 		size.x = int(chestSpriteClosed.getGlobalBounds().height);
 		size.y = int(chestSpriteClosed.getGlobalBounds().width);
 		room = Room;
+		isPresentTaken = false;
+		isOpened = false;
 	}
 
 	void SetFilling();

@@ -20,6 +20,7 @@ struct Game
 {
 	Game() {};
 
+	Window window;
 	MainMenu menu;
 	Player player;
 	Boss boss;
@@ -63,7 +64,7 @@ struct Game
 	void InitLevelThreeEnemies();
 
 	void InitEnemies();
-	void InitGame();
+	void InitGame(RenderWindow& window);
 	void ResetData();
 	void Restart();
 	void InitializeRoom();
@@ -93,7 +94,7 @@ struct Game
 	void UpdateBombs();
 	void UpdateTimePerFrame();
 	void UpdateTime(); 
-	void UpdateSounds();
+	void UpdateMusic();
 	void ProcessEvents(RenderWindow& window);
 	void UpdatePause();
 	void SetMainMenuMusic();

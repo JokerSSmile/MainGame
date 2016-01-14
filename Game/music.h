@@ -22,6 +22,8 @@ struct Sounds
 	Music backgroundMusic2;
 	Music backgroundMusic3;
 
+	Music bossMusic;
+
 	Music menuMusic;
 
 	SoundBuffer tearDestroyBuffer;
@@ -62,5 +64,5 @@ struct Sounds
 	
 	void LoadMusic();
 	void SetVolume(int& volume);
-	void UpdateMusic(int& volume);
+	void UpdateMusic(int& volume, Level& level);
 };

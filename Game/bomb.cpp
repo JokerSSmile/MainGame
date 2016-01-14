@@ -48,7 +48,7 @@ void Boomb::ExplosionAnimation(Texture& bombExplosionTexture, float& gameTime, f
 
 void Boomb::Update(float& gameTime)
 {
-	if (gameTime > explosionTime + TIME_FOR_EXPLOSION / 3)
+	if (gameTime > explosionTime + TIME_FOR_EXPLOSION / 3 || gameTime < 1)
 	{
 		isAlive = false;
 		damageZone.setPosition(-TILE_SIDE * 2, -TILE_SIDE * 2);
@@ -77,6 +77,5 @@ void Boomb::Draw(RenderWindow& window, Texture& playersBombTexture, Texture& bom
 		ExplosionAnimation(bombExplosionTexture, gameTime, time);
 		window.draw(explosionSprite);
 		currentFrame = 0;
-		window.draw(damageZone);
 	}
 }

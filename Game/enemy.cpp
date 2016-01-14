@@ -13,11 +13,11 @@ void Enemy::CheckCollosionFly(vector<Map>& myMap, float& time)
 		{
 			if (moving.x > 0)
 			{
-				position.x = oldPos.x - 2;
+				position.x = oldPos.x - 5;
 			}
 			else if (moving.x < 0)
 			{
-				position.x = oldPos.x + 2;
+				position.x = oldPos.x + 5;
 			}
 			moving.x = -moving.x;
 			moving.y = -moving.y;
@@ -72,6 +72,21 @@ void Enemy::DestroyEffect(float& gameTime, RenderWindow& window, Texture& poofTe
 	}
 }
 
+bool Enemy::isIntersectEnemy(vector<Enemy>& enemies)
+{
+	for (auto& enemy : enemies)
+	{
+		if (enemy.sprite.getPosition() != sprite.getPosition() && (enemy.name == "EnemyFollow" || enemy.name == "Worm") && enemy.health > 0)
+		{
+			if (Collision::BoundingBoxTest(sprite, enemy.sprite) && sprite.getPosition().x != 0)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void Enemy::ExplosionCollision(Boomb& boomb, float& gameTime)
 {
 	if (sprite.getGlobalBounds().intersects(boomb.damageZone.getGlobalBounds()))
@@ -121,12 +136,14 @@ void Enemy::UpdateStandAndShoot(vector<Bullet>& bullets, float& gameTime)
 {
 	if (name == "EnemyStandAndShoot")
 	{
-		if (gameTime > (lastShootEnemyStand + TIME_BETWEEN_SHOOT_ENEMY_STAND))
+		enemyTime = clock.getElapsedTime().asSeconds();
+		if (enemyTime > (TIME_BETWEEN_SHOOT_ENEMY_STAND))
 		{
 			for (int i = 4; i <= 7; i++)
 			{
 				Shoot(bullets, gameTime, i, sprite.getPosition().x + sprite.getGlobalBounds().width / 2 - 16, sprite.getPosition().y + 32);
 			}
+			clock.restart();
 		}
 		sprite.setScale(2, 2);
 		sprite.setPosition(position);
@@ -228,8 +245,8 @@ void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTi
 {
 	if (name == "Worm")
 	{
-		UpdateFrameWorm(time);
-		if (enemyTime > 2 && followState == FAR)
+ 		UpdateFrameWorm(time);
+		if ((enemyTime > 2 && followState == FAR) )
 		{
 			SetWarmDir();
 		}
@@ -239,6 +256,8 @@ void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTi
 		sprite.setPosition(position);
 		if (IsIntersectsMap(myMap) == true || isIntersectEnemy(enemies) == true)
 		{
+			SetWarmDir();
+			followState = FAR;
 			sprite.setPosition(oldPosition);
 			if (position.x != oldPosition.x && position.y != oldPosition.y)
 			{
@@ -252,12 +271,13 @@ void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTi
 					}
 				}
 			}
-			followState = FAR;
 			enemyTime = 3;
+			isStacked = true;
 		}
 		else
 		{
 			enemyTime = clock.getElapsedTime().asSeconds();
+			isStacked = false;
 		}
 		position = sprite.getPosition();
 		spriteCenterPos.x = position.x + size.x / 2;
@@ -267,7 +287,7 @@ void Enemy::UpdateWorm(vector<Map>& myMap, vector<Enemy>& enemies, float& gameTi
 
 void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 {
-	float shift = 30;
+	float shift = 20;
 	if (spriteCenterPos.x >= playerPosition.x - shift && spriteCenterPos.x <= playerPosition.x + PLAYER_SIZE.x + shift)
 	{
 		if (spriteCenterPos.y >= playerPosition.y)
@@ -278,7 +298,7 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				if (dir == UP)
+				if (dir == UP && isStacked == false)
 				{
 					followState = NEAR;
 				}
@@ -292,7 +312,7 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				if (dir == DOWN)
+				if (dir == DOWN && isStacked == false)
 				{
 					followState = NEAR;
 				}
@@ -310,7 +330,7 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				if (dir == LEFT)
+				if (dir == LEFT && isStacked == false)
 				{
 					followState = NEAR;
 				}
@@ -324,7 +344,7 @@ void Enemy::UpdateStrightDir(Vector2f& playerPosition, bool& isStrightDir)
 			}
 			else
 			{
-				if (dir == RIGHT)
+				if (dir == RIGHT && isStacked == false)
 				{
 					followState = NEAR;
 				}
@@ -345,7 +365,7 @@ void Enemy::SetDirection(Vector2f& playerPosition)
 {
 	if (name == "Worm" || name == "EnemyFollow")
 	{
-		float shift = 10;
+		float shift = 20;
 		bool isStrightDir = false;
 		UpdateStrightDir(playerPosition, isStrightDir);
 		if (isStrightDir == false && name == "EnemyFollow")
@@ -445,21 +465,6 @@ void Enemy::UpdateState(Vector2f& playerPosition)
 	}
 }
 
-bool Enemy::isIntersectEnemy(vector<Enemy>& enemies)
-{
-	for (auto& enemy : enemies)
-	{
-		if (enemy.position != position && (enemy.name == "EnemyFollow" && enemy.name == "Worm") && enemy.health > 0)
-		{
-			if (Collision::BoundingBoxTest(sprite, enemy.sprite))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 void Enemy::MoveFollowEnemy(float& gameTime, Vector2f& playerPosition, vector<Map>& myMap, float& time, vector<Enemy>& enemies)
 {
 	if (name == "EnemyFollow")
@@ -510,7 +515,7 @@ void Enemy::CheckIsAlive(float& gameTime)
 	{
 		currentFrame = 0;
 		alive = false;
-		sprite.setPosition(0, 0);
+		sprite.setPosition(WINDOW_WIDTH * 3, WINDOW_HEIGHT* 3);
 	}
 }
 

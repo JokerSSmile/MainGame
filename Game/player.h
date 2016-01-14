@@ -14,16 +14,15 @@ using namespace std;
 struct Player :
 	public Character
 {
-	float damage = 0.1;
-	float speed = 0.1f;
-	float lastBombPlant = 0;
-	float CurrentFrame = 0;
-	float lastHitTime = 0;
-	float bombHitTime = 0;
-	float hitTimer = 0;
-	float range = 250;
-	float timeBetweenShoots = 0.1;
-
+	float damage;
+	float speed;
+	float lastBombPlant;
+	float CurrentFrame;
+	float lastHitTime;
+	float bombHitTime;
+	float hitTimer;
+	float range;
+	float timeBetweenShoots;
 	int bombCount;
 	
 	bool canMove;
@@ -39,10 +38,17 @@ struct Player :
 		size.y = Size.y;
 		position.x = pos.x;
 		position.y = pos.y;
-
 		health = MAX_PLAYER_HEALTH;
-
 		bombCount = 2;
+		damage = 100;//0.5f;
+		speed = 0.1f;
+		lastBombPlant = 0;
+		CurrentFrame = 0;
+		lastHitTime = 0;
+		bombHitTime = 0;
+		hitTimer = 0;
+		range = 250.f;
+		timeBetweenShoots = 0.8f;
 
 		sprite.setTextureRect(IntRect(0, 0, size.x, size.y));
 		headSprite.setTexture(headTexture);

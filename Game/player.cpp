@@ -202,10 +202,11 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float&
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.alive == true)
+		if (enemy.alive == true && enemy.sprite.getPosition().x != 0)
 		{
 			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 			{
+				cout << enemy.health << endl;
 				health -= enemy.damage;
 				hitTimer = gameTime;
 				playerHurts.play();
@@ -226,7 +227,8 @@ void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float&
 
 void Player::ChangeColorAfterHit(float& gameTime)
 {
-	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
+	if ((gameTime > hitTimer && gameTime < hitTimer + CHANGE_COLOR_EFFECT) || (gameTime > lastHitTime && gameTime < lastHitTime + CHANGE_COLOR_EFFECT)
+		|| gameTime > bombHitTime && gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
 		if (gameTime > 1)
 		{

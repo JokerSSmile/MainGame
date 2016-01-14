@@ -184,9 +184,9 @@ void Chest::Update(Player& p, Sound& openingSound, Sprites& mySprites)
 	chestSpriteClosed.setTexture(chestTexture);
 	if (isOpened == false)
 	{
+		CheckOpening(p, openingSound);
 		SetFilling();
 		chestSpriteClosed.setPosition(position.x - size.x / 2, position.y - size.y / 2);
-		CheckOpening(p, openingSound);
 	}
 	else
 	{

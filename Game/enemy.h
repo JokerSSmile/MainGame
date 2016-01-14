@@ -12,24 +12,25 @@ using namespace std;
 struct Enemy :
 	public Character
 {
-	float currentFrame = 0;
-	int enemyRoom = 0;
-	float lastShootEnemyStand = 0;
-	float damage = 0.5;
-	float deathTime = 0;
-	float bombHitTime = 0;
-	float playerHitTime = 0;
+	float currentFrame;
+	int enemyRoom ;
+	float lastShootEnemyStand;
+	float damage;
+	float deathTime;
+	float bombHitTime;
+	float playerHitTime;
 	float enemyTime;
 	float speed;
 	bool isRemove;
-	//bool isDirEqualToPlayers;
+	bool isStacked;
 	Clock clock;
 	Sprite poofSprite;
 	Sprite headSprite;
 	FollowState followState;
-	Vector2f lastPosition = {0, 0};
+	ShootingState shooting;
+	Vector2f lastPosition;
 	Vector2f spriteCenterPos;
-	Vector2f enemyOldPosition = { position.x, position.y };
+	Vector2f enemyOldPosition;
 
 	Enemy() {};
 	Enemy(Texture & image, Vector2f& pos, Vector2i& Size, String Name, float Health, int Room) :Character(image, pos, Size, Name, health)
@@ -39,6 +40,14 @@ struct Enemy :
 		size.y = Size.y;
 		position.x = pos.x;
 		position.y = pos.y;
+		enemyOldPosition = position;
+		currentFrame = 0;
+		lastShootEnemyStand = 0;
+		damage = 0.5;
+		deathTime = 0;
+		bombHitTime = 0;
+		playerHitTime = 0;
+		isStacked = false;
 		health = Health;
 		enemyRoom = Room;
 
@@ -49,6 +58,10 @@ struct Enemy :
 		else if (name == "EnemyFollow")
 		{
 			dir = STAND;
+		}
+		else if (name == "Worm")
+		{
+			dir = RIGHT;
 		}
 	}
 

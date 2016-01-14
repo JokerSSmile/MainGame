@@ -1,40 +1,69 @@
 #include "game.h"
 
-//TODO:
-//hero red when enemy damage
-//restart after boss
-
-
 void Game::InitLevelOneEnemies()
 {
-	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
-	//enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(500, 800), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
-	//enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 900), Vector2i(ZOMBIE_SIZE), "Worm", 10, 4));
-//	boss = Boss(mySprites.bossTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(80, 112), "Boss", 10, 4);
-	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY1_POSITION_X - 25, FLY1_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-//	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(FLY2_POSITION_X - 25, FLY2_POSITION_Y), Vector2i(FLY_SIZE), "EnemyFly", 1, 1));
-	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
-// 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1500, 200), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
-// 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1300, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 2));
-	//enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
- 	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 300), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", 3, 3));
-	//enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 900), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
-// 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 1050), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
-// 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 950), Vector2i(FLY_SIZE), "EnemyFly", 1, 6));
-// 	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 800), Vector2i(FLY_SIZE), "EnemyFly", 1, 5));
- 	//enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(400, 300), Vector2i(WORM_SIZE), "Worm", WORM_HP_1, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1200, 800), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1300, 1100), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 5));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 220), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_1, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(1400, 900), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_1, 5));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 1000), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_1, 6));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2600, 1000), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_1, 6));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2300, 800), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 6));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2600, 900), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 6));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2100, 200), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 3));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2300, 400), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_1, 3));
 }
 
 void Game::InitLevelTwoEnemies()
 {
- 	//enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
- 	//enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(400, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(300, 200), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(350, 325), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 1));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1400, 1000), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 5));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1400, 850), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 5));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1600, 1000), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 5));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1100, 800), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 5));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1200, 1700), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 8));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 1700), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 8));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1600, 1700), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 8));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(500, 1500), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 7));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(700, 1600), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 7));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(300, 1650), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 7));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2500, 1450), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 9));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2600, 1500), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 9));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2550, 1600), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 9));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2450, 1700), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 9));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(2100, 1700), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 9));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(2100, 800), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 6));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(2450, 1100), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_2, 6));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(2200, 900), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 6));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(2200, 200), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 3));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(2400, 300), Vector2i(WORM_SIZE), "Worm", WORM_HP_2, 3));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2300, 400), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 3));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(2600, 450), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_2, 3));
+
 }
 
 void Game::InitLevelThreeEnemies()
 {
-// 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 300), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
-// 	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(1300, 400), Vector2i(ZOMBIE_SIZE), "EnemyFollow", 2, 2));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(250, 440), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_3, 1));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1200, 200), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 2));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1550, 400), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 2));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2100, 250), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_3, 3));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2500, 350), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_3, 3));
+	enemies.push_back(Enemy(mySprites.standAndShootTexture, Vector2f(2300, 350), Vector2i(STAND_AND_SHOOT_SIZE), "EnemyStandAndShoot", STAND_AND_SHOOT_HP_3, 3));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1300, 800), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 5));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1500, 800), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 5));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1450, 1050), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 5));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(2450, 1100), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_3, 6));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(300, 1500), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_3, 7));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(450, 1750), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_3, 7));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(1600, 1580), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 8));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1300, 1750), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_3, 8));
+	enemies.push_back(Enemy(mySprites.enemyTexture, Vector2f(1500, 1450), Vector2i(FLY_SIZE), "EnemyFly", FLY_HP_3, 8));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(2100, 1600), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 9));
+	enemies.push_back(Enemy(mySprites.wormTexture, Vector2f(2400, 1650), Vector2i(WORM_SIZE), "Worm", WORM_HP_3, 9));
+	enemies.push_back(Enemy(mySprites.heroTexture, Vector2f(2600, 1450), Vector2i(ZOMBIE_SIZE), "EnemyFollow", FOLLOW_HP_3, 9));
 }
 
 void Game::InitEnemies()
@@ -54,8 +83,11 @@ void Game::InitEnemies()
 	}
 }
 
-void Game::InitGame()
+void Game::InitGame(RenderWindow& window)
 {
+	Image icon;
+	icon.loadFromFile("resources/icon.png");
+	window.setIcon(36, 30, icon.getPixelsPtr());
 	level = ONE;
 	lastShootPlayer = 0;
 	volume = 30;
@@ -66,9 +98,9 @@ void Game::InitGame()
 	myTileMap.InitMap(myMap, level);
 	mySprites.InitImages();
 	mySprites.LoadFont();
-	mySounds.LoadMusic();
 	menu.InitMenu(mySprites.mainMenuTexture, mySprites.font);
 	isKeyPressed = false;
+	mySounds.LoadMusic();
 	mySounds.menuMusic.play();
 }
 
@@ -82,9 +114,13 @@ void Game::ResetData()
 	clock.restart();
 	boomb.currentFrame = 0;
 	player.lastBombPlant = 0;
+	boomb.position = { -TILE_SIDE, -TILE_SIDE };
+	boss.sprite.setPosition(-TILE_SIDE, -TILE_SIDE);
+	boomb.explosionTime = 0;
+	boomb.createTime = 0;
+	boomb.isAlive = false;
 	player.lastHitTime = 0;
 	player.hitTimer = 0;
-	boss.sprite.setPosition(0, 0);
 }
 
 void Game::Restart()
@@ -93,7 +129,6 @@ void Game::Restart()
 	lastShootPlayer = 0;
 	room = FIRST;
 	volume = 30;
-	//gameState = MAIN_MENU;
 	InitEnemies();
 	player.position = { PLAYER_POSITION_X, PLAYER_POSITION_Y + 700 };
 	view.reset(FloatRect(0, float(WINDOW_HEIGHT), float(WINDOW_WIDTH), float(WINDOW_HEIGHT)));
@@ -273,6 +308,7 @@ void Game::CheckMouseIntersectionWithTextEnd(RenderWindow& window)
 		{
 			level = ONE;
 			Restart();
+			player = Player(mySprites.heroTexture, Vector2f(PLAYER_POSITION_X - 100, PLAYER_POSITION_Y + 700), Vector2i(PLAYER_SIZE), "Hero", 6, mySprites.headTexture);
 			gameState = MAIN_MENU;
 		}
 	}
@@ -331,6 +367,11 @@ void Game::UpdateEnemies(RenderWindow& window)
 				enemy.UpdateStandAndShoot(bullets, gameTime);
 				enemy.UpdateWorm(myMap, enemies, gameTime, time);
 				enemy.Update(boomb, gameTime, player.position);
+				
+			}
+			else
+			{
+				enemy.clock.restart();
 			}
 			enemy.ExplosionCollision(boomb, gameTime);
 			enemy.deathTime = gameTime;
@@ -377,7 +418,15 @@ void Game::UpdatePlayersBullets(Bullet& bullet)
 		{
 			if (enemy.health > 0)
 			{
-				if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite) || Collision::PixelPerfectTest(enemy.headSprite, bullet.bulletSprite))
+				if (Collision::PixelPerfectTest(enemy.sprite, bullet.bulletSprite) && enemy.sprite.getPosition().x != 0)
+				{
+					bullet.deathTime = gameTime;
+					bullet.alive = false;
+					enemy.health -= bullet.damage;
+					enemy.playerHitTime = gameTime;
+					mySounds.tearDestroy.play();
+				}
+				else if (Collision::PixelPerfectTest(enemy.headSprite, bullet.bulletSprite) && enemy.name == "EnemyFollow")
 				{
 					bullet.deathTime = gameTime;
 					bullet.alive = false;
@@ -473,9 +522,9 @@ void Game::UpdateTimePerFrame()
 	time = time / GAME_TIME_DIFFERENCE;
 }
 
-void Game::UpdateSounds()
+void Game::UpdateMusic()
 {
-	mySounds.UpdateMusic(volume);
+	mySounds.UpdateMusic(volume, level);
 }
 
 void Game::ProcessEvents(RenderWindow& window)
@@ -547,6 +596,10 @@ void Game::UpdateBoss()
 		boss.PlaySound(mySounds.bossLands, mySounds.bossShoots, mySounds.bossDies);
 		boss.ExplosionCollision(boomb, gameTime);
 	}
+	else
+	{
+		boss.clock.restart();
+	}
 }
 
 void Game::UpdateGame(RenderWindow& window)
@@ -567,7 +620,7 @@ void Game::UpdateGame(RenderWindow& window)
 		UpdateEnemies(window);
 		UpdateChests(window);
 		UpdateBombs();
-		UpdateSounds();
+		UpdateMusic();
 		CheckEndGame();
 		UpdateBoss();
 		InitializeRoom();
@@ -836,9 +889,6 @@ void Game::DrawBoss(RenderWindow& window)
 
 void Game::DrawWindow(RenderWindow& window)
 {
-	Image icon;
-	icon.loadFromFile("resources/icon.png");
-	window.setIcon(36, 30, icon.getPixelsPtr());
 	window.setView(view);
 	if (gameState == MAIN_MENU)
 	{
