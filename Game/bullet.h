@@ -13,25 +13,23 @@ using namespace std;
 
 struct Bullet
 {
-	float dy;
-	float dx;
+	Vector2f moving;
 	int direction;
-	float x = 0;
-	float y = 0;
+	Vector2f position;
 	Vector2f startPos;
-	bool alive = false;
+	bool alive;
 	float timeShot;
 	float deathTime = 0;
 	Sprite bulletSprite;
 	Sprite bulletEffectSprite;
 	Sprite bulletEnemyEffectSprite;
-	bool isPlayers = false;
+	bool isPlayers;
 	float speed;
-	float damage = 0;
-	bool isInWall;
+	float damage;
+	bool isDel;
 
 	void CheckCollisionBullet(float& gameTime, vector<Map>& myMap, Sprite& mySprites, Sound& destroyBullet);
-	void DeleteBullet(float& gameTime, Sound& destroyBullet);
+	void DeleteBullet(float& gameTime, Sound& destroyBullet, float& playersShootRange);
 	void BulletDestroyEffect(float& gameTime, RenderWindow& window);
 	void SetSpeed();
 	void UpdateBullet(float& time, RenderWindow & window, float gameTime, Texture& bulletTexture, Texture& bulletEffectTexture, Texture& bulletEnemyEffectTexture);

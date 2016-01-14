@@ -1,57 +1,31 @@
 #include "chest.h"
 
-
-void Chest::LoadTextures()
-{
-	if (areTexturesLoaded == false)
-	{
-		increaseSpeedTexture.loadFromFile("resources/images/increaseSpeed.png");
-		IncreaseDamageTexture.loadFromFile("resources/images/IncreaseDamage.png");
-		HealthTexture.loadFromFile("resources/images/addHeart.png");
-		BombTexture.loadFromFile("resources/images/addBomb.png");
-
-		increaseSpeedSprite.setTexture(increaseSpeedTexture);
-		increaseDamageSprite.setTexture(IncreaseDamageTexture);
-		healthSprite.setTexture(HealthTexture);
-		bombSprite.setTexture(BombTexture);
-
-		increaseSpeedSprite.setOrigin(increaseSpeedSprite.getGlobalBounds().width / 2, increaseSpeedSprite.getGlobalBounds().height / 2);
-		increaseDamageSprite.setOrigin(increaseDamageSprite.getGlobalBounds().width / 2, increaseDamageSprite.getGlobalBounds().height / 2);
-		healthSprite.setOrigin(healthSprite.getGlobalBounds().width / 2, healthSprite.getGlobalBounds().height / 2);
-		bombSprite.setOrigin(bombSprite.getGlobalBounds().width / 2, bombSprite.getGlobalBounds().height / 2);
-
-		increaseSpeedSprite.setScale(1.5, 1.5);
-		increaseDamageSprite.setScale(1.5, 1.5);
-		healthSprite.setScale(1.5, 1.5);
-		bombSprite.setScale(1.5, 1.5);
-
-		areTexturesLoaded = true;
-	}
-}
-
-int Chest::RandomNumber()
-{
-	return (double)rand() / (RAND_MAX + 1) * 4;
-}
-
 void Chest::SetFilling()
 {
-	int rand = RandomNumber();
+	int rand = int(RandomNumber(0, 6));
 	if (rand == 0)
 	{
-		filling = IncreaseSpeed;
+		filling = INCREASE_SPEED;
 	}
 	else if (rand == 1)
 	{
-		filling = IncreaseDamage;
+		filling = INCREASE_DAMAGE;
 	}
 	else if (rand == 2)
 	{
-		filling = Health;
+		filling = HEALTH;
 	}
 	else if (rand == 3)
 	{
-		filling = Bomb;
+		filling = BOMB;
+	}
+	else if (rand == 4)
+	{
+		filling = RANGE_UP;
+	}
+	else if (rand == 5)
+	{
+		filling = FIRE_RATE_UP;
 	}
 }
 
@@ -64,54 +38,68 @@ void Chest::CheckOpening(Player& p, Sound& openingSound)
 	}
 }
 
-void Chest::GiveFirstPresent(RenderWindow& window)
+void Chest::GiveFirstPresent(RenderWindow& window, Sprite& increaseSpeedSprite)
 {
-	increaseSpeedSprite.setPosition(x, y + TILE_SIDE / 2);
+	increaseSpeedSprite.setPosition(position.x, verticalPosition);
 	window.draw(increaseSpeedSprite);
 }
 
-void Chest::GiveSecondPresent(RenderWindow& window)
+void Chest::GiveSecondPresent(RenderWindow& window, Sprite& increaseDamageSprite)
 {
-	increaseDamageSprite.setPosition(x, y + TILE_SIDE / 2);
+	increaseDamageSprite.setPosition(position.x, verticalPosition);
 	window.draw(increaseDamageSprite);
 }
 
-void Chest::GiveThirdPresent(RenderWindow& window)
+void Chest::GiveThirdPresent(RenderWindow& window, Sprite& healthSprite)
 {
-	healthSprite.setPosition(x, y + TILE_SIDE / 2);
+	healthSprite.setPosition(position.x, verticalPosition);
 	window.draw(healthSprite);
 }
 
-void Chest::GiveForthPresent(RenderWindow& window)
+void Chest::GiveForthPresent(RenderWindow& window, Sprite& bombSprite)
 {
-	bombSprite.setPosition(x, y + TILE_SIDE / 2);
+	bombSprite.setPosition(position.x, verticalPosition);
 	window.draw(bombSprite);
 }
 
-void Chest::SetPresent(RenderWindow& window)
+void Chest::GiveFifthPresent(RenderWindow& window, Sprite& rangeSprite)
+{
+	rangeSprite.setPosition(position.x, verticalPosition);
+	window.draw(rangeSprite);
+}
+
+void Chest::GiveSixthPresent(RenderWindow& window, Sprite& fireRateUp)
+{
+	fireRateUp.setPosition(position.x, verticalPosition);
+	window.draw(fireRateUp);
+}
+
+void Chest::SetPresent(RenderWindow& window, Sprites& mySprites)
 {
 	switch (filling)
 	{
-	case IncreaseSpeed: GiveFirstPresent(window); break;
-	case IncreaseDamage: GiveSecondPresent(window); break;
-	case Health: GiveThirdPresent(window); break;
-	case Bomb: GiveForthPresent(window); break;
+	case INCREASE_SPEED: GiveFirstPresent(window, mySprites.increaseSpeedSprite); break;
+	case INCREASE_DAMAGE: GiveSecondPresent(window, mySprites.increaseDamageSprite); break;
+	case HEALTH: GiveThirdPresent(window, mySprites.healthSprite); break;
+	case BOMB: GiveForthPresent(window, mySprites.bombSprite); break;
+	case RANGE_UP: GiveFifthPresent(window, mySprites.rangeUpSprite); break;
+	case FIRE_RATE_UP: GiveSixthPresent(window, mySprites.fireRateUpSprite);
 	}
 }
 
-void Chest::CheckCollisionWithPresent(Player& p)
+void Chest::CheckCollisionWithPresent(Player& p, Sprites& mySprites)
 {
-	if (Collision::PixelPerfectTest(p.sprite, increaseSpeedSprite))
+	if (Collision::PixelPerfectTest(p.sprite, mySprites.increaseSpeedSprite))
 	{
 		isPresentTaken = true;
 		p.speed += SPEED_BONUS;
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, increaseDamageSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.increaseDamageSprite))
 	{
 		isPresentTaken = true;
 		p.damage += DAMAGE_BONUS;
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, healthSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.healthSprite))
 	{
 		isPresentTaken = true;
 		if (p.health >= MAX_PLAYER_HEALTH - 1)
@@ -123,35 +111,94 @@ void Chest::CheckCollisionWithPresent(Player& p)
 			p.health += HEAL_BONUS;
 		}
 	}
-	else if (Collision::PixelPerfectTest(p.sprite, bombSprite))
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.bombSprite))
 	{
 		isPresentTaken = true;
 		p.bombCount += BOMB_BONUS;
 	}
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.rangeUpSprite))
+	{
+		isPresentTaken = true;
+		p.range += RANGE_BONUS;
+	}
+	else if (Collision::PixelPerfectTest(p.sprite, mySprites.fireRateUpSprite))
+	{
+		isPresentTaken = true;
+		p.timeBetweenShoots -= FIRE_RATE_UP_BONUS;
+	}
 }
 
-void Chest::Update(Player& p, Sound& openingSound)
+void Chest::UpdateDrawText(Font& font, RenderWindow& window, View& view)
+{
+	bonusText.setFont(font);
+	bonusText.setCharacterSize(15);
+	bonusText.setPosition(view.getCenter().x - WINDOW_WIDTH / 2 + BONUS_TEXT_SHIFT.x, view.getCenter().y + WINDOW_HEIGHT / 2 - BONUS_TEXT_SHIFT.y);
+	bonusText.setColor(Color::White);
+	switch (filling)
+	{
+	case INCREASE_SPEED:  bonusText.setString("SPEED UP");
+		break;
+	case INCREASE_DAMAGE: bonusText.setString("INCREASE DAMAGE");
+		break;
+	case HEALTH: bonusText.setString("HEAL");
+		break;
+	case BOMB: bonusText.setString("ADD BOMB");
+		break;
+	case RANGE_UP: bonusText.setString("RANGE UP");
+		break;
+	case FIRE_RATE_UP: bonusText.setString("FIRE RATE UP");
+		break;
+	default:
+		break;
+	}
+	
+}
+
+void Chest::DrawText(RenderWindow& window, float& gameTime, float& playerY, View& view)
+{
+	if (isOpened == false)
+	{
+		if (playerY > view.getCenter().y - TILE_SIDE / 2)
+		{
+			verticalPosition = view.getCenter().y - TILE_SIDE;
+		}
+		else
+		{
+			verticalPosition = view.getCenter().y;
+		}
+	}
+	if (isPresentTaken == false)
+		{
+			takePresentTime = gameTime;
+		}
+	if (gameTime > takePresentTime && gameTime < takePresentTime + TIME_FOR_SHOW_BONUS_TYPE_TEXT)
+	{
+
+		window.draw(bonusText);
+	}
+}
+
+void Chest::Update(Player& p, Sound& openingSound, Sprites& mySprites)
 {
 	chestSpriteOpened.setTexture(chestTexture);
 	chestSpriteClosed.setTexture(chestTexture);
-	LoadTextures();
 	if (isOpened == false)
 	{
-		SetFilling();
-		chestSpriteClosed.setPosition(x - w / 2, y - h / 2);
 		CheckOpening(p, openingSound);
+		SetFilling();
+		chestSpriteClosed.setPosition(position.x - size.x / 2, position.y - size.y / 2);
 	}
 	else
 	{
-		chestSpriteOpened.setPosition(x - w / 2, y - h / 2);
+		chestSpriteOpened.setPosition(position.x - size.x / 2, position.y - size.y / 2);
 		if (isPresentTaken == false)
 		{
-			CheckCollisionWithPresent(p);
+			CheckCollisionWithPresent(p, mySprites);
 		}
 	}
 }
 
-void Chest::DrawChest(RenderWindow& window)
+void Chest::DrawChest(RenderWindow& window, Sprites& mySprites)
 {
 	if (isOpened == false)
 	{
@@ -165,7 +212,7 @@ void Chest::DrawChest(RenderWindow& window)
 		}
 		if (isPresentTaken == false)
 		{
-			SetPresent(window);
+			SetPresent(window, mySprites);
 		}
 	}
 }

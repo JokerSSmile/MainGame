@@ -1,54 +1,52 @@
 #include "music.h"
 
-const String BACKGORUND_MUSIC_1 = "resources/music/background1.ogg";
-const String BACKGORUND_MUSIC_2 = "resources/music/background2.ogg";
-const String BACKGORUND_MUSIC_3 = "resources/music/background3.ogg";
-const String TEARS_DESTROY_SOUND = "resources/sound/tear_destroy.wav";
-const String BOMB_EXPLOSION_SOUND = "resources/sound/bomb_explosion.wav";
-const String CHEST_OPENING_SOUND = "resources/sound/chest_open.wav";
-const String DOOR_OPENING_SOUND = "resources/sound/door_open.wav";
-const String PLAYER_HURTS_SOUND = "resources/sound/player_hurts.wav";
-const String CHEST_DROP_SOUND = "resources/sound/chest_drop.wav";
-const String TEAR_FIRE_SOUND = "resources/sound/tear_fire.wav";
-const String FLY_HURT_SOUND = "resources/sound/fly_hurt.wav";
-const String ENEMY_HURT_SOUND = "resources/sound/enemy_hurt.wav";
-const String MAIN_MENU_MUSIC = "resources/music/main_menu.ogg";
-
 void Sounds::LoadMusic()
 {
-	backgroundMusic1.openFromFile(BACKGORUND_MUSIC_1);
-	backgroundMusic2.openFromFile(BACKGORUND_MUSIC_2);
-	backgroundMusic3.openFromFile(BACKGORUND_MUSIC_3);
+	backgroundMusic1.openFromFile("resources/music/background1.ogg");
+	backgroundMusic2.openFromFile("resources/music/background2.ogg");
+	backgroundMusic3.openFromFile("resources/music/background3.ogg");
 
-	tearDestroyBuffer.loadFromFile(TEARS_DESTROY_SOUND);
+	menuMusic.openFromFile("resources/music/main_menu.ogg");
+	menuMusic.setLoop(true);
+
+	bossMusic.openFromFile("resources/music/boss_fight.ogg");
+	bossMusic.setLoop(true);
+
+	tearDestroyBuffer.loadFromFile("resources/sound/tear_destroy.wav");
 	tearDestroy.setBuffer(tearDestroyBuffer);
 
-	bombExplosionBuffer.loadFromFile(BOMB_EXPLOSION_SOUND);
+	bombExplosionBuffer.loadFromFile("resources/sound/bomb_explosion.wav");
 	bombExplosion.setBuffer(bombExplosionBuffer);
 
-	chestDropBuffer.loadFromFile(CHEST_DROP_SOUND);
+	chestDropBuffer.loadFromFile("resources/sound/chest_drop.wav");
 	chestDrop.setBuffer(chestDropBuffer);
 
-	chestOpeningBuffer.loadFromFile(CHEST_OPENING_SOUND);
+	chestOpeningBuffer.loadFromFile("resources/sound/chest_open.wav");
 	chestOpening.setBuffer(chestOpeningBuffer);
 
-	doorOpeningBuffer.loadFromFile(DOOR_OPENING_SOUND);
+	doorOpeningBuffer.loadFromFile("resources/sound/door_open.wav");
 	doorOpening.setBuffer(doorOpeningBuffer);
 
-	playerHurtsBuffer.loadFromFile(PLAYER_HURTS_SOUND);
+	playerHurtsBuffer.loadFromFile("resources/sound/player_hurts.wav");
 	playerHurts.setBuffer(playerHurtsBuffer);
 
-	tearFireBuffer.loadFromFile(TEAR_FIRE_SOUND);
+	tearFireBuffer.loadFromFile("resources/sound/tear_fire.wav");
 	tearFire.setBuffer(tearFireBuffer);
 
-	flyHurtBuffer.loadFromFile(FLY_HURT_SOUND);
+	flyHurtBuffer.loadFromFile("resources/sound/fly_hurt.wav");
 	flyHurt.setBuffer(flyHurtBuffer);
 
-	enemyHurtBuffer.loadFromFile(ENEMY_HURT_SOUND);
+	enemyHurtBuffer.loadFromFile("resources/sound/enemy_hurt.wav");
 	enemyHurt.setBuffer(enemyHurtBuffer);
 
-	menuMusic.openFromFile(MAIN_MENU_MUSIC);
-	menuMusic.setLoop(true);
+	bossLandsBuffer.loadFromFile("resources/sound/boss_lands.wav");
+	bossLands.setBuffer(bossLandsBuffer);
+
+	bossShootsBoofer.loadFromFile("resources/sound/boss_shoots.wav");
+	bossShoots.setBuffer(bossShootsBoofer);
+
+	bossDiesBuffer.loadFromFile("resources/sound/boss_dies.wav");
+	bossDies.setBuffer(bossDiesBuffer);
 }
 
 void Sounds::SetVolume(int& volume)
@@ -65,25 +63,36 @@ void Sounds::SetVolume(int& volume)
 	flyHurt.setVolume(float(volume));
 	enemyHurt.setVolume(float(volume));
 	tearFire.setVolume(float(volume));
-	menuMusic.setVolume(float(volume));
+	menuMusic.setVolume(float(volume / 2));
+	bossMusic.setVolume(float(volume / 2));
 }
 
-void Sounds::UpdateMusic(int& volume)
+void Sounds::UpdateMusic(int& volume, Level& level)
 {
 	SetVolume(volume);
-	if (backgroundMusic1.getStatus() == false && currentMusic == FIRST_MUSIC)
+	if (level != BOSS)
 	{
-		backgroundMusic2.play();
-		currentMusic = SECOND_MUSIC;
+		if (backgroundMusic1.getStatus() == false && currentMusic == FIRST_MUSIC)
+		{
+			backgroundMusic2.play();
+			currentMusic = SECOND_MUSIC;
+		}
+		else if (backgroundMusic2.getStatus() == false && currentMusic == SECOND_MUSIC)
+		{
+			backgroundMusic3.play();
+			currentMusic = THIRD_MUSIC;
+		}
+		else if (backgroundMusic3.getStatus() == false && currentMusic == THIRD_MUSIC)
+		{
+			backgroundMusic1.play();
+			currentMusic = FIRST_MUSIC;
+		}
 	}
-	else if (backgroundMusic2.getStatus() == false && currentMusic == SECOND_MUSIC)
+	else
 	{
-		backgroundMusic3.play();
-		currentMusic = THIRD_MUSIC;
-	}
-	else if (backgroundMusic3.getStatus() == false && currentMusic == THIRD_MUSIC)
-	{
-		backgroundMusic1.play();
-		currentMusic = FIRST_MUSIC;
+		if (bossMusic.getStatus() == false)
+		{
+			bossMusic.play();
+		}
 	}
 }

@@ -15,15 +15,23 @@ const String BOMB_TEXTURE_IN_STATUS_BAR = "resources/images/addBomb.png";
 const String PLAYERS_BODY_TEXTURE_PATH = "resources/images/body_1.png";
 const String PLAYERS_HEAD_TEXTURE_PATH = "resources/images/head.png";
 const String ENEMY_FLY_TEXTURE_PATH = "resources/images/fly.png";
+const String ENEMY_WORM_TEXTURE_PATH = "resources/images/worm.png";
 const String ENEMY_STAND_AND_SHOOT_TEXTURE_PATH = "resources/images/StandAndShoot.png";
 const String ENEMY_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_destroy_effect.png";
 const String ENEMY_FOLLOW_TEXTURE_PATH = "resources/images/enemy_follow.png";
+const String ENEMY_FOLLOW_HEAD_TEXTURE_PATH = "resources/images/follow_head.png";
 const String BULLET_TEXTURE_PATH = "resources/images/bullets.png";
 const String TEARS_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/tears_effect.png";
 const String ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH = "resources/images/enemy_tears_effect.png";
 const String BOMB_EXPLOSION_TEXTURE_PATH = "resources/images/explosion.png";
 const String BOMB_BEFORE_EXPLOSION_TEXTURE = "resources/images/bomb_state.png";
 const String HEART_TEXTURES_IN_STATUS_BAR = "resources/images/hearts.png";
+const String MANHOLE_TEXTURE_PATH = "resources/images/manhole.png";
+const String BOSS_TEXTURE_PATH = "resources/images/boss.png";
+const String CONTROLS_TEXTURE_PATH = "resources/images/controls.png";
+const String HEALTHBAR_TEXTURE_PATH = "resources/images/health_bar.png";
+const String RANGE_TEXTURE_PATH = "resources/images/range_up.png";
+const String FIRE_RATE_UP_TEXTURE_PATH = "resources/images/fire_rate_up.png";
 
 struct Sprites
 {
@@ -44,25 +52,31 @@ struct Sprites
 	Texture floorBackgroundTexture;
 	Sprite floorBackgroundSprite;
 
+	//controls
+	Texture controlsTexture;
+
+	//manhole
+	Texture manholeTexture;
+
 	//hero
 	Image heroImage;
 	Texture heroTexture;
 
 	//images in health bar
 	Texture heartTexture;
+	Texture healthBarTexture;
+	Sprite healthBar;
 
-	//enemy image
+	//enemies
 	Image enemyImage;
 	Texture enemyTexture;
 	Image poofImage;
 	Texture poofTexture;
-
-	//standAndShoot
+	Texture enemyFollowHead;
 	Image standAndShootImage;
 	Texture  standAndShootTexture;
-
-	//enemy follow
 	Texture enemyFollowTexture;
+	Texture wormTexture;
 
 	//bullets
 	Texture bulletTexture;
@@ -79,70 +93,36 @@ struct Sprites
 	//font
 	Font font;
 
-	void LoadBackgroundSprites()
-	{
-		wallBackground.loadFromFile(WALL_TEXTURE_PATH);
-		wallBackgroundTexture.loadFromImage(wallBackground);
-		wallBackgroundSprite.setTexture(wallBackgroundTexture);
-		floorBackground.loadFromFile(FLOOR_TEXTURE_PATH);
-		floorBackgroundTexture.loadFromImage(floorBackground);
-		floorBackgroundSprite.setTexture(floorBackgroundTexture);
-		wallBulletTexture.loadFromFile(WALL_BULLET_TEXTURE_PATH);
-		wallBulletSprite.setTexture(wallBulletTexture);
+	//chest bonuses
+	Texture increaseSpeedTexture;
+	Texture IncreaseDamageTexture;
+	Texture healthTexture;
+	Texture bombTexture;
+	Texture rangeUpTexture;
+	Texture fireRateUpTexture;
+	Sprite increaseSpeedSprite;
+	Sprite increaseDamageSprite;
+	Sprite healthSprite;
+	Sprite bombSprite;
+	Sprite rangeUpSprite;
+	Sprite fireRateUpSprite;
 
-		bombCount.loadFromFile(BOMB_TEXTURE_IN_STATUS_BAR);
-	}
 
-	void LoadHeroImage()
-	{
-		heroImage.loadFromFile(PLAYERS_BODY_TEXTURE_PATH);
-		heroTexture.loadFromImage(heroImage);
-		headTexture.loadFromFile(PLAYERS_HEAD_TEXTURE_PATH);
-		heartTexture.loadFromFile(HEART_TEXTURES_IN_STATUS_BAR);
-	}
+	//boss
+	Texture bossTexture;
 
-	void LoadEnemyImage()
-	{
-		enemyImage.loadFromFile(ENEMY_FLY_TEXTURE_PATH);
-		enemyTexture.loadFromImage(enemyImage);
-		standAndShootImage.loadFromFile(ENEMY_STAND_AND_SHOOT_TEXTURE_PATH);
-		standAndShootTexture.loadFromImage(standAndShootImage);
-		poofImage.loadFromFile(ENEMY_DESTROY_EFFECT_TEXTURE_PATH);
-		poofTexture.loadFromImage(poofImage);
-		enemyFollowTexture.loadFromFile(ENEMY_FOLLOW_TEXTURE_PATH);
-	}
+	void LoadBackgroundSprites();
 
-	void LoadBulletTexture()
-	{
-		bulletTexture.loadFromFile(BULLET_TEXTURE_PATH);
-		bulletEffectTexture.loadFromFile(TEARS_DESTROY_EFFECT_TEXTURE_PATH);
-		bulletEffectTextureEnemy.loadFromFile(ENEMY_BULLET_DESTROY_EFFECT_TEXTURE_PATH);
-	}
+	void LoadChestSprites();
 
-	void LoadMainMenuTextures()
-	{
-		mainMenuTexture.loadFromFile(MAIN_MENU_TEXTURE_PATH);
-		pauseTexture.loadFromFile(PAUSE_TEXTURE_PATH);
-	}
+	void LoadHeroImage();
+	void LoadEnemyImage();
+	void LoadBulletTexture();
 
-	void LoadFont()
-	{
-		font.loadFromFile(FONT_8_BIT_PATH);
-	}
+	void LoadMainMenuTextures();
+	void LoadFont();
+	void LoadBombsTextures();
+	void LoadBossSprite();
 
-	void LoadBombsTextures()
-	{
-		bombExplosion.loadFromFile(BOMB_EXPLOSION_TEXTURE_PATH);
-		bombState.loadFromFile(BOMB_BEFORE_EXPLOSION_TEXTURE);
-	}
-
-	void InitImages()
-	{
-		LoadMainMenuTextures();
-		LoadBackgroundSprites();
-		LoadHeroImage();
-		LoadEnemyImage();
-		LoadBulletTexture();
-		LoadBombsTextures();
-	}
+	void InitImages();
 };

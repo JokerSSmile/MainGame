@@ -13,7 +13,7 @@ bool Player::DiagonalMoving(float& time)
 {
 	if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = leftUp;
+		dir = LEFT_UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
@@ -21,7 +21,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = leftDown;
+		dir = LEFT_DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
@@ -29,7 +29,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = rightUp;
+		dir = RIGHT_UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
@@ -37,7 +37,7 @@ bool Player::DiagonalMoving(float& time)
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = rightDown;
+		dir = RIGHT_DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
@@ -50,35 +50,35 @@ void Player::StrightMoving(float& time)
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
-		dir = left;
+		dir = LEFT;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 60, 36, 26));
 		headSprite.setTextureRect(IntRect(192, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
-		dir = right;
+		dir = RIGHT;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 34, 36, 26));
 		headSprite.setTextureRect(IntRect(64, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
-		dir = up;
+		dir = UP;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 0, 36, 26));
 		headSprite.setTextureRect(IntRect(128, 0, 32, 32));
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
-		dir = down;
+		dir = DOWN;
 		setFrame(time);
 		sprite.setTextureRect(IntRect(36 * int(CurrentFrame), 0, 36, 26));
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 	}
 	else
 	{
-		dir = stay;
+		dir = STAND;
 		sprite.setTextureRect(IntRect(0, 0, 36, 26));
 		headSprite.setTextureRect(IntRect(0, 0, 32, 32));
 	}
@@ -117,7 +117,7 @@ void Player::PlantBomb(Boomb& bomb, float& time)
 			if (time > lastBombPlant + TIME_BEFORE_EXPLOSION + TIME_FOR_EXPLOSION || lastBombPlant == 0)
 			{
 				lastBombPlant = time;
-				bomb.position = Vector2f(position.x - h / 2, position.y - h / 2);
+				bomb.position = Vector2f(position.x - size.y / 2, position.y - size.y / 2);
 				bomb.createTime = time;
 				bomb.explosionTime = time + TIME_BEFORE_EXPLOSION;
 				bomb.isAlive = true;
@@ -159,25 +159,26 @@ void Player::SetShootAnimation(int& dir)
 
 void Player::Shoot(vector<Bullet>& bullets, float gameTime, float &lastShootPlayer, int dir, Sound& tearFire)
 {
-	if (gameTime > (lastShootPlayer + TIME_BETWEEN_SHOOTS_PLAYER))
+	if (gameTime > (lastShootPlayer + timeBetweenShoots))
 	{
 		Bullet bullet;
 		bullet.isPlayers = true;
 		bullet.alive = true;
 		if (dir == 5)
 		{
-			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
+			bullet.position.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2 - BULLET_SHIFT_IF_SHOOT_UP;
 		}
 		else
 		{		
-			bullet.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
+			bullet.position.y = headSprite.getPosition().y + headSprite.getLocalBounds().height / 2;
 		}
-		bullet.x = headSprite.getPosition().x + headSprite.getLocalBounds().width / 2;
+		bullet.position.x = headSprite.getPosition().x + headSprite.getLocalBounds().width / 2;
 		bullet.timeShot = gameTime;
 		bullet.direction = dir;
 		bullet.speed = PLAYERS_BULLET_SPEED;
 		bullet.damage = damage;
 		bullet.startPos = position;
+		bullet.isDel = false;
 		lastShootPlayer = bullet.timeShot;
 		bullets.push_back(bullet);
 		tearFire.play();
@@ -197,32 +198,37 @@ bool Player::IsIntersectsPlayerEnemy(Enemy& enemy)
 	return false;
 }
 
-void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, float& gameTime, float& hitTimer, Sound& tearDestroy)
+void Player::CheckEnemyCollidesPlayer(vector<Enemy>& enemies, Boss& boss, float& gameTime, Sound& playerHurts)
 {
 	for (auto& enemy: enemies)
 	{
-		if (enemy.alive == true)
+		if (enemy.alive == true && enemy.sprite.getPosition().x != 0)
 		{
 			if (IsIntersectsPlayerEnemy(enemy) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
 			{
+				cout << enemy.health << endl;
 				health -= enemy.damage;
 				hitTimer = gameTime;
-				tearDestroy.play();
+				playerHurts.play();
+
 			}
-			if (Collision::PixelPerfectTest(sprite, enemy.sprite))
-			{
-				if (enemy.name == "EnemyStandAndShoot")
-				{
-					canMove = false;
-				}
-			}
+		}
+	}
+	if (Collision::PixelPerfectTest(sprite, boss.sprite) && (gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD || hitTimer == 0))
+	{
+		if (boss.state == SHOOT || boss.state == STAY && boss.alive == true)
+		{
+			health -= BOSS_FALL_DAMAGE;
+			hitTimer = gameTime;
+			playerHurts.play();
 		}
 	}
 }
 
-void Player::ChangeColorAfterHit(float& gameTime, float& hitTimer)
+void Player::ChangeColorAfterHit(float& gameTime)
 {
-	if (gameTime < hitTimer + CHANGE_COLOR_EFFECT || gameTime < lastHitTime + CHANGE_COLOR_EFFECT && hitTimer != 0 || gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
+	if ((gameTime > hitTimer && gameTime < hitTimer + CHANGE_COLOR_EFFECT) || (gameTime > lastHitTime && gameTime < lastHitTime + CHANGE_COLOR_EFFECT)
+		|| gameTime > bombHitTime && gameTime < bombHitTime + CHANGE_COLOR_EFFECT)
 	{
 		if (gameTime > 1)
 		{
@@ -243,26 +249,44 @@ void Player::DoorCollision(vector<Map>& myMap, View& view, bool& areDoorsOpened)
 	{
 		if (areDoorsOpened == true && Collision::PixelPerfectTest(sprite, map.sprite))
 		{
-			if (map.pos == RIGHT)
+			if (map.pos == D_RIGHT)
 			{
 				view.setCenter(view.getCenter().x + WINDOW_WIDTH, view.getCenter().y);
-				position.x += TILE_SIDE * 4 + w;
+				position.x += TILE_SIDE * 4 + size.x + 10;
 			}
-			else if (map.pos == LEFT)
+			else if (map.pos == D_LEFT)
 			{
 				view.setCenter(view.getCenter().x - WINDOW_WIDTH, view.getCenter().y);
-				position.x -= TILE_SIDE * 4 + w;
+				position.x -= TILE_SIDE * 4 + size.x + 10;
 			}
-			else if (map.pos == UP)
+			else if (map.pos == D_UP)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y - WINDOW_HEIGHT);
-				position.y -= TILE_SIDE * 4 + h;
+				position.y -= TILE_SIDE * 4 + size.y + 10;
 			}
-			else if (map.pos == DOWN)
+			else if (map.pos == D_DOWN)
 			{
 				view.setCenter(view.getCenter().x, view.getCenter().y + WINDOW_HEIGHT);
-				position.y += TILE_SIDE * 4 + h;
+				position.y += TILE_SIDE * 4 + size.y + 10;
 			}
+			break;
+		}
+	}
+}
+
+void Player::SpikeCollision(vector<Map>& myMap, float& gameTime, Sound& playerHurts)
+{
+	for (auto& map : myMap)
+	{
+		if (Collision::PixelPerfectTest(sprite, map.sprite) && gameTime > hitTimer + TIME_FOR_PLAYER_HIT_CD)
+		{
+			if (map.pos == SPIKE)
+			{
+				health -= SPIKE_DAMAGE;
+				hitTimer = gameTime;
+				playerHurts.play();
+			}
+			break;
 		}
 	}
 }
@@ -273,7 +297,7 @@ bool Player::IsIntersectsMap(vector<Map>& myMap, View& view, bool areDoorsOpened
 	{
 		if (Collision::BoundingBoxTest(sprite, map.sprite))
 		{
-			if (map.pos == 0)
+			if (map.pos == WALL || map.pos == ROCK)
 			{
 				return true;
 			}
@@ -318,5 +342,5 @@ void Player::Moving(float& time, vector<Map>& myMap, View& view, bool areDoorsOp
 		}
 	}
 	position = sprite.getPosition();
-	headSprite.setPosition(sprite.getPosition().x - 14, sprite.getPosition().y - 43);
+	headSprite.setPosition(sprite.getPosition().x - SHIFT_FOR_HEAD.x, sprite.getPosition().y - SHIFT_FOR_HEAD.y);
 }

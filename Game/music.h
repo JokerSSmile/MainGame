@@ -22,6 +22,8 @@ struct Sounds
 	Music backgroundMusic2;
 	Music backgroundMusic3;
 
+	Music bossMusic;
+
 	Music menuMusic;
 
 	SoundBuffer tearDestroyBuffer;
@@ -50,8 +52,17 @@ struct Sounds
 
 	SoundBuffer enemyHurtBuffer;
 	Sound enemyHurt;
+
+	SoundBuffer bossLandsBuffer;
+	Sound bossLands;
+
+	SoundBuffer bossShootsBoofer;
+	Sound bossShoots;
+
+	SoundBuffer bossDiesBuffer;
+	Sound bossDies;
 	
 	void LoadMusic();
 	void SetVolume(int& volume);
-	void UpdateMusic(int& volume);
+	void UpdateMusic(int& volume, Level& level);
 };

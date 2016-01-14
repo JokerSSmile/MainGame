@@ -35,7 +35,7 @@ void Boomb::ExplosionAnimation(Texture& bombExplosionTexture, float& gameTime, f
 
 	if (isAlive == true)
 	{
-		damageZone.setSize(Vector2f(float(explosionSprite.getGlobalBounds().width * 0.75), float(explosionSprite.getGlobalBounds().height / 2 * 0.75)));
+		damageZone.setSize(Vector2f(float(explosionSprite.getGlobalBounds().width * 0.75), float(explosionSprite.getGlobalBounds().height / 2)));
 		damageZone.setPosition(explosionSprite.getPosition().x + BOMB_DAMAGE_ZONE_SHIFT.x, explosionSprite.getPosition().y + explosionSprite.getGlobalBounds().height / 2 + BOMB_DAMAGE_ZONE_SHIFT.y);
 	}
 	if (currentExplosionFrame < EXPLOSION_FRAMES_COUNT)
@@ -48,7 +48,7 @@ void Boomb::ExplosionAnimation(Texture& bombExplosionTexture, float& gameTime, f
 
 void Boomb::Update(float& gameTime)
 {
-	if (gameTime > explosionTime + TIME_FOR_EXPLOSION / 3)
+	if (gameTime > explosionTime + TIME_FOR_EXPLOSION / 3 || gameTime < 1)
 	{
 		isAlive = false;
 		damageZone.setPosition(-TILE_SIDE * 2, -TILE_SIDE * 2);
@@ -57,6 +57,7 @@ void Boomb::Update(float& gameTime)
 
 void Boomb::PlaySound(Sound& explosionSound, float& gameTime)
 {
+
 	if (currentExplosionFrame == 0 && currentFrame != 0 && gameTime >= explosionTime)
 	{
 		explosionSound.play();

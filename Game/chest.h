@@ -8,65 +8,62 @@
 #include "player.h"
 #include "constants.h"
 #include "collision.h"
+#include "sprites.h"
 
 using namespace sf;
 
-static enum
-{
-	IncreaseSpeed, IncreaseDamage, Health, Bomb
-} filling;
-
 struct Chest
 {
-public:
-	int room;
-	float x;
-	float y;
-	int h;
-	int w;
+	ChestFilling filling;
+	Vector2f position;
+	Vector2i size;
 	Texture chestTexture;
-	Texture increaseSpeedTexture;
-	Texture IncreaseDamageTexture;
-	Texture HealthTexture;
-	Texture BombTexture;
 	Sprite chestSpriteOpened;
 	Sprite chestSpriteClosed;
-	Sprite increaseSpeedSprite;
-	Sprite increaseDamageSprite;
-	Sprite healthSprite;
-	Sprite bombSprite;
+	Text bonusText;
 
-	bool isOpened = false;
+	float verticalPosition;
+	float takePresentTime;
 	int present;
-	bool areTexturesLoaded = false;
-	bool isPresentTaken = false;
+	int room;
+	bool isPresentTaken;
+	bool isOpened;
+
 	Chest() {};
-	Chest(float X, float Y, int Room)
+	Chest(Vector2f pos, int Room)
 	{
-		x = X;
-		y = Y;
+		position.x = pos.x;
+		position.y = pos.y;
 		chestTexture.loadFromFile("resources/images/chest.png");
 		chestSpriteOpened.setTextureRect(IntRect(64, 0, 64, 64));
 		chestSpriteClosed.setTextureRect(IntRect(0, 0, 64, 64));
-		h = int(chestSpriteClosed.getGlobalBounds().height);
-		w = int(chestSpriteClosed.getGlobalBounds().width);
+		size.x = int(chestSpriteClosed.getGlobalBounds().height);
+		size.y = int(chestSpriteClosed.getGlobalBounds().width);
 		room = Room;
+		isPresentTaken = false;
+		isOpened = false;
 	}
 
-	void LoadTextures();
-	int RandomNumber();
 	void SetFilling();
 	void CheckOpening(Player& p, Sound& openingSound);
 
-	void GiveFirstPresent(RenderWindow& window);
-	void GiveSecondPresent(RenderWindow& window);
-	void GiveThirdPresent(RenderWindow& window);
-	void GiveForthPresent(RenderWindow& window);
+	void GiveFirstPresent(RenderWindow& window, Sprite& increaseSpeedSprite);
+	void GiveSecondPresent(RenderWindow & window, Sprite & increaseDamageSprite);
+	void GiveThirdPresent(RenderWindow & window, Sprite & healthSprite);
+	void GiveForthPresent(RenderWindow & window, Sprite & bombSprite);
 
-	void SetPresent(RenderWindow& window);
-	void CheckCollisionWithPresent(Player& p);
+	void GiveFifthPresent(RenderWindow & window, Sprite & bombSprite);
 
-	void Update(Player& p, Sound& openingSound);
+	void GiveSixthPresent(RenderWindow & window, Sprite & fireRateUp);
 
-	void DrawChest(RenderWindow& window);
+	void SetPresent(RenderWindow & window, Sprites& mySprites);
+	void CheckCollisionWithPresent(Player& p, Sprites& mySprites);
+
+	void UpdateDrawText(Font& font, RenderWindow& window, View& view);
+
+	void DrawText(RenderWindow & window, float & gameTime, float& playerY, View& view);
+
+	void Update(Player& p, Sound& openingSound, Sprites& mySprites);
+
+	void DrawChest(RenderWindow& window, Sprites& mySprites);
 };

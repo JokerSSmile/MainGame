@@ -10,29 +10,20 @@
 #include "bomb.h"
 #include "music.h"
 #include "menu.h"
+#include "boss.h"
 
 #include <sstream>
 
-static enum 
-{
-	NOT_STATED,
-	FIRST,
-	SECOND,
-	THIRD,
-	FORTH,
-	FIFTH,
-	SIXTH,
-	SEVENTH,
-	EIGHTH,
-	NINTH
-} currentRoom;
+
 
 struct Game
 {
 	Game() {};
 
+	Window window;
 	MainMenu menu;
 	Player player;
+	Boss boss;
 	tileMap myTileMap;
 	Sprites mySprites;
 	Clock clock;
@@ -42,6 +33,9 @@ struct Game
 	GameState gameState;
 	View view;
 	Event event;
+	Level level;
+	PlayerState playerState;
+	RoomNum room;
 
 	Sprite mainMenuSprite;
 	Sprite pauseSprite;
@@ -56,38 +50,40 @@ struct Game
 	vector<Bullet> bullets;
 	vector<Chest> chests;
 
+	float currentFrame;
 	float lastShootPlayer;
-	float hitTimer;
 	float gameTime;
 	float time;
-
-	int room;
 	int volume;
-
 	bool isKeyPressed;
 
+	void InitLevelOneEnemies();
+
+	void InitLevelTwoEnemies();
+
+	void InitLevelThreeEnemies();
+
 	void InitEnemies();
-	void InitGame();
-	void Delete();
+	void InitGame(RenderWindow& window);
+	void ResetData();
 	void Restart();
-	int InitializeRoom();
+	void InitializeRoom();
 
 	void SetPauseText();
-	void CheckIntersectionWithTextPause(RenderWindow& window);
+	void CheckMouseIntersectionWithTextPause(RenderWindow& window);
 	void InitSheetAndBackground(RenderWindow& window);
 	void SetPause(RenderWindow& window);
 
 	void SetEndGameText(RenderWindow& window);
-	void CheckIntersectionWithTextEnd(RenderWindow & window);
-	void SetEndGame(RenderWindow & window);
+	void CheckMouseIntersectionWithTextEnd(RenderWindow & window);
+	void EndGame(RenderWindow & window);
 
 	bool IsRoomCleared();
 	bool IsRoomEmpty();
 	void AddChest(View& view);
 	bool IsChestInRoom();
 
-	void DeleteEnemyFromVector();
-	void EnemyDeathSound(Enemy& enemy);
+	bool RemoveEnemyFromVector();
 	void UpdateEnemies(RenderWindow& window);
 	void UpdateChests(RenderWindow& window);
 	void UpdatePlayer();
@@ -98,12 +94,15 @@ struct Game
 	void UpdateBombs();
 	void UpdateTimePerFrame();
 	void UpdateTime(); 
-	void UpdateSounds();
+	void UpdateMusic();
 	void ProcessEvents(RenderWindow& window);
 	void UpdatePause();
 	void SetMainMenuMusic();
 	void CheckEndGame();
+	void UpdateBoss();
 	void UpdateGame(RenderWindow& window);
+
+	void DrawHelp(RenderWindow & window);
 
 	void DrawBackground(RenderWindow& window);
 	void DrawPlayersHealth(RenderWindow& window);
@@ -112,10 +111,12 @@ struct Game
 	void DrawPlayer(RenderWindow& window);
 	void DrawBombs(RenderWindow& window);
 	void SetCorrectDrawOrder(RenderWindow& window);
+	void JumpNextLevel(RenderWindow & window);
 	void DrawMap(RenderWindow& window);
 	void DrawChest(RenderWindow& window);
 	void DrawPause(RenderWindow& window);
 
 	void DrawEndGame(RenderWindow& window);
+	void DrawBoss(RenderWindow& window);
 	void DrawWindow(RenderWindow& window);
 };

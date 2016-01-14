@@ -12,7 +12,7 @@ void StartGame()
 {
 	RenderWindow window (VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Game");
 	Game* game = new Game;
-	game->InitGame();
+	game->InitGame(window);
 	while (window.isOpen())
 	{
 		game->UpdateGame(window);
